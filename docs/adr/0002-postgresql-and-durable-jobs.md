@@ -1,0 +1,3 @@
+# Use PostgreSQL for records, retrieval and durable job handoff
+
+Accepted October 3, 2026 after comparing SQLite, MySQL, MongoDB and a Redis queue. Use PostgreSQL with Drizzle, pgvector and pg-boss so authoritative records, flexible facts, semantic projections and durable jobs share one database. Commit the saved-item receipt and processing job through the same transaction connection, then execute slow work in a separate Node worker. This costs more local setup than SQLite but supports separate runtime hosts later; files and external provider effects remain outside database atomicity and require reconciliation, idempotency and guarded publication.

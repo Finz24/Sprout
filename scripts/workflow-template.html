@@ -1,0 +1,30 @@
+<style>
+#sprout-workflows { --flow-node: color-mix(in srgb, var(--viz-series-1) 9%, var(--background)); --flow-issue: color-mix(in srgb, var(--orange) 12%, var(--background)); --flow-later: color-mix(in srgb, var(--purple) 9%, var(--background)); color: var(--foreground); container-type: inline-size; }
+#sprout-workflows .chapter { margin-block: 1rem; }
+#sprout-workflows summary { cursor: pointer; padding-block: .75rem; }
+#sprout-workflows .chapter > summary { font-weight: 500; }
+#sprout-workflows .chapter-content { padding-block: .25rem 1rem; }
+#sprout-workflows .flow-diagram { display: block; width: 100%; height: auto; }
+#sprout-workflows .flow-diagram text { fill: var(--foreground); font-family: Arial, sans-serif; font-weight: 400; }
+#sprout-workflows .flow-diagram .node text { text-anchor: middle; }
+#sprout-workflows .flow-diagram .node rect, #sprout-workflows .flow-diagram .node polygon, #sprout-workflows .flow-diagram .node path { fill: var(--flow-node); stroke: var(--border); stroke-width: 1px; }
+#sprout-workflows .flow-diagram .issue rect, #sprout-workflows .flow-diagram .open rect { fill: var(--flow-issue); }
+#sprout-workflows .flow-diagram .later rect, #sprout-workflows .flow-diagram .advanced rect { fill: var(--flow-later); }
+#sprout-workflows .flow-diagram .portal rect { fill: var(--secondary); }
+#sprout-workflows .flow-diagram .flowchart-link { fill: none; stroke: var(--muted-foreground); stroke-width: 1.25px; }
+#sprout-workflows .flow-diagram marker path { fill: var(--muted-foreground); stroke: var(--muted-foreground); }
+#sprout-workflows .flow-diagram .edgeLabel rect { fill: var(--background); opacity: .96; }
+#sprout-workflows .routes { display: none; }
+#sprout-workflows .routes li { margin-block: .75rem; }
+#sprout-workflows .routes .route-target { display: block; margin-inline-start: 1rem; }
+#sprout-workflows .rules li { margin-block: .75rem; }
+#sprout-workflows .legend { display: flex; flex-wrap: wrap; gap: .5rem 1rem; }
+#sprout-workflows .chapter-stage { display: block; font-weight: 400; }
+#sprout-workflows .route-label { color: var(--muted-foreground); }
+/*__RESPONSIVE_RULES__*/
+</style>
+<div id="sprout-workflows">
+  <h2>Sprout · revised action flows</h2>
+  <div class="legend text-small"><span>Core</span><span>Later</span><span>Advanced</span><span>◇ Decision</span><span>Decision needed · unresolved policy</span></div>
+  <!--__CHAPTERS__-->
+</div>

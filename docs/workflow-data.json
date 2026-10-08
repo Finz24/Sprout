@@ -1,0 +1,1848 @@
+[
+  {
+    "id": "00",
+    "title": "The whole product",
+    "stage": "Core → later → advanced",
+    "nodes": [
+      {
+        "id": "home",
+        "label": "Open Sprout",
+        "kind": "step"
+      },
+      {
+        "id": "capture",
+        "label": "01 · Submit and retain",
+        "kind": "step"
+      },
+      {
+        "id": "enrich",
+        "label": "02 · Understand and index",
+        "kind": "step"
+      },
+      {
+        "id": "find",
+        "label": "04 · Find or ask",
+        "kind": "step"
+      },
+      {
+        "id": "use",
+        "label": "03 · Open and use item",
+        "kind": "step"
+      },
+      {
+        "id": "review",
+        "label": "03 · Preview and accept",
+        "kind": "step"
+      },
+      {
+        "id": "repair",
+        "label": "05 · Resolve an issue",
+        "kind": "step"
+      },
+      {
+        "id": "act",
+        "label": "06 · Authorize an action",
+        "kind": "later"
+      },
+      {
+        "id": "remember",
+        "label": "09 · Rediscover",
+        "kind": "later"
+      },
+      {
+        "id": "evolve",
+        "label": "10 · Refine or reprocess",
+        "kind": "advanced"
+      },
+      {
+        "id": "retain",
+        "label": "11 · Download or delete",
+        "kind": "step"
+      }
+    ],
+    "edges": [
+      {
+        "from": "home",
+        "label": "Save",
+        "to": "capture"
+      },
+      {
+        "from": "home",
+        "label": "Retrieve",
+        "to": "find"
+      },
+      {
+        "from": "capture",
+        "label": "Receipt confirmed",
+        "to": "enrich"
+      },
+      {
+        "from": "enrich",
+        "label": "Available result",
+        "to": "use"
+      },
+      {
+        "from": "find",
+        "label": "Open match",
+        "to": "use"
+      },
+      {
+        "from": "use",
+        "label": "Optional review",
+        "to": "review"
+      },
+      {
+        "from": "home",
+        "label": "Needs attention",
+        "to": "repair"
+      },
+      {
+        "from": "use",
+        "label": "Fresh instruction or suggestion",
+        "to": "act"
+      },
+      {
+        "from": "use",
+        "label": "Keep for later",
+        "to": "remember"
+      },
+      {
+        "from": "use",
+        "label": "New interpretation",
+        "to": "evolve"
+      },
+      {
+        "from": "use",
+        "label": "Manage saved data",
+        "to": "retain"
+      }
+    ],
+    "rules": [
+      "Home opens with search and recent items, a visible Needs your input count, and Add for text, a pasted link or a file. Card and compact list views remain in scope.",
+      "The visual library uses sidebar navigation, recognizable saved-item cards, compact list views and an inspector. Spaces preserve owner-chosen membership, arrangement, grouping and filters without forking originals or understanding.",
+      "Open/use is the central junction. New items can be searched, read and downloaded. Acceptance records review of the displayed understanding; it does not certify truth or authorize actions.",
+      "One submission creates one item, except deliberate exact-content reuse. Its subjects remain individually discoverable. The owner will add the existing backlog in normal batches.",
+      "Core means useful capture, understanding, retrieval, original access, processing visibility and recovery for text, images, video, links, Instagram, X and YouTube. A text-only checkpoint is not completion of core.",
+      "Windows self-hosting and installed Galaxy sharing are selected, with a named Cloudflare Tunnel and application authentication. Validate the actual route; access depends on the host being running and reachable. Cloud AI is acceptable.",
+      "Later stages add tasks, reminders, Sprout/linked Google calendars and resurfacing. Comments, refinement, reprocessing, versions and rollback remain advanced. This map does not implement those features."
+    ],
+    "open": []
+  },
+  {
+    "id": "01",
+    "title": "Capture and preserve",
+    "stage": "Core · source/device support unverified",
+    "nodes": [
+      {
+        "id": "submit",
+        "label": "Share, drop or Add",
+        "kind": "step"
+      },
+      {
+        "id": "upload",
+        "label": "Upload / not yet saved",
+        "kind": "step"
+      },
+      {
+        "id": "failure",
+        "label": "Not saved: retry here",
+        "kind": "issue"
+      },
+      {
+        "id": "receipt",
+        "label": "Confirm retained input",
+        "kind": "step"
+      },
+      {
+        "id": "match",
+        "label": "Existing content?",
+        "kind": "decision"
+      },
+      {
+        "id": "trash",
+        "label": "Match in Trash: choose",
+        "kind": "decision"
+      },
+      {
+        "id": "reuse",
+        "label": "Reuse + retain new context",
+        "kind": "step"
+      },
+      {
+        "id": "new",
+        "label": "Create Processing + New",
+        "kind": "step"
+      },
+      {
+        "id": "collect",
+        "label": "Collect available sources",
+        "kind": "step"
+      },
+      {
+        "id": "partial",
+        "label": "Show missing material",
+        "kind": "issue"
+      },
+      {
+        "id": "understand",
+        "label": "02 · Assess evidence",
+        "kind": "portal"
+      },
+      {
+        "id": "instruction",
+        "label": "06 · Check fresh instruction",
+        "kind": "portal"
+      },
+      {
+        "id": "stop",
+        "label": "Leave item in Trash",
+        "kind": "step"
+      }
+    ],
+    "edges": [
+      {
+        "from": "submit",
+        "label": "Online route available",
+        "to": "upload"
+      },
+      {
+        "from": "submit",
+        "label": "Unavailable route",
+        "to": "failure"
+      },
+      {
+        "from": "failure",
+        "label": "Resubmit safely",
+        "to": "upload"
+      },
+      {
+        "from": "upload",
+        "label": "Durable receipt",
+        "to": "receipt"
+      },
+      {
+        "from": "upload",
+        "label": "Failed / uncertain receipt",
+        "to": "failure"
+      },
+      {
+        "from": "receipt",
+        "label": "Check identity",
+        "to": "match"
+      },
+      {
+        "from": "match",
+        "label": "New",
+        "to": "new"
+      },
+      {
+        "from": "match",
+        "label": "Exact content",
+        "to": "reuse"
+      },
+      {
+        "from": "match",
+        "label": "Trashed match",
+        "to": "trash"
+      },
+      {
+        "from": "trash",
+        "label": "Restore chosen",
+        "to": "reuse"
+      },
+      {
+        "from": "trash",
+        "label": "Keep Trash: stop",
+        "to": "stop"
+      },
+      {
+        "from": "new",
+        "label": "Begin collection",
+        "to": "collect"
+      },
+      {
+        "from": "reuse",
+        "label": "Existing interpretation retained",
+        "to": "instruction"
+      },
+      {
+        "from": "collect",
+        "label": "Enough / all retained",
+        "to": "understand"
+      },
+      {
+        "from": "collect",
+        "label": "Some missing",
+        "to": "partial"
+      },
+      {
+        "from": "partial",
+        "label": "Analyze available evidence",
+        "to": "understand"
+      },
+      {
+        "from": "receipt",
+        "label": "Fresh explicit instruction",
+        "to": "instruction"
+      }
+    ],
+    "rules": [
+      "On Galaxy the intended route is an installed web share target, subject to real testing. On Windows support dragging links/photos/videos and direct text, paste or upload. If sharing is unavailable, offer direct input. WhatsApp-origin content is supported through ordinary input; a bot or direct integration is not promised.",
+      "Before acknowledgement the capture surface says uploading/not saved. Only a durable receipt permits a saved claim, and only for the text and attachment bytes actually retained. Missing attachments are individually named. Pre-receipt failure stays recoverable in the submitting surface.",
+      "A lost acknowledgement is resolved against the same logical submission before retry. Safe full resubmission is sufficient; persistent offline capture and resumable uploads are not implied.",
+      "A transport retry is the same submission; a later deliberate save has its own new intent. Exact duplicate reuse preserves that intent, new files and collection choices without altering the first Original input or automatically rewriting the summary. Newly added context is separately searchable.",
+      "The same URL is not proof of identical content. Never discard a new attachment or infer a fuzzy merge. A Trash match requires an explicit restore choice and shows its consequences. Keeping it in Trash ends that duplicate save with an honest result.",
+      "Track received payload, retained bytes, acquired context, analyzed modalities and useful understanding separately. An available URL/thumbnail/transcript does not prove downloaded or analyzed footage.",
+      "Collect directly related links, available media, metadata and available top source comments (up to 20 platform-ranked comments). Do not claim unavailable comments were collected. Preserve timestamps and provenance.",
+      "Every fresh owner instruction, from a new or reused item, goes to 06 · Check fresh instruction. During core, retain the instruction and display Not scheduled; feature launch never replays it.",
+      "Source limitations and file-supply workarounds require observed tests and explicit per-source acceptance before they satisfy the full core milestone."
+    ],
+    "open": []
+  },
+  {
+    "id": "02",
+    "title": "Understand and enrich",
+    "stage": "Core",
+    "nodes": [
+      {
+        "id": "assess",
+        "label": "Assess retained evidence",
+        "kind": "step"
+      },
+      {
+        "id": "conflict",
+        "label": "Check gaps and conflicts",
+        "kind": "step"
+      },
+      {
+        "id": "policy",
+        "label": "Effective research policy",
+        "kind": "decision"
+      },
+      {
+        "id": "research",
+        "label": "Bounded permitted lookup",
+        "kind": "step"
+      },
+      {
+        "id": "compose",
+        "label": "Compose supported understanding",
+        "kind": "step"
+      },
+      {
+        "id": "validate",
+        "label": "Valid and current?",
+        "kind": "decision"
+      },
+      {
+        "id": "failed",
+        "label": "05 · Repair failed analysis",
+        "kind": "portal"
+      },
+      {
+        "id": "publish",
+        "label": "Publish initial understanding",
+        "kind": "step"
+      },
+      {
+        "id": "index",
+        "label": "Index current evidence",
+        "kind": "step"
+      },
+      {
+        "id": "indexfail",
+        "label": "05 · Repair index only",
+        "kind": "portal"
+      },
+      {
+        "id": "open",
+        "label": "03 · Open usable item",
+        "kind": "portal"
+      }
+    ],
+    "edges": [
+      {
+        "from": "assess",
+        "label": "Available sources",
+        "to": "conflict"
+      },
+      {
+        "from": "conflict",
+        "label": "Identify useful gaps",
+        "to": "policy"
+      },
+      {
+        "from": "policy",
+        "label": "Off / no gap / limit",
+        "to": "compose"
+      },
+      {
+        "from": "policy",
+        "label": "Permitted gap",
+        "to": "research"
+      },
+      {
+        "from": "research",
+        "label": "Finding / conflict / unavailable",
+        "to": "compose"
+      },
+      {
+        "from": "compose",
+        "label": "Check output and owner edits",
+        "to": "validate"
+      },
+      {
+        "from": "validate",
+        "label": "Malformed / failed",
+        "to": "failed"
+      },
+      {
+        "from": "validate",
+        "label": "Stale or trashed: do not publish",
+        "to": "open"
+      },
+      {
+        "from": "validate",
+        "label": "Safe initial result",
+        "to": "publish"
+      },
+      {
+        "from": "publish",
+        "label": "Make retrievable",
+        "to": "index"
+      },
+      {
+        "from": "index",
+        "label": "Failed",
+        "to": "indexfail"
+      },
+      {
+        "from": "index",
+        "label": "Ready",
+        "to": "open"
+      }
+    ],
+    "rules": [
+      "Assess text, images, audio, footage and other source context only when actually obtained and analyzed. Describe absent modalities and any consequent limits. Silent visual instructions must not be guessed from a caption.",
+      "Check contradictions among ALL evidence before composition, including owner input, source captions, audio and comments even when research is Off. Owner corrections take precedence, then captured sources, then external findings; keep relevant competing claims and dates inspectable.",
+      "Global and per-item Off / Fill missing information / Deep research determine effective policy before each lookup. Fill is the default. Deep remains useful-gap-directed and bounded by time, cost and source limits; it is not permission for unrestricted browsing.",
+      "Off material cannot leak through mixed-item lookups. A separable permitted lookup can continue using only permitted material. Minimize outbound context; do not send ticket codes or private message bodies to find public venue facts. These controls must exist outside the AI prompt.",
+      "AI understanding combines the original input and acquired evidence into a useful summary, category, saving intent and flexible enriched facts. Associate each fact with its correct subject and support. Do not impose a category-specific schema.",
+      "Distinguish owner-stated saving intent from inferred intent. Stop external research when the useful gap is filled or another lookup adds little value; unknown fields remain unknown.",
+      "Invalid AI output, failed media analysis and quota exhaustion are recoverable states, not successful understanding. Existing originals and completed useful output remain accessible when optional AI work is paused.",
+      "Publish only against the current item state. Concurrent owner corrections win; deleted items cannot be republished by delayed work. Index repair uses current stored material and never calls enrichment.",
+      "Initial processing may expose a labeled interim result. Once an understanding is committed, new evidence is retained separately and does not silently replace it. The exact initial commit boundary must be specified before implementing resume behavior."
+    ],
+    "open": [
+      "Initial interim-versus-committed boundary and precise mandatory common properties are still implementation design decisions."
+    ]
+  },
+  {
+    "id": "03",
+    "title": "Inspect, correct and accept",
+    "stage": "Core",
+    "nodes": [
+      {
+        "id": "open",
+        "label": "Open current item",
+        "kind": "step"
+      },
+      {
+        "id": "use",
+        "label": "Read, watch or download",
+        "kind": "step"
+      },
+      {
+        "id": "original",
+        "label": "Inspect Original input",
+        "kind": "step"
+      },
+      {
+        "id": "edit",
+        "label": "Correct or dispute",
+        "kind": "step"
+      },
+      {
+        "id": "preview",
+        "label": "Preview understanding",
+        "kind": "step"
+      },
+      {
+        "id": "accept",
+        "label": "Accept this reviewed version",
+        "kind": "step"
+      },
+      {
+        "id": "leave",
+        "label": "Leave New / return",
+        "kind": "step"
+      },
+      {
+        "id": "index",
+        "label": "04 · Retrieve corrected data",
+        "kind": "portal"
+      },
+      {
+        "id": "newanalysis",
+        "label": "10 · Owner-requested analysis",
+        "kind": "portal"
+      }
+    ],
+    "edges": [
+      {
+        "from": "open",
+        "label": "Ordinary use",
+        "to": "use"
+      },
+      {
+        "from": "open",
+        "label": "Inspect evidence",
+        "to": "original"
+      },
+      {
+        "from": "open",
+        "label": "Wrong understanding",
+        "to": "edit"
+      },
+      {
+        "from": "open",
+        "label": "Review New item",
+        "to": "preview"
+      },
+      {
+        "from": "preview",
+        "label": "Explicit acceptance",
+        "to": "accept"
+      },
+      {
+        "from": "preview",
+        "label": "Not ready",
+        "to": "leave"
+      },
+      {
+        "from": "accept",
+        "label": "Continue using",
+        "to": "use"
+      },
+      {
+        "from": "edit",
+        "label": "Save owner correction",
+        "to": "index"
+      },
+      {
+        "from": "edit",
+        "label": "Want new interpretation",
+        "to": "newanalysis"
+      },
+      {
+        "from": "use",
+        "label": "Done",
+        "to": "leave"
+      },
+      {
+        "from": "original",
+        "label": "Back",
+        "to": "open"
+      }
+    ],
+    "rules": [
+      "Lead with understood data when available; otherwise show original input and progress honestly. Original input remains a separate button with submitted text, links and attachments. Retained files open independently of the live source.",
+      "New does not block exact/AI search, opening, source access or download. New/accepted markers remain visible. Opening an already accepted item does not create another acceptance chore.",
+      "Acceptance refers to the understanding the owner actually previewed. If that displayed revision changed, require a current preview before accepting. Acceptance acknowledges review, not factual certification or action permission.",
+      "Core manual correction includes title, category, saving intent, summary text and individual flexible facts. The owner may remove or dispute unsupported understanding and keep the original. Exclude disputed generated claims from answers and distinguish owner corrections from source statements.",
+      "Corrected material is re-indexed; originals stay intact and later processing cannot overwrite owner corrections. Ordinary owner edits do not reset acceptance. Full diff/history/comments are not required for this editor.",
+      "An owner-requested fresh interpretation belongs to the advanced reprocessing flow. While that stage is unavailable, offer direct correction or original-only use, not a Retry button that silently regenerates the completed summary.",
+      "Future material replacement by AI requires explicit review. Raw-only acceptance remains undecided; the owner can always use the retained original without a fabricated summary."
+    ],
+    "open": [
+      "Whether a raw-only item can be Accepted without any AI understanding."
+    ]
+  },
+  {
+    "id": "04",
+    "title": "Find and ask",
+    "stage": "Core",
+    "nodes": [
+      {
+        "id": "query",
+        "label": "One search box",
+        "kind": "step"
+      },
+      {
+        "id": "matches",
+        "label": "Find saved matches",
+        "kind": "step"
+      },
+      {
+        "id": "none",
+        "label": "No saved matches",
+        "kind": "step"
+      },
+      {
+        "id": "items",
+        "label": "Show matching items",
+        "kind": "step"
+      },
+      {
+        "id": "answer",
+        "label": "Enough supported evidence?",
+        "kind": "decision"
+      },
+      {
+        "id": "policy",
+        "label": "02 · Apply research policy",
+        "kind": "portal"
+      },
+      {
+        "id": "partial",
+        "label": "Partial answer + matches",
+        "kind": "step"
+      },
+      {
+        "id": "supported",
+        "label": "Answer with evidence",
+        "kind": "step"
+      },
+      {
+        "id": "service",
+        "label": "AI unavailable: keep matches",
+        "kind": "issue"
+      },
+      {
+        "id": "index",
+        "label": "Index pending: show status",
+        "kind": "issue"
+      },
+      {
+        "id": "retain",
+        "label": "Retain attributed finding",
+        "kind": "step"
+      },
+      {
+        "id": "open",
+        "label": "03 · Open selected item",
+        "kind": "portal"
+      }
+    ],
+    "edges": [
+      {
+        "from": "query",
+        "label": "Name / tags / filters / question",
+        "to": "matches"
+      },
+      {
+        "from": "matches",
+        "label": "None",
+        "to": "none"
+      },
+      {
+        "from": "matches",
+        "label": "Available matches",
+        "to": "items"
+      },
+      {
+        "from": "matches",
+        "label": "Index incomplete",
+        "to": "index"
+      },
+      {
+        "from": "items",
+        "label": "Direct retrieval",
+        "to": "open"
+      },
+      {
+        "from": "items",
+        "label": "Natural-language question",
+        "to": "answer"
+      },
+      {
+        "from": "answer",
+        "label": "Yes",
+        "to": "supported"
+      },
+      {
+        "from": "answer",
+        "label": "Gap",
+        "to": "policy"
+      },
+      {
+        "from": "answer",
+        "label": "Answering service failed",
+        "to": "service"
+      },
+      {
+        "from": "policy",
+        "label": "Allowed lookup adds support",
+        "to": "supported"
+      },
+      {
+        "from": "policy",
+        "label": "Off / limited / no support",
+        "to": "partial"
+      },
+      {
+        "from": "supported",
+        "label": "Inspect result",
+        "to": "open"
+      },
+      {
+        "from": "partial",
+        "label": "Use saved matches",
+        "to": "open"
+      },
+      {
+        "from": "service",
+        "label": "Use ordinary matches",
+        "to": "open"
+      },
+      {
+        "from": "supported",
+        "label": "Useful external finding",
+        "to": "retain"
+      },
+      {
+        "from": "retain",
+        "label": "Clear item association",
+        "to": "open"
+      }
+    ],
+    "rules": [
+      "Exact names, tags, filters and natural-language questions share an entry point. Ordinary matches remain useful without an AI answer. Display New markers and current processing/index status.",
+      "Distinguish no matches, matches with missing information, supported answers, index not yet ready, and AI/service errors. Do not turn missing restaurant hours into No restaurants found. Do not invent a saved match from web results.",
+      "Answers identify supporting items and relevant source evidence, dates, uncertainty and disagreements. Facts stay attached to the correct subject; a multi-restaurant video is one item whose restaurants can each be found.",
+      "External gap filling obeys the same effective policy as capture. Off material stays out of outbound mixed-item requests. If permitted lookup fails or reaches its bound, return the supported partial answer and matching items.",
+      "Retain useful external findings as separately attributed supporting evidence when their associated item is clear. If association is ambiguous, ask which item; without a choice leave the finding in the query outcome, not silently attached everywhere.",
+      "Retaining a finding does not replace current understanding, accept an item or authorize an action. Advanced Refine may later incorporate it explicitly. Original and external accounts of a past visit remain distinguishable.",
+      "Manual corrections and Trash changes must reach retrieval. Stale/disputed/trashed understanding is not valid answer evidence. Index failure offers 05 · Repair index only; AI failure retains ordinary retrieval."
+    ],
+    "open": []
+  },
+  {
+    "id": "05",
+    "title": "Needs your input and recovery",
+    "stage": "Core · action recovery later",
+    "nodes": [
+      {
+        "id": "issue",
+        "label": "Open a specific issue",
+        "kind": "step"
+      },
+      {
+        "id": "kind",
+        "label": "What needs attention?",
+        "kind": "decision"
+      },
+      {
+        "id": "optional",
+        "label": "Answer, defer or leave unknown",
+        "kind": "step"
+      },
+      {
+        "id": "capture",
+        "label": "01 · Retry missing receipt/file",
+        "kind": "portal"
+      },
+      {
+        "id": "initial",
+        "label": "02 · Resume unfinished analysis",
+        "kind": "portal"
+      },
+      {
+        "id": "index",
+        "label": "Repair index from current data",
+        "kind": "step"
+      },
+      {
+        "id": "action",
+        "label": "06 · Reconcile action outcome",
+        "kind": "portal"
+      },
+      {
+        "id": "reconnect",
+        "label": "08 · Reconnect linked calendar",
+        "kind": "portal"
+      },
+      {
+        "id": "close",
+        "label": "Close resolved issue only",
+        "kind": "step"
+      },
+      {
+        "id": "limited",
+        "label": "Record limitation / keep usable",
+        "kind": "step"
+      }
+    ],
+    "edges": [
+      {
+        "from": "issue",
+        "label": "Show cause and usable data",
+        "to": "kind"
+      },
+      {
+        "from": "kind",
+        "label": "Optional question",
+        "to": "optional"
+      },
+      {
+        "from": "kind",
+        "label": "Missing original / file",
+        "to": "capture"
+      },
+      {
+        "from": "kind",
+        "label": "Unfinished initial analysis",
+        "to": "initial"
+      },
+      {
+        "from": "kind",
+        "label": "Index failed",
+        "to": "index"
+      },
+      {
+        "from": "kind",
+        "label": "Later action problem",
+        "to": "action"
+      },
+      {
+        "from": "kind",
+        "label": "Later connection problem",
+        "to": "reconnect"
+      },
+      {
+        "from": "kind",
+        "label": "No useful owner remedy",
+        "to": "limited"
+      },
+      {
+        "from": "optional",
+        "label": "Answered / intentionally unknown",
+        "to": "close"
+      },
+      {
+        "from": "index",
+        "label": "Repaired",
+        "to": "close"
+      },
+      {
+        "from": "index",
+        "label": "Still failed",
+        "to": "issue"
+      },
+      {
+        "from": "limited",
+        "label": "Dismiss informational issue",
+        "to": "close"
+      }
+    ],
+    "rules": [
+      "Needs your input is a set of issues, not an item's single status. Separate required repairs, optional clarification and later suggested actions. Each names its affected result, what remains usable, and an exact remedy.",
+      "Deduplicate repeated reports of the same issue. Resolving one issue clears only that issue; it does not accept the item or clear unrelated questions. Close obsolete questions when circumstances change.",
+      "Optional saving intent can remain unknown. Deferring or leaving unknown does not block search. An irreparable source limitation is informational instead of an endlessly repeated request.",
+      "No durable item yet means recovery in the original submitting surface. A retained item with a missing file can have an issue linking to file supply. Do not send an unsaved submission to an empty queue.",
+      "Retry only the failed step: upload/fetch, unfinished initial analysis, index repair, or a later integration repair. A new analysis of committed understanding is advanced owner-requested Reprocessing.",
+      "Newly supplied evidence is retained. Before initial completion it may resume unfinished analysis; after completion it cannot silently overwrite current understanding. Repair-index reads stored current evidence only.",
+      "A failed or uncertain external action goes to its operation outcome, not to a generic execute-again loop. Reconnection does not replay old requests. Failed retries remain visible with bounded retry behavior.",
+      "Late results check current corrections, deletion and cancellation before publication. Diagnostics should identify the failed stage without exposing private source content or secrets."
+    ],
+    "open": []
+  },
+  {
+    "id": "06",
+    "title": "Authorize and execute",
+    "stage": "Later · core retains instructions only",
+    "nodes": [
+      {
+        "id": "request",
+        "label": "Check fresh owner instruction",
+        "kind": "step"
+      },
+      {
+        "id": "stage",
+        "label": "Action feature available?",
+        "kind": "decision"
+      },
+      {
+        "id": "disabled",
+        "label": "Retained · Not scheduled",
+        "kind": "step"
+      },
+      {
+        "id": "intent",
+        "label": "Owner instruction or suggestion?",
+        "kind": "decision"
+      },
+      {
+        "id": "choice",
+        "label": "Owner chooses suggestion",
+        "kind": "step"
+      },
+      {
+        "id": "details",
+        "label": "Resolve essential details",
+        "kind": "step"
+      },
+      {
+        "id": "execute",
+        "label": "Execute authorized operation",
+        "kind": "step"
+      },
+      {
+        "id": "outcome",
+        "label": "Known operation outcome?",
+        "kind": "decision"
+      },
+      {
+        "id": "success",
+        "label": "Show success per operation",
+        "kind": "step"
+      },
+      {
+        "id": "unknown",
+        "label": "Reconcile unknown outcome",
+        "kind": "issue"
+      },
+      {
+        "id": "failed",
+        "label": "Repair only failed operation",
+        "kind": "issue"
+      },
+      {
+        "id": "cancel",
+        "label": "Cancel pending request",
+        "kind": "step"
+      },
+      {
+        "id": "schedule",
+        "label": "07 · Observe scheduled reminder",
+        "kind": "portal"
+      }
+    ],
+    "edges": [
+      {
+        "from": "request",
+        "label": "Current capability",
+        "to": "stage"
+      },
+      {
+        "from": "stage",
+        "label": "No",
+        "to": "disabled"
+      },
+      {
+        "from": "stage",
+        "label": "Yes",
+        "to": "intent"
+      },
+      {
+        "from": "intent",
+        "label": "Clear fresh instruction",
+        "to": "details"
+      },
+      {
+        "from": "intent",
+        "label": "Inference / ambiguous intent",
+        "to": "choice"
+      },
+      {
+        "from": "choice",
+        "label": "Choose / clarify",
+        "to": "details"
+      },
+      {
+        "from": "choice",
+        "label": "Decline",
+        "to": "cancel"
+      },
+      {
+        "from": "details",
+        "label": "Complete, authorized parameters",
+        "to": "execute"
+      },
+      {
+        "from": "details",
+        "label": "Missing: ask, then continue",
+        "to": "details"
+      },
+      {
+        "from": "details",
+        "label": "Cancel",
+        "to": "cancel"
+      },
+      {
+        "from": "execute",
+        "label": "Record individually",
+        "to": "outcome"
+      },
+      {
+        "from": "outcome",
+        "label": "Success",
+        "to": "success"
+      },
+      {
+        "from": "outcome",
+        "label": "Known failure",
+        "to": "failed"
+      },
+      {
+        "from": "outcome",
+        "label": "Could have succeeded",
+        "to": "unknown"
+      },
+      {
+        "from": "unknown",
+        "label": "Confirmed succeeded",
+        "to": "success"
+      },
+      {
+        "from": "unknown",
+        "label": "Confirmed absent + still authorized",
+        "to": "execute"
+      },
+      {
+        "from": "failed",
+        "label": "Safe repair + still authorized",
+        "to": "execute"
+      },
+      {
+        "from": "success",
+        "label": "Reminder was scheduled",
+        "to": "schedule"
+      }
+    ],
+    "rules": [
+      "Current owner instructions are distinct from quoted messages, forwarded text, source comments and retrieved imperatives. Source content can support a useful suggestion but can never authorize execution.",
+      "A fresh clear instruction with complete required details executes without another generic permission step. Inferred actions require a choice. Ask only for missing or ambiguous essentials.",
+      "During core, retain requested action text and explicitly state Not scheduled. Acceptance, reshare, transport retry, reconnect and later feature availability never replay old instructions.",
+      "Track each requested operation separately. Event creation may succeed while reminder scheduling fails; repair only unfinished work. Success opens the existing result rather than creating it again.",
+      "External timeout is Outcome unknown when success is possible. Reconcile first using existing operation identity. If uncertainty cannot be resolved, show it and allow a deliberate owner decision to retry with the known duplicate risk, keep waiting or abandon; no blind automatic retry.",
+      "Authorization applies to the intended parameters and current request. Essential changes require the owner to choose the changed action. A cancelled pending request must not execute later; if execution already happened, report the actual outcome and offer a separate disposition.",
+      "Supported later actions include tasks, reminders, Sprout events and linked Google events. Phone notifications and Gmail reminders are for the owner only. No unrelated Google event import or sending to other people.",
+      "Exact handoffs: create event through 08 · Create Sprout event; define reminder timing through 07 · Choose timing before scheduling; after scheduling enter 07 · Observe schedule, not the creation step again."
+    ],
+    "open": []
+  },
+  {
+    "id": "07",
+    "title": "Reminders, snooze and tasks",
+    "stage": "Later · detailed time policy still to review",
+    "nodes": [
+      {
+        "id": "timing",
+        "label": "Choose timing and timezone",
+        "kind": "step"
+      },
+      {
+        "id": "relative",
+        "label": "Relative to item/event",
+        "kind": "step"
+      },
+      {
+        "id": "fixed",
+        "label": "Fixed date and time",
+        "kind": "step"
+      },
+      {
+        "id": "schedule",
+        "label": "Observe scheduled reminder",
+        "kind": "step"
+      },
+      {
+        "id": "due",
+        "label": "Due while host available?",
+        "kind": "decision"
+      },
+      {
+        "id": "catchup",
+        "label": "Past due / downtime policy",
+        "kind": "open"
+      },
+      {
+        "id": "send",
+        "label": "Attempt each chosen channel",
+        "kind": "step"
+      },
+      {
+        "id": "status",
+        "label": "Show per-channel result",
+        "kind": "step"
+      },
+      {
+        "id": "use",
+        "label": "Open, snooze, dismiss or done",
+        "kind": "step"
+      },
+      {
+        "id": "snooze",
+        "label": "Choose a new due time",
+        "kind": "step"
+      },
+      {
+        "id": "done",
+        "label": "Task completion state",
+        "kind": "step"
+      },
+      {
+        "id": "repair",
+        "label": "06 · Reconcile / repair delivery",
+        "kind": "portal"
+      }
+    ],
+    "edges": [
+      {
+        "from": "timing",
+        "label": "Relative intent",
+        "to": "relative"
+      },
+      {
+        "from": "timing",
+        "label": "Fixed intent",
+        "to": "fixed"
+      },
+      {
+        "from": "relative",
+        "label": "Authorized scheduling via 06",
+        "to": "schedule"
+      },
+      {
+        "from": "fixed",
+        "label": "Authorized scheduling via 06",
+        "to": "schedule"
+      },
+      {
+        "from": "schedule",
+        "label": "Due",
+        "to": "due"
+      },
+      {
+        "from": "due",
+        "label": "Yes",
+        "to": "send"
+      },
+      {
+        "from": "due",
+        "label": "Overdue / host unavailable",
+        "to": "catchup"
+      },
+      {
+        "from": "catchup",
+        "label": "Policy + owner reschedule choice",
+        "to": "timing"
+      },
+      {
+        "from": "send",
+        "label": "Record evidence",
+        "to": "status"
+      },
+      {
+        "from": "status",
+        "label": "Failure / uncertain result",
+        "to": "repair"
+      },
+      {
+        "from": "status",
+        "label": "Owner interacts",
+        "to": "use"
+      },
+      {
+        "from": "use",
+        "label": "Snooze",
+        "to": "snooze"
+      },
+      {
+        "from": "snooze",
+        "label": "New authorized timing",
+        "to": "schedule"
+      },
+      {
+        "from": "use",
+        "label": "Mark task done",
+        "to": "done"
+      },
+      {
+        "from": "use",
+        "label": "Dismiss: no task completion",
+        "to": "schedule"
+      }
+    ],
+    "rules": [
+      "Show the interpreted due instant and timezone before treating timing as known. Event time and reminder time are separate. Missing timing asks unless an owner-configured default applies.",
+      "An undated item may have a fixed reminder without inventing an event. Only explicit completion marks a task done; keep an outstanding-tasks view.",
+      "Relative reminders follow the accepted event/item time; fixed reminders keep their due instant. Movement into the past requires a reschedule decision rather than silent immediate delivery. All-day events and daylight-saving behavior need a coherent later policy.",
+      "Scheduled does not mean delivered. Track each channel's attempt, provider acceptance, known failure and observed owner interaction when available. Provider acceptance is not proof the owner received or read it.",
+      "Phone notifications open the relevant saved item. Self-email is an optional parallel channel. Permission denial, offline devices, locked screen and host restart need actual tests. Delivery failure leaves due/overdue state visible.",
+      "Snooze, dismiss and task completion are different. Dismiss closes that notification and does not complete a task or automatically schedule another occurrence. The schedule view retains its historical dismissed outcome.",
+      "Pending cancellation must be checked before dispatch. Task completion racing a queued notification must have a defined suppression rule. Unknown external outcomes use 06 · Reconcile unknown outcome.",
+      "Candidate later defaults, not yet final: one-time snooze override, completion suppresses remaining task reminders, reopening does not replay old alerts. No new recurrence or quiet-hour requirement is introduced."
+    ],
+    "open": [
+      "Choose host-downtime catch-up, all-day/DST behavior, snooze after event movement, completion/reopening policy and notification evidence before this stage ships."
+    ]
+  },
+  {
+    "id": "08",
+    "title": "Sprout and Google Calendar",
+    "stage": "Later · Sprout events only",
+    "nodes": [
+      {
+        "id": "create",
+        "label": "Create Sprout event",
+        "kind": "step"
+      },
+      {
+        "id": "link",
+        "label": "Optional Google link",
+        "kind": "step"
+      },
+      {
+        "id": "edit",
+        "label": "Owner edit / linked change",
+        "kind": "step"
+      },
+      {
+        "id": "ai",
+        "label": "AI proposes changed date",
+        "kind": "step"
+      },
+      {
+        "id": "approve",
+        "label": "Owner chooses action change",
+        "kind": "step"
+      },
+      {
+        "id": "sync",
+        "label": "Synchronize linked event",
+        "kind": "step"
+      },
+      {
+        "id": "conflict",
+        "label": "Conflict: preserve both values",
+        "kind": "issue"
+      },
+      {
+        "id": "accepted",
+        "label": "Accepted event state",
+        "kind": "step"
+      },
+      {
+        "id": "relative",
+        "label": "07 · Recalculate relative timing",
+        "kind": "portal"
+      },
+      {
+        "id": "fixed",
+        "label": "Keep fixed reminder timing",
+        "kind": "step"
+      },
+      {
+        "id": "disconnect",
+        "label": "Unlink / delete / access lost",
+        "kind": "open"
+      },
+      {
+        "id": "repair",
+        "label": "Reconnect and reconcile",
+        "kind": "step"
+      }
+    ],
+    "edges": [
+      {
+        "from": "create",
+        "label": "Owner requests link",
+        "to": "link"
+      },
+      {
+        "from": "create",
+        "label": "Local only",
+        "to": "accepted"
+      },
+      {
+        "from": "link",
+        "label": "Known linked identity",
+        "to": "sync"
+      },
+      {
+        "from": "edit",
+        "label": "Authorized owner edit",
+        "to": "sync"
+      },
+      {
+        "from": "ai",
+        "label": "Suggestion only",
+        "to": "approve"
+      },
+      {
+        "from": "approve",
+        "label": "Adopt changed parameters",
+        "to": "sync"
+      },
+      {
+        "from": "approve",
+        "label": "Keep actions unchanged",
+        "to": "accepted"
+      },
+      {
+        "from": "sync",
+        "label": "Consistent result",
+        "to": "accepted"
+      },
+      {
+        "from": "sync",
+        "label": "Concurrent conflicting edit",
+        "to": "conflict"
+      },
+      {
+        "from": "conflict",
+        "label": "Owner selects resolution",
+        "to": "sync"
+      },
+      {
+        "from": "accepted",
+        "label": "Relative reminder",
+        "to": "relative"
+      },
+      {
+        "from": "accepted",
+        "label": "Fixed reminder",
+        "to": "fixed"
+      },
+      {
+        "from": "link",
+        "label": "Connection/deletion change",
+        "to": "disconnect"
+      },
+      {
+        "from": "disconnect",
+        "label": "Owner disposition / reconnect",
+        "to": "repair"
+      },
+      {
+        "from": "repair",
+        "label": "Read remote state first",
+        "to": "sync"
+      }
+    ],
+    "rules": [
+      "Represent one Sprout event with an optional corresponding Google Calendar link. Only Sprout events/reminders and deliberately linked events are in scope; unrelated Google events stay untouched.",
+      "Owner edits and synchronized owner changes differ from AI findings about a source date. An AI-proposed update needs the owner's choice before it changes an event or reminder.",
+      "Track the linked identity and the versions being reconciled. Avoid echo updates, stale overwrites and duplicate creation. Simultaneous material edits preserve both values for owner resolution.",
+      "Only an accepted event state drives relative reminder recalculation. Fixed reminders do not move. If recalculation puts a reminder in the past, use 07 · Choose timing rather than silently dispatching.",
+      "Revoked access and failed synchronization remain visible. Reconnect reads both sides and reconciles; it does not recreate an event deleted remotely or replay old creation requests.",
+      "Unlink, local deletion, remote deletion and item deletion require an explicit disposition policy. Failed cancellation/deletion stays visible even if the saved item is in Trash.",
+      "Restoring a saved item or previous understanding never revives a cancelled event or commitment. Unknown create/update outcomes use 06 · Reconcile unknown outcome."
+    ],
+    "open": [
+      "Finalize unlink/delete behavior on each side and conflict resolution choices before calendar implementation."
+    ]
+  },
+  {
+    "id": "09",
+    "title": "Resurface and rediscover",
+    "stage": "Later",
+    "nodes": [
+      {
+        "id": "settings",
+        "label": "Choose frequency and channels",
+        "kind": "step"
+      },
+      {
+        "id": "eligible",
+        "label": "Select eligible saved material",
+        "kind": "step"
+      },
+      {
+        "id": "empty",
+        "label": "None eligible: stay quiet",
+        "kind": "step"
+      },
+      {
+        "id": "candidate",
+        "label": "Prepare dated suggestion",
+        "kind": "step"
+      },
+      {
+        "id": "check",
+        "label": "Still eligible before display?",
+        "kind": "decision"
+      },
+      {
+        "id": "skip",
+        "label": "Skip excluded item",
+        "kind": "step"
+      },
+      {
+        "id": "show",
+        "label": "Show why this item",
+        "kind": "step"
+      },
+      {
+        "id": "open",
+        "label": "03 · Open and use item",
+        "kind": "portal"
+      },
+      {
+        "id": "feedback",
+        "label": "Not now / Never / Less like this",
+        "kind": "step"
+      }
+    ],
+    "edges": [
+      {
+        "from": "settings",
+        "label": "Configured run",
+        "to": "eligible"
+      },
+      {
+        "from": "eligible",
+        "label": "No candidate",
+        "to": "empty"
+      },
+      {
+        "from": "eligible",
+        "label": "Candidate",
+        "to": "candidate"
+      },
+      {
+        "from": "candidate",
+        "label": "Before display / send",
+        "to": "check"
+      },
+      {
+        "from": "check",
+        "label": "No",
+        "to": "skip"
+      },
+      {
+        "from": "check",
+        "label": "Yes",
+        "to": "show"
+      },
+      {
+        "from": "show",
+        "label": "Use it",
+        "to": "open"
+      },
+      {
+        "from": "show",
+        "label": "Give feedback",
+        "to": "feedback"
+      },
+      {
+        "from": "feedback",
+        "label": "Apply to later selection",
+        "to": "eligible"
+      }
+    ],
+    "rules": [
+      "Default to weekly in-app rediscovery, with configurable frequency, categories, collections and optional phone/email channels. Resurfacing is distinct from an explicitly scheduled reminder.",
+      "Let the owner favor forgotten material or actionable ideas, and exclude whole collections. Choosing an activity follows ordinary action authorization; a suggestion is never automatically scheduled.",
+      "Check item visibility, exclusions, feedback and the chosen New/accepted eligibility policy before selection and again before display or dispatch. Trash and excluded items cannot escape via a stale queue.",
+      "No eligible item is a valid result. Do not invent filler or repeatedly recommend an ineligible item to meet a weekly quota.",
+      "Explain why a saved item returned. Distinguish a dated memory from a currently available activity. An expired ticket can be a memory but must not appear as an upcoming show.",
+      "Any permitted freshness lookup follows research settings and cannot silently reprocess the item. Without fresh evidence do not claim current opening hours, prices or availability.",
+      "Not now, Never show again and Less like this have distinct meanings; feedback changes recommendations without deleting saved material. Precise cooldowns and suppression scope remain later choices."
+    ],
+    "open": [
+      "New-item eligibility, Not now duration, Less like this scope and reversal of suppression are to be settled before resurfacing ships."
+    ]
+  },
+  {
+    "id": "10",
+    "title": "Comments, refinement and versions",
+    "stage": "Advanced",
+    "nodes": [
+      {
+        "id": "current",
+        "label": "Current understanding + original",
+        "kind": "step"
+      },
+      {
+        "id": "comment",
+        "label": "Add owner comment",
+        "kind": "step"
+      },
+      {
+        "id": "refine",
+        "label": "Owner requests Refine",
+        "kind": "step"
+      },
+      {
+        "id": "reprocess",
+        "label": "Owner requests Reprocessing",
+        "kind": "step"
+      },
+      {
+        "id": "refetch",
+        "label": "Re-fetch source",
+        "kind": "step"
+      },
+      {
+        "id": "candidate",
+        "label": "Build separate candidate",
+        "kind": "step"
+      },
+      {
+        "id": "failure",
+        "label": "Failed: keep current version",
+        "kind": "issue"
+      },
+      {
+        "id": "diff",
+        "label": "Compare changes and conflicts",
+        "kind": "step"
+      },
+      {
+        "id": "adopt",
+        "label": "Adopt reviewed candidate",
+        "kind": "step"
+      },
+      {
+        "id": "keep",
+        "label": "Decline: keep current",
+        "kind": "step"
+      },
+      {
+        "id": "history",
+        "label": "Inspect / restore history",
+        "kind": "step"
+      },
+      {
+        "id": "actions",
+        "label": "06 · Choose action changes",
+        "kind": "portal"
+      }
+    ],
+    "edges": [
+      {
+        "from": "current",
+        "label": "Additional context",
+        "to": "comment"
+      },
+      {
+        "from": "comment",
+        "label": "Searchable added context",
+        "to": "current"
+      },
+      {
+        "from": "current",
+        "label": "Use comments / findings",
+        "to": "refine"
+      },
+      {
+        "from": "current",
+        "label": "New source analysis",
+        "to": "reprocess"
+      },
+      {
+        "from": "reprocess",
+        "label": "Explicit refetch",
+        "to": "refetch"
+      },
+      {
+        "from": "refetch",
+        "label": "Evidence retained with limits",
+        "to": "candidate"
+      },
+      {
+        "from": "refine",
+        "label": "Known starting version",
+        "to": "candidate"
+      },
+      {
+        "from": "candidate",
+        "label": "Failure",
+        "to": "failure"
+      },
+      {
+        "from": "candidate",
+        "label": "Ready",
+        "to": "diff"
+      },
+      {
+        "from": "diff",
+        "label": "Concurrent edits: resolve first",
+        "to": "diff"
+      },
+      {
+        "from": "diff",
+        "label": "Accept changes",
+        "to": "adopt"
+      },
+      {
+        "from": "diff",
+        "label": "Decline",
+        "to": "keep"
+      },
+      {
+        "from": "adopt",
+        "label": "Re-index selected current state",
+        "to": "current"
+      },
+      {
+        "from": "current",
+        "label": "Inspect older understanding",
+        "to": "history"
+      },
+      {
+        "from": "history",
+        "label": "Restore deliberately, then re-index",
+        "to": "current"
+      },
+      {
+        "from": "adopt",
+        "label": "Suggested commitment changes",
+        "to": "actions"
+      }
+    ],
+    "rules": [
+      "Owner comments add information without manually editing the item and are distinguishable from source comments, external findings and action results. They remain searchable additional context; they do not silently rewrite the current summary.",
+      "A fresh explicit request in an owner-written comment follows 06 · Check fresh instruction. Quotes inside comments remain evidence; adding, editing or restoring a comment cannot replay an old action.",
+      "Refine uses comments and retained findings to propose a change. Reprocessing is always owner-initiated and re-fetches source material. Neither runs automatically because a source or policy changed.",
+      "Preserve original input, first enrichment and later versions. Keep candidate understanding separate from the current searchable account and its evidence.",
+      "Compare the candidate with the starting revision and current state. If owner corrections/comments changed while work ran, show the conflict before adoption; do not overwrite them.",
+      "Failure, unavailable refetch or declining a candidate leaves the current understanding and retained media intact. Partial source access must remain visible in the comparison.",
+      "Adoption is deliberate after a diff/review. Material AI replacement requires explicit review. History restoration changes the selected understanding and repairs retrieval, without replaying instructions, cancelling newer commitments or undoing external work.",
+      "Any recommended action changes are separate suggestions routed through 06 · Check fresh instruction. The owner chooses their disposition; rollback is not action rollback."
+    ],
+    "open": [
+      "Choose comment deletion/retention behavior, current-versus-historical search, and exact version-review interaction during advanced planning."
+    ]
+  },
+  {
+    "id": "11",
+    "title": "Downloads, Trash and commitments",
+    "stage": "Core · commitment disposition later",
+    "nodes": [
+      {
+        "id": "item",
+        "label": "Manage retained item",
+        "kind": "step"
+      },
+      {
+        "id": "download",
+        "label": "Download retained file",
+        "kind": "step"
+      },
+      {
+        "id": "delete",
+        "label": "Delete requested",
+        "kind": "step"
+      },
+      {
+        "id": "commit",
+        "label": "Existing commitments?",
+        "kind": "decision"
+      },
+      {
+        "id": "choose",
+        "label": "Choose their disposition",
+        "kind": "step"
+      },
+      {
+        "id": "unresolved",
+        "label": "Keep failed disposition visible",
+        "kind": "issue"
+      },
+      {
+        "id": "trash",
+        "label": "Trash · 30-day recovery",
+        "kind": "step"
+      },
+      {
+        "id": "restore",
+        "label": "Restore retained state",
+        "kind": "step"
+      },
+      {
+        "id": "index",
+        "label": "Repair retrieval only",
+        "kind": "step"
+      },
+      {
+        "id": "purge",
+        "label": "Expiry: safe permanent cleanup",
+        "kind": "step"
+      }
+    ],
+    "edges": [
+      {
+        "from": "item",
+        "label": "Offline file copy",
+        "to": "download"
+      },
+      {
+        "from": "item",
+        "label": "Delete",
+        "to": "delete"
+      },
+      {
+        "from": "delete",
+        "label": "Later-stage commitments",
+        "to": "commit"
+      },
+      {
+        "from": "commit",
+        "label": "None",
+        "to": "trash"
+      },
+      {
+        "from": "commit",
+        "label": "Present",
+        "to": "choose"
+      },
+      {
+        "from": "choose",
+        "label": "Disposition resolved",
+        "to": "trash"
+      },
+      {
+        "from": "choose",
+        "label": "Failed / outcome unknown",
+        "to": "unresolved"
+      },
+      {
+        "from": "unresolved",
+        "label": "Resolve without hiding issue",
+        "to": "choose"
+      },
+      {
+        "from": "trash",
+        "label": "Owner restores in time",
+        "to": "restore"
+      },
+      {
+        "from": "restore",
+        "label": "No fresh enrichment",
+        "to": "index"
+      },
+      {
+        "from": "trash",
+        "label": "After recovery window",
+        "to": "purge"
+      },
+      {
+        "from": "index",
+        "label": "Return to library",
+        "to": "item"
+      }
+    ],
+    "rules": [
+      "Retain original input and captured media until deletion. Explicit download creates a device copy that can open offline; automatic offline availability inside Sprout is deferred.",
+      "Trash is excluded from ordinary search, AI answers and resurfacing. A dedicated view shows deleted items and expiry. A late processing job cannot return one to the live library.",
+      "Deletion during later action stages shows linked reminders/events and requires owner disposition. Unknown or failed cancellation remains visible; deletion must not make an unresolved commitment disappear.",
+      "Restore retained data and repair its index, without enrichment or instruction replay. Cancelled reminders and events remain cancelled.",
+      "Permanent cleanup after 30 days must tolerate interruption and protect retained media referenced by another item. A duplicate detected in Trash follows 01 · Match in Trash: choose; it is not silently restored.",
+      "Thirty-day Trash is distinct from backup retention and downloaded device copies. Define a manual full records-plus-media backup and verify clean restore before Sprout becomes the sole copy. Backup retention remains an operating decision.",
+      "Keeping an unresolved deletion visible does not require keeping its material in ordinary search; the exact later commitment-disposition presentation must make the remaining obligation clear."
+    ],
+    "open": []
+  },
+  {
+    "id": "12",
+    "title": "Independent states and operating limits",
+    "stage": "Core · conceptual dimensions, not screens",
+    "nodes": [
+      {
+        "id": "item",
+        "label": "One saved item",
+        "kind": "step"
+      },
+      {
+        "id": "preserve",
+        "label": "Preservation: full / partial",
+        "kind": "step"
+      },
+      {
+        "id": "process",
+        "label": "Processing: pending / ready / failed",
+        "kind": "step"
+      },
+      {
+        "id": "review",
+        "label": "Review: New / Accepted",
+        "kind": "step"
+      },
+      {
+        "id": "attention",
+        "label": "Attention: zero or more issues",
+        "kind": "step"
+      },
+      {
+        "id": "search",
+        "label": "Retrieval: indexed / pending / failed",
+        "kind": "step"
+      },
+      {
+        "id": "life",
+        "label": "Lifecycle: live / Trash / purged",
+        "kind": "step"
+      },
+      {
+        "id": "action",
+        "label": "Later actions: per-operation state",
+        "kind": "later"
+      },
+      {
+        "id": "policy",
+        "label": "Research policy + usage limits",
+        "kind": "step"
+      }
+    ],
+    "edges": [
+      {
+        "from": "item",
+        "label": "Independent dimension",
+        "to": "preserve"
+      },
+      {
+        "from": "item",
+        "label": "Independent dimension",
+        "to": "process"
+      },
+      {
+        "from": "item",
+        "label": "Independent dimension",
+        "to": "review"
+      },
+      {
+        "from": "item",
+        "label": "Independent dimension",
+        "to": "attention"
+      },
+      {
+        "from": "item",
+        "label": "Independent dimension",
+        "to": "search"
+      },
+      {
+        "from": "item",
+        "label": "Independent dimension",
+        "to": "life"
+      },
+      {
+        "from": "item",
+        "label": "Independent dimension",
+        "to": "action"
+      },
+      {
+        "from": "item",
+        "label": "Governs permitted work",
+        "to": "policy"
+      }
+    ],
+    "rules": [
+      "These are independent concepts, not final database enums or a sequence of UI screens. A New item can be searchable and partially preserved, with a usable summary and one open issue.",
+      "Durable receipt precedes saved status. Processing, source fidelity, index readiness, owner review and action results cannot substitute for each other.",
+      "Validate the selected Cloudflare named Tunnel, application session and Galaxy sharing path before real sensitive use. A stopped/unreachable Windows host means unavailable service, not a false receipt or a promised offline queue.",
+      "Keep provider credentials out of client content and logs. Treat URLs, redirects, retrieved instructions and files as untrusted; constrain fetch destinations, file handling and rendered content.",
+      "Choose measured limits for media size/duration, research work, concurrency and storage. Measure complete jobs, including retries and media analysis. Paused optional AI does not prevent reading retained material.",
+      "English UI and generated output; preserve original Unicode text and names. Actual supported source languages and cross-language search must be selected and tested before promising them.",
+      "Future hosting target remains $25–40/month with a $50 pre-tax planning ceiling. This is not a provider selection, spending authorization or exact cross-provider billing guarantee.",
+      "Core operating proof includes authenticated private ownership, two-user isolation tests, honest host-unavailable behavior, safe recovery, faithful originals and a tested manual backup/restore. Public signup and hosted deployment remain later work.",
+      "Every save, correction, search, answer, file, setting, export and processing operation preserves authenticated user ownership. A Space is organization within a private library, not a shared-access tenant."
+    ],
+    "open": [
+      "Source-language scope, mandatory common fields, initial commit boundary, original-only review, research acquisition/cloud-analysis interpretation and measured processing limits remain core design/validation work. The stack, authentication-first approach and named tunnel direction are selected."
+    ]
+  }
+]

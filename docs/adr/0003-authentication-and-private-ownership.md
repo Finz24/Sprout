@@ -1,0 +1,3 @@
+# Establish authenticated private ownership in the first release
+
+Accepted October 3, 2026. Use Better Auth from the first release, provision one user and disable public signup while self-hosting. Private records, files, settings, search context and jobs preserve user ownership, with entry-point authorization and PostgreSQL row security; test two-user isolation even on the personal installation. This avoids building a global owner-only data model that would need redesign for hosted users. A Space organizes one user's library and does not confer shared access. Tunnel/network access is distinct from application authentication and authorization.

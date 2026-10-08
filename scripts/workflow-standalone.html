@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sprout connected flows</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --background: #fafaf8;
+      --foreground: #252923;
+      --muted-foreground: #646b61;
+      --border: #c6ccc1;
+      --secondary: #edf0e9;
+      --viz-series-1: #53764a;
+      --orange: #b46c28;
+      --purple: #8461a0;
+      font-family: system-ui, sans-serif;
+      line-height: 1.5;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #181c17;
+        --foreground: #e5e9e0;
+        --muted-foreground: #a5af9f;
+        --border: #697361;
+        --secondary: #293126;
+        --viz-series-1: #98bb8d;
+        --orange: #e5a66b;
+        --purple: #bca0d2;
+      }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--background); color: var(--foreground); }
+    main { max-width: 1100px; margin-inline: auto; padding: clamp(1rem, 3vw, 2.5rem); }
+    h2 { font-size: 1.5rem; margin-block: 0 1rem; }
+    h3 { font-size: 1rem; }
+    .text-small { font-size: .875rem; color: var(--muted-foreground); }
+    .chapter { border-bottom: 1px solid var(--border); }
+    summary:focus-visible { outline: 2px solid var(--viz-series-1); outline-offset: 4px; }
+    .rules { margin-block: 1rem; }
+    .rules ul, .routes { padding-inline-start: 1.5rem; }
+    .routes li, .rules li { overflow-wrap: anywhere; }
+  </style>
+</head>
+<body>
+  <main>
+    <!--__WORKFLOW_FRAGMENT__-->
+  </main>
+</body>
+</html>

@@ -1,0 +1,23 @@
+# Secrets
+.env
+.env.*
+*.pem
+*.key
+
+# Dependencies and application build output
+node_modules/
+.next/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# Python caches
+__pycache__/
+*.py[cod]
+.venv/
+
+# Local logs and OS metadata
+*.log
+.DS_Store
+Thumbs.db

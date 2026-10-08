@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Sprout diagram builder</title></head>
+<body><h1>Sprout diagram builder</h1><button id="build" disabled>Build diagrams</button><pre id="status">Loading Mermaid</pre><div id="measure"></div>
+<script type="module">
+const status = document.getElementById('status');
+let mermaid;
+try {
+  ({default: mermaid} = await import('/mermaid/mermaid.esm.min.mjs'));
+} catch {
+  status.textContent = 'Graph rendering needs a local Mermaid 11.12.0 dist directory. Restart with --mermaid-dir PATH. Cached assembly and viewing work without it.';
+  throw new Error('Local Mermaid renderer is not configured');
+}
+mermaid.initialize({startOnLoad:false,securityLevel:'strict',htmlLabels:false,markdownAutoWrap:false,theme:'base',fontFamily:'Arial, sans-serif',themeVariables:{fontSize:'14px'},flowchart:{htmlLabels:false,useMaxWidth:false,nodeSpacing:16,rankSpacing:30,curve:'basis',padding:8}});
+document.getElementById('build').onclick = async () => {
+  try {
+    const flows = await (await fetch('/graphs')).json();
+    for (const flow of flows) {
+      status.textContent = 'Rendering ' + flow.id;
+      const {svg} = await mermaid.render('sprout_' + flow.id, flow.source);
+      document.getElementById('measure').innerHTML = svg;
+      const element = document.querySelector('#measure svg');
+      const box = element.querySelector('g').getBBox();
+      element.setAttribute('viewBox', `${box.x-12} ${box.y-12} ${box.width+24} ${box.height+24}`);
+      const response = await fetch('/svg/' + flow.id, {method:'POST',headers:{'Content-Type':'image/svg+xml'},body:element.outerHTML});
+      if (!response.ok) throw new Error(await response.text());
+    }
+    const response = await fetch('/assemble', {method:'POST'});
+    if (!response.ok) throw new Error(await response.text());
+    status.textContent = await response.text();
+    document.getElementById('measure').replaceChildren();
+  } catch (error) { status.textContent = 'ERROR: ' + error.stack; }
+};
+status.textContent = 'Ready · Mermaid loaded';
+document.getElementById('build').disabled = false;
+</script></body></html>
