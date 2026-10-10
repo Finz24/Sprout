@@ -1,0 +1,26 @@
+{
+  "name": "api",
+  "sourceRoot": "apps/api/src",
+  "tags": ["scope:api", "platform:server"],
+  "implicitDependencies": ["runtime"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -b apps/api/tsconfig.json"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -p apps/api/tsconfig.json --noEmit"
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsx watch --conditions=development apps/api/src/main.ts"
+      }
+    }
+  }
+}

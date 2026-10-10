@@ -1,0 +1,18 @@
+packages:
+  - apps/*
+  - packages/*
+allowBuilds:
+  nx: true
+  esbuild: true
+  '@tailwindcss/oxide': true
+  rolldown: true
+minimumReleaseAgeExclude:
+  - '@tanstack/history@1.162.5'
+  - '@tanstack/react-router@1.170.42'
+  - '@tanstack/router-core@1.171.35'
+  - '@types/node@24.19.2'
+  - framer-motion@14.1.0
+  - motion-dom@14.1.0
+  - motion-utils@14.1.0
+  - motion@14.1.0
+  - prettier@3.9.10

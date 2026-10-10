@@ -1,6 +1,6 @@
 # Sprout: current product direction
 
-Approved direction as of October 3, 2026. Application implementation and live integration validation have not started.
+Approved product direction as of October 3, 2026. Development-foundation initialization began October 10 with the selected Effect architecture; product behavior and live source/model integration remain unimplemented and unvalidated.
 
 ## Purpose and core experience
 

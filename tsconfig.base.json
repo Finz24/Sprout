@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "lib": ["ES2023"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "sourceMap": true,
+    "jsx": "react-jsx",
+    "paths": {
+      "@sprout/contracts": ["./packages/contracts/src/index.ts"],
+      "@sprout/database": ["./packages/database/src/index.ts"],
+      "@sprout/runtime": ["./packages/runtime/src/index.ts"],
+      "@sprout/ui": ["./packages/ui/src/index.ts"]
+    }
+  }
+}

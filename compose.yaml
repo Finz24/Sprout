@@ -1,0 +1,158 @@
+name: sprout
+x-app: &app
+  build: .
+  init: true
+  environment: &environment
+    DATABASE_URL: postgresql://sprout@postgres:5432/sprout
+    HOST: 0.0.0.0
+    NX_DAEMON: 'false'
+  depends_on:
+    postgres:
+      condition: service_healthy
+    migrate:
+      condition: service_completed_successfully
+  healthcheck: &health
+    test:
+      [
+        'CMD',
+        'node',
+        '-e',
+        "fetch('http://127.0.0.1:'+process.env.PORT+'/health/ready',{signal:AbortSignal.timeout(3000)}).then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))",
+      ]
+    interval: 5s
+    timeout: 4s
+    retries: 6
+    start_period: 15s
+services:
+  postgres:
+    image: pgvector/pgvector:0.8.1-pg17-bookworm@sha256:3e8b3adfd27b5707128f60956f62a793c3c9326ea8cfaf0eab7adccb5d700b21
+    environment:
+      POSTGRES_USER: sprout
+      POSTGRES_DB: sprout
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports: ['127.0.0.1:54329:5432']
+    volumes: ['postgres-data:/var/lib/postgresql/data']
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U sprout -d sprout']
+      interval: 3s
+      timeout: 3s
+      retries: 20
+  migrate:
+    build: .
+    image: sprout-migrate-development:local
+    init: true
+    command: ['corepack', 'pnpm', 'migrate']
+    environment: *environment
+    depends_on:
+      postgres:
+        condition: service_healthy
+  api:
+    <<: *app
+    image: sprout-api-development:local
+    command:
+      [
+        'corepack',
+        'pnpm',
+        'exec',
+        'tsx',
+        'watch',
+        '--conditions=development',
+        'apps/api/src/main.ts',
+      ]
+    environment:
+      <<: *environment
+      PORT: '3001'
+    ports: ['127.0.0.1:3001:3001']
+    volumes: ['originals:/workspace/originals']
+    develop:
+      watch: &backend-watch
+        - action: sync
+          path: ./apps
+          target: /workspace/apps
+          ignore: ['**/node_modules/', '**/dist/', '**/package.json']
+          initial_sync: true
+        - action: sync
+          path: ./packages
+          target: /workspace/packages
+          ignore: ['**/node_modules/', '**/dist/', '**/package.json']
+          initial_sync: true
+        - action: rebuild
+          path: ./package.json
+        - action: rebuild
+          path: ./pnpm-lock.yaml
+        - action: rebuild
+          path: ./pnpm-workspace.yaml
+        - action: rebuild
+          path: ./Dockerfile
+        - action: rebuild
+          path: ./tsconfig.base.json
+        - action: rebuild
+          path: ./apps/web/package.json
+        - action: rebuild
+          path: ./apps/api/package.json
+        - action: rebuild
+          path: ./apps/worker/package.json
+        - action: rebuild
+          path: ./packages/contracts/package.json
+        - action: rebuild
+          path: ./packages/database/package.json
+        - action: rebuild
+          path: ./packages/runtime/package.json
+        - action: rebuild
+          path: ./packages/ui/package.json
+  worker:
+    <<: *app
+    image: sprout-worker-development:local
+    command:
+      [
+        'corepack',
+        'pnpm',
+        'exec',
+        'tsx',
+        'watch',
+        '--conditions=development',
+        'apps/worker/src/main.ts',
+      ]
+    environment:
+      <<: *environment
+      PORT: '3002'
+    ports: ['127.0.0.1:3002:3002']
+    volumes: ['originals:/workspace/originals']
+    develop:
+      watch: *backend-watch
+  web:
+    build: .
+    image: sprout-web-development:local
+    init: true
+    command:
+      [
+        'corepack',
+        'pnpm',
+        'exec',
+        'vite',
+        '--config',
+        'apps/web/vite.config.ts',
+        'apps/web',
+      ]
+    environment:
+      API_PROXY_URL: http://api:3001
+    ports: ['127.0.0.1:5173:5173']
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:5173',{signal:AbortSignal.timeout(3000)}).then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))",
+        ]
+      interval: 5s
+      timeout: 4s
+      retries: 6
+    develop:
+      watch: *backend-watch
+volumes:
+  postgres-data:
+  originals:

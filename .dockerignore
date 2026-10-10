@@ -1,0 +1,13 @@
+node_modules
+**/node_modules
+**/dist
+.git
+.nx
+.env
+.env.*
+*.pem
+*.key
+coverage
+playwright-report
+test-results
+outputs

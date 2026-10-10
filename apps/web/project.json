@@ -1,0 +1,26 @@
+{
+  "name": "web",
+  "sourceRoot": "apps/web/src",
+  "tags": ["scope:web", "platform:browser"],
+  "implicitDependencies": ["ui"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vite build --config apps/web/vite.config.ts apps/web"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -p apps/web/tsconfig.json --noEmit"
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vite --config apps/web/vite.config.ts apps/web"
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "lib": ["ES2023", "DOM"],
+    "types": ["node"],
+    "rootDir": "."
+  },
+  "include": [
+    "tests/**/*.ts",
+    "*.config.ts",
+    "packages/database/drizzle.config.ts"
+  ]
+}

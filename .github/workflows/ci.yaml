@@ -1,0 +1,97 @@
+name: Foundation CI
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+env:
+  NX_DAEMON: 'false'
+  NX_NO_CLOUD: 'true'
+jobs:
+  quality:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: 24.21.0
+          package-manager-cache: false
+      - run: npm install --global corepack@0.36.0
+      - run: corepack pnpm install --frozen-lockfile
+      - run: corepack pnpm format:check
+      - run: corepack pnpm lint
+      - run: corepack pnpm typecheck
+  build:
+    needs: quality
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: 24.21.0
+          package-manager-cache: false
+      - run: npm install --global corepack@0.36.0
+      - run: corepack pnpm install --frozen-lockfile
+      - name: Build and typecheck affected projects
+        env:
+          NX_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if git rev-parse --verify "${NX_BASE}^{commit}" >/dev/null 2>&1; then
+            corepack pnpm check:affected
+          else
+            echo "Base revision unavailable; checking every project."
+            corepack pnpm exec nx run-many -t typecheck,build --parallel=3
+          fi
+  test:
+    needs: quality
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: 24.21.0
+          package-manager-cache: false
+      - run: npm install --global corepack@0.36.0
+      - run: corepack pnpm install --frozen-lockfile
+      - run: corepack pnpm test
+  integration:
+    needs: [build, test]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: 24.21.0
+          package-manager-cache: false
+      - run: npm install --global corepack@0.36.0
+      - run: corepack pnpm install --frozen-lockfile
+      - run: sh scripts/install-compose-ci.sh
+      - run: docker compose up --build --wait --wait-timeout 180
+      - run: corepack pnpm test:integration
+      - if: failure()
+        run: docker compose logs --no-color
+      - if: always()
+        run: docker compose down
+  e2e:
+    needs: integration
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: 24.21.0
+          package-manager-cache: false
+      - run: npm install --global corepack@0.36.0
+      - run: corepack pnpm install --frozen-lockfile
+      - run: corepack pnpm exec playwright install --with-deps chromium
+      - run: sh scripts/install-compose-ci.sh
+      - run: docker compose up --build --wait --wait-timeout 180
+      - run: corepack pnpm test:e2e
+      - if: failure()
+        run: docker compose logs --no-color
+      - if: always()
+        run: docker compose down

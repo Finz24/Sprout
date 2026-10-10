@@ -1,0 +1,19 @@
+{
+  "name": "@sprout/runtime",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "development": "./src/index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "@sprout/contracts": "workspace:*",
+    "@sprout/database": "workspace:*",
+    "effect": "4.0.2",
+    "@effect/platform-node": "4.0.2"
+  }
+}
