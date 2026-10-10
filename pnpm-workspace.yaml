@@ -1,6 +1,10 @@
 packages:
   - apps/*
   - packages/*
+peerDependencyRules:
+  allowedVersions:
+    # Better Auth's optional test-utils peer; production auth never imports Vitest.
+    'better-auth@1.6.23>vitest': '5.0.3'
 allowBuilds:
   nx: true
   esbuild: true

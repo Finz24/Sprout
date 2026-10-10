@@ -11,9 +11,11 @@
     }
   },
   "dependencies": {
+    "@effect/platform-node": "4.0.2",
     "@sprout/contracts": "workspace:*",
     "@sprout/database": "workspace:*",
+    "better-auth": "1.6.23",
     "effect": "4.0.2",
-    "@effect/platform-node": "4.0.2"
+    "pg": "8.23.1"
   }
 }

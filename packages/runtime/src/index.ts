@@ -8,6 +8,13 @@ import type { ComponentName } from '@sprout/contracts';
 import { DatabaseLive } from '@sprout/database';
 import { loadSettings, type Settings } from './config.js';
 import { readiness } from './health.js';
+import { privateRoutes, WorkspaceAccessLive } from './private-access.js';
+export {
+  WorkspaceAccess,
+  WorkspaceAccessLive,
+  WorkspaceFailure,
+} from './private-access.js';
+export { bootstrapOwner } from './auth.js';
 
 export { loadSettings, ConfigurationError } from './config.js';
 export { readiness } from './health.js';
@@ -23,10 +30,14 @@ export const healthRoutes = (component: ComponentName) =>
   HttpApiBuilder.layer(HealthApi).pipe(
     Layer.provide(HealthHandlers(component)),
   );
+const routesLayer = (settings: Settings) =>
+  settings.component === 'api'
+    ? HttpRouter.serve(Layer.mergeAll(healthRoutes('api'), privateRoutes), {
+        disableLogger: true,
+      }).pipe(Layer.provide(WorkspaceAccessLive(settings)))
+    : HttpRouter.serve(healthRoutes('worker'), { disableLogger: true });
 export const serverLayer = (settings: Settings) =>
-  HttpRouter.serve(healthRoutes(settings.component), {
-    disableLogger: true,
-  }).pipe(
+  routesLayer(settings).pipe(
     Layer.provide(DatabaseLive(settings.database)),
     Layer.provide(
       NodeHttpServer.layer(createServer, {

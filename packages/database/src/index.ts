@@ -2,6 +2,10 @@ import { resolve } from 'node:path';
 import { Context, Data, Effect, Layer } from 'effect';
 import { readMigrationFiles } from 'drizzle-orm/migrator';
 import { Pool } from 'pg';
+export {
+  createWorkspaceStore,
+  PrivateAccessDenied,
+} from './private-workspace.js';
 
 export type DatabaseFailure = 'connection' | 'migrations' | 'pgvector';
 export class DatabaseUnavailable extends Data.TaggedError(

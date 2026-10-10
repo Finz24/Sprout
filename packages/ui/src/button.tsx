@@ -12,7 +12,7 @@ export const buttonVariants = cva(
         outline:
           'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
       },
-      size: { default: 'h-10 px-4 py-2', sm: 'h-9 px-3' },
+      size: { default: 'h-12 px-4 py-2', sm: 'h-11 px-3' },
     },
     defaultVariants: { variant: 'default', size: 'default' },
   },

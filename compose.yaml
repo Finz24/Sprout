@@ -30,7 +30,7 @@ services:
       POSTGRES_USER: sprout
       POSTGRES_DB: sprout
       POSTGRES_HOST_AUTH_METHOD: trust
-    ports: ['127.0.0.1:54329:5432']
+    ports: ['127.0.0.1:${POSTGRES_PORT:-54329}:5432']
     volumes: ['postgres-data:/var/lib/postgresql/data']
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U sprout -d sprout']
@@ -62,7 +62,10 @@ services:
     environment:
       <<: *environment
       PORT: '3001'
-    ports: ['127.0.0.1:3001:3001']
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-}
+      AUTH_ORIGIN: ${AUTH_ORIGIN:-http://127.0.0.1:5173}
+      SESSION_TTL_SECONDS: ${SESSION_TTL_SECONDS:-86400}
+    ports: ['127.0.0.1:${API_PORT:-3001}:3001']
     volumes: ['originals:/workspace/originals']
     develop:
       watch: &backend-watch
@@ -116,7 +119,7 @@ services:
     environment:
       <<: *environment
       PORT: '3002'
-    ports: ['127.0.0.1:3002:3002']
+    ports: ['127.0.0.1:${WORKER_PORT:-3002}:3002']
     volumes: ['originals:/workspace/originals']
     develop:
       watch: *backend-watch
@@ -136,7 +139,7 @@ services:
       ]
     environment:
       API_PROXY_URL: http://api:3001
-    ports: ['127.0.0.1:5173:5173']
+    ports: ['127.0.0.1:${WEB_PORT:-5173}:5173']
     depends_on:
       api:
         condition: service_healthy

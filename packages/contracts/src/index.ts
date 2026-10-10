@@ -35,6 +35,11 @@ export const NotReady = Schema.Struct({
 export type ComponentName = typeof Component.Type;
 export type ReadyResponse = typeof Ready.Type;
 export type NotReadyResponse = typeof NotReady.Type;
+export interface WorkspaceResponse {
+  readonly owner: { readonly id: string; readonly name: string };
+  readonly expiresAt: string;
+  readonly items: readonly never[];
+}
 export const HealthApi = HttpApi.make('SproutHealth').add(
   HttpApiGroup.make('health').add(
     HttpApiEndpoint.get('live', '/health/live', { success: Live }),

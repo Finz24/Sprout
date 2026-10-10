@@ -6,7 +6,7 @@ Approved October 10, 2026: Option C, a modular strict TypeScript workspace with 
 flowchart TB
   U[Browser] --> W[React + Vite + TanStack Router\nshadcn-style UI + Tailwind + Motion]
   subgraph PC[Development environment - local or Docker Compose Watch]
-    A[Node + Effect HTTP API\nFuture Better Auth and ownership checks]
+    A[Node + Effect HTTP API\nBetter Auth and private ownership]
     D[(PostgreSQL + Drizzle + pgvector\nFuture pg-boss jobs)]
     F[(Private original files)]
     K[Node + Effect worker\nReadiness now - processing later]
@@ -29,6 +29,14 @@ Arrows show the accepted design, including future features explicitly labeled ab
 This resembles T3 Code's React/TanStack/Effect service composition, while Sprout deliberately chooses PostgreSQL and a separate worker process. The [comparison](research/sprout-architecture-comparison.md) records references, alternatives and static failure reviews. It is not measured performance evidence. Effect 4 is pinned as a coherent package family; its HTTP modules still carry unstable API annotations, so isolate transport composition and review upgrades explicitly. Effect does not provide authorization, make Promise adapters transactional or make external work exactly once.
 
 ## Validation against the connected flows
+
+Issue #3 initializes Better Auth and the private navigation shell. Owner bootstrap
+is a local-only transaction; public signup is disabled. `WorkspaceAccess` exposes
+an authenticated Effect operation with typed failures, translated to HTTP by the
+router. The database resolves a live session token under a transaction-local
+non-BYPASSRLS role and forced row security. The idle worker has no private HTTP
+surface. Saved-item storage, search retrieval and guarded job publication remain
+their own issues; [development](development.md) documents the current contract.
 
 Reviewed [connected flows HTML](../outputs/sprout-connected-flows-standalone.html), its chapter rules and SVGs, and [structured source](workflow-data.json). On October 3, `python -X utf8 scripts/check-workflows.py` passed: 13 journeys, 143 nodes, 172 logical connections, valid unique IDs/markers, and generated-source alignment. The browser also loaded all 13 chapters and SVGs. This validates documentation consistency, not a running application. The standalone page includes encoding and theme definitions; the original HTML fragment is intended for embedding.
 
