@@ -1,0 +1,20 @@
+{
+  "name": "database",
+  "sourceRoot": "packages/database/src",
+  "tags": ["scope:database", "platform:server"],
+  "implicitDependencies": [],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -b packages/database/tsconfig.json"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -p packages/database/tsconfig.json --noEmit"
+      }
+    }
+  }
+}

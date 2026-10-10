@@ -1,6 +1,8 @@
 # Approved testing boundary for Sprout
 
-September 27, 2026. Status: owner confirmed — "Yes—use this end-to-end boundary." No application tests have run. Approval of the testing boundary does not certify source support or approve every synthesis clarification in the parent spec.
+September 27, 2026. Status: owner confirmed — "Yes—use this end-to-end boundary." The complete product journey has not been exercised. Approval of the testing boundary does not certify source support or approve every synthesis clarification in the parent spec.
+
+For issue #2 only, the owner approved [development-foundation acceptance](foundation-development-environment.md): meaningful foundation unit checks, integration health checks and end-to-end screen sanity. These checks establish runtime wiring and development usability; authentication, saving, processing, isolation and the journey below are verified when their product slices exist.
 
 ## One primary boundary: the owner's complete save-to-use journey
 

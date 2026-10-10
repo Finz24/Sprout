@@ -1,6 +1,6 @@
 # Sprout: owner-controlled AI understanding and a visual personal workspace
 
-Current local specification, updated October 3, 2026 with the approved architecture. The parent issue was published October 1 as [Finz24/Sprout #1](https://github.com/Finz24/Sprout/issues/1); its original body is not asserted to include these later local decisions. The testing boundary is approved; application implementation and live integration checks have not started.
+Current local product specification, updated October 3, 2026. [ADR 0004](../adr/0004-effect-api-and-worker.md) records the October 10 architecture replacement and development-foundation initialization. The parent issue was published October 1 as [Finz24/Sprout #1](https://github.com/Finz24/Sprout/issues/1); its original body is not asserted to include these later local decisions. The testing boundary is approved; product behavior and live source/model integrations remain unimplemented and unvalidated.
 
 ## Problem Statement
 

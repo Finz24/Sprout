@@ -10,6 +10,9 @@ node_modules/
 dist/
 build/
 coverage/
+.nx/
+playwright-report/
+test-results/
 *.tsbuildinfo
 
 # Python caches
