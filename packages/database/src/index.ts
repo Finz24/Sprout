@@ -14,6 +14,13 @@ export interface DatabaseSettings {
 }
 export const migrationsFolder = () =>
   resolve(process.env.MIGRATIONS_DIR ?? 'packages/database/migrations');
+export const migrationHistoryMatches = (
+  committed: readonly string[],
+  applied: readonly string[],
+): boolean =>
+  committed.length > 0 &&
+  committed.length === applied.length &&
+  committed.every((hash, index) => hash === applied[index]);
 export class Database extends Context.Service<
   Database,
   { readonly probe: Effect.Effect<void, DatabaseUnavailable> }
@@ -28,8 +35,8 @@ export const DatabaseLive = (settings: DatabaseSettings) =>
           readMigrationFiles({ migrationsFolder: settings.migrationsFolder }),
         catch: () => new DatabaseUnavailable({ reason: 'migrations' }),
       });
-      const expectedHash = migrations.at(-1)?.hash;
-      if (!expectedHash)
+      const expectedHashes = migrations.map((migration) => migration.hash);
+      if (!expectedHashes.length)
         return yield* Effect.fail(
           new DatabaseUnavailable({ reason: 'migrations' }),
         );
@@ -54,16 +61,17 @@ export const DatabaseLive = (settings: DatabaseSettings) =>
       const probe = Effect.tryPromise({
         try: async () => {
           await pool.query('SELECT 1');
-          let hash: string | undefined;
+          let appliedHashes: string[];
           try {
             const result = await pool.query<{ hash: string }>(
-              'SELECT hash FROM drizzle.__drizzle_migrations ORDER BY created_at DESC LIMIT 1',
+              'SELECT hash FROM drizzle.__drizzle_migrations ORDER BY created_at ASC, id ASC LIMIT $1',
+              [expectedHashes.length + 1],
             );
-            hash = result.rows[0]?.hash;
+            appliedHashes = result.rows.map((row) => row.hash);
           } catch {
             throw new DatabaseUnavailable({ reason: 'migrations' });
           }
-          if (hash !== expectedHash)
+          if (!migrationHistoryMatches(expectedHashes, appliedHashes))
             throw new DatabaseUnavailable({ reason: 'migrations' });
           const result = await pool.query<{ installed: boolean }>(
             "SELECT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'vector') AS installed",
