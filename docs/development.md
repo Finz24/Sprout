@@ -75,8 +75,8 @@ docker compose up -d api worker
 ```
 
 Each backend exposes `/health/live` (the HTTP process is serving) and
-`/health/ready`. Ready checks a bounded PostgreSQL query, the latest committed
-Drizzle migration hash, and the installed vector extension. Failed dependencies
+`/health/ready`. Ready checks a bounded PostgreSQL query, the complete ordered
+Drizzle migration history, and the installed vector extension. Failed dependencies
 return HTTP 503 with named statuses, without connection strings or SQL errors.
 The worker requires only these database dependencies until durable processing is
 initialized in its own issue. Database failure keeps liveness available and makes
@@ -88,8 +88,11 @@ The workspace has applications `web`, `api`, and `worker`, and shared packages
 `ui`, `contracts`, `database`, and `runtime`. Cross-package imports use public
 `@sprout/*` exports. Web may import UI and browser-safe contracts; API and worker
 compose runtime services; runtime may import contracts and database. Backend
-dependencies and Node built-ins cannot enter UI, web, or contracts. Import cycles
-fail quality checks. Future domain modules should be added by their owning issue.
+dependencies and Node built-ins cannot enter UI, web, or contracts. Nx's ESLint
+rules enforce the project graph and reject workspace dependency cycles. Use
+`import type` declarations rather than inline `import()` types so the boundary
+rules can validate type dependencies too. Future domain modules should be added
+by their owning issue.
 
 UI components share semantic Tailwind tokens through `packages/ui`; the initial
 Button is a source-owned shadcn-style component. Prefer these tokens and public
@@ -104,11 +107,13 @@ corepack pnpm test:integration
 corepack pnpm test:e2e
 ```
 
-Quality checks formatting, lint, public package boundaries, import cycles and
+Quality checks formatting, lint, public package boundaries, workspace cycles and
 TypeScript. Nx caches builds locally and includes dependent projects in affected
-checks. If the base revision is absent, the affected wrapper checks every project.
-Unit tests cover readiness failure semantics and configuration/import boundaries.
-Integration currently checks only live/ready endpoints. E2E currently exercises
+checks. `check:affected` uses Nx's public CLI; set `NX_BASE` to choose its base
+revision. CI checks every project when its base revision is unavailable.
+Unit tests cover readiness failure semantics, migration history, configuration
+and the configured import boundaries. Vitest integration tests check the API and
+worker's live/ready endpoints. E2E currently exercises
 the simple screen, navigation and reload on desktop and mobile. CI has separate
 quality, build, test, integration and E2E jobs; there is no deployment stage.
 

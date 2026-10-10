@@ -1,87 +1,102 @@
-import fs from 'node:fs';
-import os from 'node:os';
-import path from 'node:path';
-import { afterEach, expect, it } from 'vitest';
-// @ts-expect-error The dependency checker is also a standalone Node script.
-import { checkBoundaries } from '../../scripts/check-boundaries.mjs';
+import { ESLint } from 'eslint';
+import { describe, expect, test } from 'vitest';
 
-const folders: string[] = [];
-it('keeps contracts safe for browser consumers', () => {
-  expect(
-    checkBoundaries(
-      fixture({ 'packages/contracts/src/index.ts': "import 'node:fs';" }),
-    ),
-  ).toContain('packages/contracts/src/index.ts: server dependency in browser');
-});
-it('forbids bare Node built-ins in browser code', () => {
-  expect(
-    checkBoundaries(fixture({ 'apps/web/src/main.ts': "import 'fs';" })),
-  ).toContain('apps/web/src/main.ts: server dependency in browser');
-});
-it('detects JavaScript-style relative imports of TSX in cycles', () => {
-  expect(
-    checkBoundaries(
-      fixture({
-        'packages/ui/src/a.tsx': "import './b.js';",
-        'packages/ui/src/b.tsx': "import './a.js';",
-      }),
-    ),
-  ).toEqual([expect.stringContaining('Import cycle')]);
-});
-it('forbids package internals and cross-project relative imports', () => {
-  expect(
-    checkBoundaries(
-      fixture({
-        'apps/web/src/main.ts':
-          "import '@sprout/ui/src/button'; import '../../../packages/ui/src/index.js';",
-        'packages/ui/src/index.ts': "export const button = 'button';",
-      }),
-    ),
-  ).toEqual(
-    expect.arrayContaining([
-      'apps/web/src/main.ts: forbidden dependency @sprout/ui/src/button',
-      'apps/web/src/main.ts: cross-project imports must use public package exports',
-    ]),
-  );
-});
-afterEach(() => {
-  for (const folder of folders.splice(0))
-    fs.rmSync(folder, { recursive: true, force: true });
-});
-function fixture(files: Record<string, string>) {
-  const folder = fs.mkdtempSync(path.join(os.tmpdir(), 'sprout-boundary-'));
-  folders.push(folder);
-  for (const [name, content] of Object.entries(files)) {
-    const target = path.join(folder, name);
-    fs.mkdirSync(path.dirname(target), { recursive: true });
-    fs.writeFileSync(target, content);
-  }
-  return folder;
-}
-it('forbids a browser importing a backend package', () => {
-  expect(
-    checkBoundaries(
-      fixture({ 'apps/web/src/main.ts': "import '@sprout/database';" }),
-    ),
-  ).toContain('apps/web/src/main.ts: forbidden dependency @sprout/database');
-});
-it('detects a relative import cycle', () => {
-  expect(
-    checkBoundaries(
-      fixture({
-        'packages/ui/src/a.ts': "import './b.js';",
-        'packages/ui/src/b.ts': "import './a.js';",
-      }),
-    ),
-  ).toEqual([expect.stringContaining('Import cycle')]);
-});
-it('allows browser access through the UI public interface', () => {
-  expect(
-    checkBoundaries(
-      fixture({
-        'apps/web/src/main.ts': "import '@sprout/ui';",
-        'packages/ui/src/index.ts': "export const button = 'button';",
-      }),
-    ),
-  ).toEqual([]);
+const eslint = new ESLint();
+
+describe('workspace architecture policy', () => {
+  test.each([
+    {
+      name: 'dynamic Node imports cannot enter the browser',
+      file: 'apps/web/src/policy.ts',
+      source: "export const fs = import('node:fs');",
+      rule: 'no-restricted-syntax',
+    },
+    {
+      name: 'dynamic database drivers cannot enter browser JavaScript',
+      file: 'apps/web/src/policy.js',
+      source: "export const pg = import('pg');",
+      rule: 'no-restricted-syntax',
+    },
+    {
+      name: 'dynamic deep imports cannot bypass public exports',
+      file: 'apps/api/src/policy.ts',
+      source: "export const config = import('@sprout/runtime/src/config.js');",
+      rule: 'no-restricted-syntax',
+    },
+    {
+      name: 'computed module paths cannot conceal dependencies',
+      file: 'apps/web/src/policy.ts',
+      source: 'export const load = (name: string) => import(name);',
+      rule: 'no-restricted-syntax',
+    },
+    {
+      name: 'CommonJS imports cannot bypass ESM checks',
+      file: 'apps/web/src/policy.js',
+      source: "export const fs = require('fs');",
+      rule: 'no-restricted-syntax',
+    },
+    {
+      name: 'web cannot import database infrastructure',
+      file: 'apps/web/src/policy.ts',
+      source: "import '@sprout/database';",
+      rule: '@nx/enforce-module-boundaries',
+    },
+    {
+      name: 'JavaScript cannot bring Node into the browser',
+      file: 'apps/web/src/policy.js',
+      source: "import 'node:fs';",
+      rule: 'no-restricted-imports',
+    },
+    {
+      name: 'bare Node imports cannot enter contracts',
+      file: 'packages/contracts/src/policy.ts',
+      source: "import 'fs';",
+      rule: 'no-restricted-imports',
+    },
+    {
+      name: 'inline import types cannot bypass dependency checks',
+      file: 'apps/web/src/policy.ts',
+      source: "export type Database = typeof import('@sprout/database');",
+      rule: 'no-restricted-syntax',
+    },
+    {
+      name: 'type declarations obey workspace boundaries',
+      file: 'apps/web/src/policy.ts',
+      source:
+        "import type { Database } from '@sprout/database'; export type Value = Database;",
+      rule: '@nx/enforce-module-boundaries',
+    },
+    {
+      name: 'deep imports cannot bypass public exports',
+      file: 'apps/api/src/policy.ts',
+      source: "import '@sprout/runtime/src/config.js';",
+      rule: 'no-restricted-imports',
+    },
+    {
+      name: 'relative paths cannot cross project boundaries',
+      file: 'apps/web/src/policy.ts',
+      source: "import '../../../packages/database/src/index.js';",
+      rule: '@nx/enforce-module-boundaries',
+    },
+    {
+      name: 'database cannot introduce a reverse dependency on runtime',
+      file: 'packages/database/src/policy.ts',
+      source: "import '@sprout/runtime';",
+      rule: '@nx/enforce-module-boundaries',
+    },
+  ])('$name', async ({ file, source, rule }) => {
+    const results = await eslint.lintText(source, { filePath: file });
+    expect(
+      results.flatMap((result) =>
+        result.messages.map((message) => message.ruleId),
+      ),
+    ).toContain(rule);
+  });
+
+  test('web can use the public UI package', async () => {
+    const results = await eslint.lintText("import '@sprout/ui';", {
+      filePath: 'apps/web/src/policy.ts',
+    });
+    expect(results.flatMap((result) => result.messages)).toEqual([]);
+  });
 });

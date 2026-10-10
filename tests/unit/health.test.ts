@@ -5,8 +5,7 @@ import {
   DatabaseUnavailable,
   type DatabaseFailure,
 } from '@sprout/database';
-import { readiness } from '@sprout/runtime';
-import { loadSettings } from '../../packages/runtime/src/config.js';
+import { readiness, loadSettings } from '@sprout/runtime';
 
 describe('component health contract', () => {
   it('requires the initialized dependencies before reporting worker readiness', async () => {

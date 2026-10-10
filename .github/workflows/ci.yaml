@@ -36,10 +36,16 @@ jobs:
           package-manager-cache: false
       - run: npm install --global corepack@0.36.0
       - run: corepack pnpm install --frozen-lockfile
-      - run: corepack pnpm build
-      - run: corepack pnpm check:affected
+      - name: Build and typecheck affected projects
         env:
           NX_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if git rev-parse --verify "${NX_BASE}^{commit}" >/dev/null 2>&1; then
+            corepack pnpm check:affected
+          else
+            echo "Base revision unavailable; checking every project."
+            corepack pnpm exec nx run-many -t typecheck,build --parallel=3
+          fi
   test:
     needs: quality
     runs-on: ubuntu-24.04
