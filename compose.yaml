@@ -30,7 +30,7 @@ services:
       POSTGRES_USER: sprout
       POSTGRES_DB: sprout
       POSTGRES_HOST_AUTH_METHOD: trust
-    ports: ['127.0.0.1:54329:5432']
+    ports: ['127.0.0.1:${SPROUT_DB_PORT:-54329}:5432']
     volumes: ['postgres-data:/var/lib/postgresql/data']
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U sprout -d sprout']
@@ -39,7 +39,7 @@ services:
       retries: 20
   migrate:
     build: .
-    image: sprout-migrate-development:local
+    image: ${COMPOSE_PROJECT_NAME}-migrate-development:local
     init: true
     command: ['corepack', 'pnpm', 'migrate']
     environment: *environment
@@ -48,7 +48,7 @@ services:
         condition: service_healthy
   api:
     <<: *app
-    image: sprout-api-development:local
+    image: ${COMPOSE_PROJECT_NAME}-api-development:local
     command:
       [
         'corepack',
@@ -62,7 +62,7 @@ services:
     environment:
       <<: *environment
       PORT: '3001'
-    ports: ['127.0.0.1:3001:3001']
+    ports: ['127.0.0.1:${SPROUT_API_PORT:-3001}:3001']
     volumes: ['originals:/workspace/originals']
     develop:
       watch: &backend-watch
@@ -102,7 +102,7 @@ services:
           path: ./packages/ui/package.json
   worker:
     <<: *app
-    image: sprout-worker-development:local
+    image: ${COMPOSE_PROJECT_NAME}-worker-development:local
     command:
       [
         'corepack',
@@ -116,13 +116,13 @@ services:
     environment:
       <<: *environment
       PORT: '3002'
-    ports: ['127.0.0.1:3002:3002']
+    ports: ['127.0.0.1:${SPROUT_WORKER_PORT:-3002}:3002']
     volumes: ['originals:/workspace/originals']
     develop:
       watch: *backend-watch
   web:
     build: .
-    image: sprout-web-development:local
+    image: ${COMPOSE_PROJECT_NAME}-web-development:local
     init: true
     command:
       [
@@ -136,7 +136,7 @@ services:
       ]
     environment:
       API_PROXY_URL: http://api:3001
-    ports: ['127.0.0.1:5173:5173']
+    ports: ['127.0.0.1:${SPROUT_WEB_PORT:-5173}:5173']
     depends_on:
       api:
         condition: service_healthy
