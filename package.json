@@ -10,17 +10,20 @@
   "scripts": {
     "dev": "nx run-many -t serve -p web api worker --parallel=3 --outputStyle=stream",
     "build": "nx run-many -t build --parallel=3",
-    "typecheck": "nx run-many -t typecheck --parallel=3 \u0026\u0026 tsc -p tsconfig.tools.json",
-    "lint": "eslint apps packages tests *.ts eslint.config.mjs --max-warnings=0",
-    "format:check": "prettier --check apps packages tests *.json *.ts *.yaml eslint.config.mjs .github/workflows docs/development.md docs/adr/0004-effect-api-and-worker.md",
-    "format:write": "prettier --write apps packages tests *.json *.ts *.yaml eslint.config.mjs .github/workflows docs/development.md docs/adr/0004-effect-api-and-worker.md",
+    "typecheck": "nx run-many -t typecheck --parallel=3 && tsc -p tsconfig.tools.json",
+    "lint": "eslint apps packages tests scripts/*.mjs *.ts eslint.config.mjs --max-warnings=0",
+    "format:check": "prettier --check apps packages tests scripts/*.mjs *.json *.ts *.yaml eslint.config.mjs .github/workflows docs/development.md docs/adr/0004-effect-api-and-worker.md",
+    "format:write": "prettier --write apps packages tests scripts/*.mjs *.json *.ts *.yaml eslint.config.mjs .github/workflows docs/development.md docs/adr/0004-effect-api-and-worker.md",
     "test": "vitest run --project unit",
     "test:integration": "vitest run --project integration",
     "test:e2e": "playwright test",
     "migrate": "tsx --conditions=development packages/database/src/migrate.ts",
     "db:generate": "drizzle-kit generate --config packages/database/drizzle.config.ts",
-    "check": "corepack pnpm format:check \u0026\u0026 corepack pnpm lint \u0026\u0026 corepack pnpm typecheck \u0026\u0026 corepack pnpm test \u0026\u0026 corepack pnpm build",
-    "check:affected": "nx affected -t typecheck,build --parallel=3"
+    "check": "corepack pnpm check:environment && corepack pnpm format:check && corepack pnpm lint && corepack pnpm typecheck && corepack pnpm test && corepack pnpm build && corepack pnpm check:docs",
+    "check:affected": "nx affected -t typecheck,build --parallel=3",
+    "check:environment": "node scripts/check-environment.mjs",
+    "check:runtime": "node scripts/check-environment.mjs --runtime",
+    "check:docs": "python -B -X utf8 scripts/check-workflows.py"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

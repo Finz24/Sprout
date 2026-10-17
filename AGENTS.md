@@ -1,5 +1,15 @@
 # Agent instructions
 
+## Before changing code
+
+Run `corepack pnpm check:environment` after preparing the pinned dependencies.
+Before starting services in a worktree, follow the isolated project and port
+setup in `docs/development.md`, then run `corepack pnpm check:runtime`.
+Run `corepack pnpm check` before handoff. Service changes also require
+`test:integration`; browser changes require `test:e2e` against that worktree.
+Report a blocked check with its actual error. Passing static checks does not
+prove persistence, authorization, or a complete user journey.
+
 ## Current documentation
 
 Use Context7 for library, framework, SDK, API, CLI and cloud-service

@@ -1,0 +1,92 @@
+
+> sprout@0.0.0 check:runtime C:\Users\ohadf\.t3\worktrees\sprout\t3-bc5fe128
+> node scripts/check-environment.mjs --runtime
+
+{
+  "results": [
+    {
+      "name": "arguments",
+      "status": "pass",
+      "message": "Supported options."
+    },
+    {
+      "name": "node-pin",
+      "status": "pass",
+      "message": ".nvmrc and package.json declare the same exact Node version."
+    },
+    {
+      "name": "node-runtime",
+      "status": "pass",
+      "message": "The running Node version matches .nvmrc."
+    },
+    {
+      "name": "package-manager",
+      "status": "pass",
+      "message": "packageManager declares an exact pnpm version."
+    },
+    {
+      "name": "package-config",
+      "status": "pass",
+      "message": ".npmrc enforces engines, exact saves and strict peer dependencies."
+    },
+    {
+      "name": "docker-pins",
+      "status": "pass",
+      "message": "Docker pins match Node and pnpm, with pinned Corepack and base digest."
+    },
+    {
+      "name": "compose-environment",
+      "status": "pass",
+      "message": "Compose project identity and distinct host ports are valid."
+    },
+    {
+      "name": "docker-daemon",
+      "status": "pass",
+      "message": "Docker daemon is reachable."
+    },
+    {
+      "name": "docker-compose",
+      "status": "pass",
+      "message": "Docker Compose is installed and accepts the configuration."
+    },
+    {
+      "name": "playwright-browser",
+      "status": "pass",
+      "message": "The installed Playwright package has a Chromium executable."
+    }
+  ]
+}
+
+> sprout@0.0.0 test:integration C:\Users\ohadf\.t3\worktrees\sprout\t3-bc5fe128
+> vitest run --project integration
+
+
+ RUN  v5.0.3 C:/Users/ohadf/.t3/worktrees/sprout/t3-bc5fe128
+
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  18:17:17
+   Duration  280ms (tests 48%, transform 24%, import 23%, worker 5%)
+
+
+> sprout@0.0.0 test:e2e C:\Users\ohadf\.t3\worktrees\sprout\t3-bc5fe128
+> playwright test
+
+
+Running 2 tests using 2 workers
+
+corepack : (node:19980) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At line:2 char:802
++ ... DE -ne 0) { exit $LASTEXITCODE }; corepack pnpm test:e2e 2>&1 | Tee-O ...
++                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:19980) Wa... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:8080) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [desktop] › tests\e2e\screen.spec.ts:3:1 › renders the foundation page and preserves routing after reload (1.2s)
+  ok 2 [mobile] › tests\e2e\screen.spec.ts:3:1 › renders the foundation page and preserves routing after reload (1.3s)
+
+  2 passed (2.1s)
