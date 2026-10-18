@@ -20,8 +20,11 @@ jobs:
           package-manager-cache: false
       - run: npm install --global corepack@0.36.0
       - run: corepack pnpm install --frozen-lockfile
+      - run: corepack pnpm check:environment
+      - run: corepack pnpm check:docs
       - run: corepack pnpm format:check
       - run: corepack pnpm lint
+      - run: corepack pnpm run doctor
       - run: corepack pnpm typecheck
   build:
     needs: quality

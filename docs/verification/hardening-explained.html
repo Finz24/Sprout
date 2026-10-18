@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>What Sprout's hardening changes do</title>
+    <style>
+      body {
+        margin: 0;
+        color: var(--foreground, #18202c);
+        font: 15px/1.55 var(--font-sans, system-ui);
+      }
+      h2 {
+        margin: 0 0 8px;
+        font-size: 22px;
+        font-weight: 650;
+      }
+      h3 {
+        margin: 0 0 8px;
+        font-size: 18px;
+      }
+      p {
+        margin: 8px 0 16px;
+      }
+      .flow {
+        padding: 0;
+        margin: 18px 0 24px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        list-style: none;
+      }
+      .flow li {
+        border-bottom: 2px solid var(--border, #cbd2db);
+        padding: 6px 12px 6px 0;
+      }
+      .flow li:last-child {
+        border-color: var(--success, #317651);
+      }
+      nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin: 0 0 16px;
+      }
+      button {
+        border: 1px solid var(--border, #cbd2db);
+        background: transparent;
+        color: inherit;
+        border-radius: 7px;
+        padding: 8px 11px;
+        font: inherit;
+        cursor: pointer;
+      }
+      button[aria-pressed='true'] {
+        background: var(--primary, #234b78);
+        color: var(--primary-foreground, #fff);
+        border-color: transparent;
+      }
+      button:focus-visible {
+        outline: 3px solid var(--ring, #6299d0);
+        outline-offset: 2px;
+      }
+      article {
+        border-top: 1px solid var(--border, #cbd2db);
+        padding-top: 18px;
+      }
+      dl {
+        display: grid;
+        grid-template-columns: 82px minmax(0, 1fr);
+        gap: 12px 16px;
+        margin: 12px 0;
+      }
+      dt {
+        font-weight: 650;
+      }
+      dd {
+        margin: 0;
+      }
+      pre {
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        padding: 14px;
+        background: var(--code-background, #edf1f5);
+        color: var(--code-foreground, #18202c);
+        border-radius: 8px;
+        font: 13px/1.6 var(--font-mono, monospace);
+      }
+      .note {
+        color: var(--muted-foreground, #566174);
+        font-size: 13px;
+      }
+      a {
+        color: var(--accent, #3269a6);
+      }
+      @media (max-width: 420px) {
+        dl {
+          grid-template-columns: 1fr;
+          gap: 4px;
+        }
+        dd {
+          margin-bottom: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main id="sprout-hardening">
+      <h2>Make common mistakes fail before they reach main</h2>
+      <p>
+        The application keeps its existing architecture. This PR strengthens the
+        rules around future changes.
+      </p>
+      <ol class="flow" aria-label="Change verification sequence">
+        <li>1. Agent edits code</li>
+        <li>2. Local checks</li>
+        <li>3. GitHub Actions</li>
+        <li>4. Protected main</li>
+      </ol>
+      <nav aria-label="Choose a safeguard">
+        <button type="button" data-area="imports" aria-pressed="true">
+          Imports
+        </button>
+        <button type="button" data-area="types" aria-pressed="false">
+          Unsafe code
+        </button>
+        <button type="button" data-area="compiler" aria-pressed="false">
+          Failed builds
+        </button>
+        <button type="button" data-area="environment" aria-pressed="false">
+          Environment
+        </button>
+        <button type="button" data-area="proof" aria-pressed="false">
+          Test the rules
+        </button>
+        <button type="button" data-area="merge" aria-pressed="false">
+          Merge gate
+        </button>
+      </nav>
+      <article aria-live="polite">
+        <h3 id="area-title"></h3>
+        <dl>
+          <dt>Before</dt>
+          <dd id="before"></dd>
+          <dt>Now</dt>
+          <dd id="now"></dd>
+          <dt>How</dt>
+          <dd id="how"></dd>
+        </dl>
+        <pre id="example"></pre>
+        <p class="note" id="evidence"></p>
+      </article>
+      <p class="note">
+        These checks detect defined mistakes. They cannot prove that a future
+        feature meets its requirements. Persistence, authorization and complete
+        user journeys still need their own tests.
+      </p>
+    </main>
+    <script>
+      const areas = {
+        imports: {
+          title: 'Keep each part of the application in its intended role',
+          before:
+            'Import restrictions had gaps for alternate extensions, code outside src, inline disables, and CommonJS loaders.',
+          now: 'The same dependency rules cover workspace source roots and supported JS/TS extensions. Source cannot disable lint rules or load hidden dependencies through the tested Node loaders.',
+          how: 'ESLint checks imports against Nx project tags. Browser code cannot import Node/server infrastructure. New project directories and ownership tags are checked too.',
+          example:
+            'Allowed\nweb → UI and contracts\nAPI / worker → runtime and contracts\nruntime → database and contracts\n\nRejected\nweb → database\nAPI → database directly\n@sprout/runtime/src/config.js',
+          evidence:
+            'Proof: boundary tests include rejection cases and valid imports. The graph itself was preserved.',
+        },
+        types: {
+          title: 'Reject unsafe shortcuts that still compile',
+          before:
+            'Strict TypeScript alone allowed unhandled promises, unchecked JSON values, narrowing casts and non-null assertions.',
+          now: 'Typed lint checks reject those patterns. Agents must handle the promise or narrow external input before using it.',
+          how: 'The existing typescript-eslint package reads the project types. No new dependency was added.',
+          example:
+            'Rejected\nPromise.resolve();\nconst data = JSON.parse(input);\nconst name = (JSON.parse(input) as { name: string }).name;\nvalue!.trim();\n\nAllowed\nconst data: unknown = JSON.parse(input);\nif (typeof data === "string") data.trim();',
+          evidence:
+            'Proof: typed probes assert actual rule diagnostics and also accept valid handling.',
+        },
+        compiler: {
+          title: 'A failed build must not leave generated files in source',
+          before:
+            'An invalid cross-project import caused the compiler to write JavaScript and declaration files into source directories even though compilation failed.',
+          now: 'noEmitOnError prevents that failed compilation from producing those files.',
+          how: 'The shared compiler configuration applies the setting to every project. A separate test runs the real compiler against a deliberately invalid project.',
+          example:
+            'Invalid project build\n1. Compiler reports TS6059\n2. Command exits unsuccessfully\n3. outside.js does not exist\n4. outside.d.ts does not exist\n5. dist/index.js does not exist',
+          evidence:
+            'Proof: the regression failed before the flag was added and passed afterward. Only confirmed generated artifacts were cleaned.',
+        },
+        environment: {
+          title: 'Make setup problems visible and worktrees separable',
+          before:
+            'Version pins could drift. Compose worktrees shared default image names and fixed host ports. Windows line endings made the untouched format check fail.',
+          now: 'Preflight checks named prerequisites. Worktrees can select separate projects, images, volumes and host ports. Git normalizes line endings and formatting accepts the current checkout.',
+          how: 'A Node standard-library script validates pins and port settings. engine-strict rejects the wrong Node version during installation. Runtime mode checks Docker, Compose and the prepared browser cache without downloading anything.',
+          example:
+            'corepack pnpm check:environment\ncorepack pnpm check:runtime\n\nCOMPOSE_PROJECT_NAME=sprout-my-issue\nSPROUT_DB_PORT=55449\nSPROUT_API_PORT=3113\nSPROUT_WORKER_PORT=3114\nSPROUT_WEB_PORT=5193',
+          evidence:
+            'Proof: CLI tests cover invalid pins, comments disguising installs, floating installs, bad ports, missing tools and redacted diagnostics. Isolation still requires choosing a unique project and unused ports.',
+        },
+        proof: {
+          title: 'Test that the safeguards actually reject mistakes',
+          before:
+            'A green application test did not establish that the engineering rules could catch a forbidden change.',
+          now: 'Dedicated tests feed the installed linter both valid and invalid code. The environment checks and real compiler also get failure cases.',
+          how: 'Probe expectations come from the intended policy. In-memory source avoids leaving invalid test files in the checkout. The hosted CI run remains separate evidence from a local pass.',
+          example:
+            'A meaningful rule test\n1. Feed web → database to ESLint\n2. Require the architecture diagnostic\n3. Reject ignored-file or parser failures\n4. Also prove web → UI passes',
+          evidence:
+            'The first hosted run failed despite local passes. The probe tests now disable CI single-run inference. The complete local check with CI enabled passes all 129 unit tests, lint, typecheck and seven builds. Hosted rerun results remain separate evidence.',
+        },
+        merge: {
+          title: 'Turn checks into an enforced GitHub gate',
+          before:
+            'main had no branch protection. Failing checks did not themselves prevent a merge.',
+          now: 'Five checks from the GitHub Actions app are required. The branch must be up to date. Administrators are included. Force pushes and branch deletion are blocked.',
+          how: 'This is a live repository setting, separate from the PR files. GitHub app ID 15368 is required, so an unrelated status producer cannot satisfy the named checks.',
+          example:
+            'Required checks\nquality\nbuild\ntest\nintegration\ne2e\n\nReadback verified: strict = true\nReadback verified: enforce_admins = true\nPR #35 reported BLOCKED with failed tests',
+          evidence:
+            'Proof: GitHub API settings were read back after the update. No merge was attempted and no new human-approval count was added.',
+        },
+      };
+      const root = document.getElementById('sprout-hardening');
+      function selectArea(key) {
+        const area = areas[key];
+        root.querySelector('#area-title').textContent = area.title;
+        for (const field of ['before', 'now', 'how', 'example', 'evidence'])
+          root.querySelector('#' + field).textContent = area[field];
+        for (const button of root.querySelectorAll('button'))
+          button.setAttribute(
+            'aria-pressed',
+            String(button.dataset.area === key),
+          );
+      }
+      for (const button of root.querySelectorAll('button'))
+        button.addEventListener('click', () => selectArea(button.dataset.area));
+      selectArea('imports');
+      console.log('Safeguard sections ready', Object.keys(areas).length);
+    </script>
+  </body>
+</html>

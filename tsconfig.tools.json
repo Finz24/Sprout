@@ -8,7 +8,17 @@
   },
   "include": [
     "tests/**/*.ts",
+    "tests/**/*.tsx",
+    "tests/**/*.mts",
+    "tests/**/*.cts",
     "*.config.ts",
-    "packages/database/drizzle.config.ts"
+    "*.config.mts",
+    "*.config.cts",
+    "apps/web/vite.config.ts",
+    "apps/web/vite.config.mts",
+    "apps/web/vite.config.cts",
+    "packages/database/drizzle.config.ts",
+    "packages/database/drizzle.config.mts",
+    "packages/database/drizzle.config.cts"
   ]
 }

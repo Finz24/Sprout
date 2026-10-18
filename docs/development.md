@@ -12,6 +12,7 @@ pnpm **10.34.6**. Docker Desktop with Compose Watch support is required; the cur
 configuration was prepared with Compose **2.39.4**. Exact dependency versions and
 the lockfile are committed. Initial installation and image builds need network
 access; ordinary development startup uses the prepared local dependencies.
+The workflow documentation check requires Python 3 with no third-party packages.
 
 ```powershell
 nvm use 24.21.0
@@ -24,6 +25,28 @@ docker compose build
 
 Playwright's browser installation is an explicit preparation step, not a
 postinstall or a test-time download. The screen uses local CSS and system fonts.
+
+From the repository root, run the offline preflight before development:
+
+```powershell
+node scripts/check-environment.mjs
+node scripts/check-environment.mjs --runtime
+```
+
+The default checks Node's active version, agreement between `.nvmrc` and
+`package.json`, the pnpm declaration, `.npmrc` policy, Dockerfile pins, and the
+exported Compose project and host ports. It uses only Node's standard library.
+Each JSON result has a name and a `pass` or `fail` status. Any failure exits
+nonzero. No check installs tools, downloads assets, or starts services.
+The Dockerfile check recognizes the pinned bootstrap and frozen dependency
+install used here. Review that check when changing the Dockerfile's tool commands
+or introducing additional build stages.
+
+`--runtime` also checks Docker daemon access, Compose configuration, and the
+installed Playwright Chromium executable. Each subprocess has a ten-second
+timeout. This checks browser files, not whether Chromium can launch. Neither mode
+proves service readiness or recovery after a dependency failure. Those require
+the running application and remain separate runtime verification.
 
 ## Full Compose development
 
@@ -48,6 +71,46 @@ decision. No password is embedded in the repository.
 
 `docker compose stop` preserves data. Do not use `down --volumes` to restart.
 
+## Isolate a worktree
+
+The default project remains `sprout`, including `sprout_postgres-data` and
+`sprout_originals`. Keep that identity when resuming existing development data.
+Changing project identity selects different volumes. It does not migrate data.
+
+For concurrent worktrees, explicitly choose a unique `COMPOSE_PROJECT_NAME` and
+four unused host ports. Reuse that choice in every terminal for the worktree.
+Compose also accepts `-p`, which takes precedence over `COMPOSE_PROJECT_NAME`.
+Application image tags include the selected project name so builds in one
+worktree do not replace another worktree's tags. The four `SPROUT_*_PORT`
+variables change loopback host bindings only. Container ports and internal URLs
+stay fixed. Defaults are database 54329, API 3001, worker 3002, and web 5173.
+
+Set this example in each terminal before running Compose, local apps, migrations,
+or tests. Choose different values if another worktree already uses these ports:
+
+```powershell
+$env:COMPOSE_PROJECT_NAME = 'sprout-bc5fe128'
+$env:SPROUT_DB_PORT = '55439'
+$env:SPROUT_API_PORT = '3103'
+$env:SPROUT_WORKER_PORT = '3104'
+$env:SPROUT_WEB_PORT = '5183'
+$env:DATABASE_URL = "postgresql://sprout@127.0.0.1:$($env:SPROUT_DB_PORT)/sprout"
+$env:API_URL = "http://127.0.0.1:$($env:SPROUT_API_PORT)"
+$env:WORKER_URL = "http://127.0.0.1:$($env:SPROUT_WORKER_PORT)"
+$env:WEB_URL = "http://127.0.0.1:$($env:SPROUT_WEB_PORT)"
+node scripts/check-environment.mjs
+docker compose config --quiet
+```
+
+The preflight validates project syntax and distinct port numbers. It does not
+load Compose `.env` files or observe a later `-p` flag. Use `docker compose config`
+to inspect those resolved settings. It does not reserve ports or infer whether
+another worktree owns a database. Check the project and URLs before migrations
+or tests. Integration tests use `API_URL` and
+`WORKER_URL`; Playwright uses `WEB_URL`. Local database commands use `DATABASE_URL`.
+Compose supplies its own internal database URL. These exported local URLs do not
+change container-to-container routing. Open `WEB_URL` for the selected worktree.
+
 ## Local apps with container PostgreSQL
 
 ```powershell
@@ -60,6 +123,27 @@ Local defaults point at the loopback database. Optional `DATABASE_URL`, `PORT`,
 `HOST`, and `DATABASE_POOL_SIZE` come from environment variables. API and worker
 use different default ports. `API_PROXY_URL` controls Vite's API proxy. Never
 commit environment files or connection credentials.
+
+For an isolated worktree, set the project, ports, and URLs above before starting
+PostgreSQL or migrating. Run local services in separate terminals with those
+same settings. Use these commands instead of `pnpm dev` to select separate ports:
+
+```powershell
+$env:HOST = '127.0.0.1'
+$env:PORT = $env:SPROUT_API_PORT
+corepack pnpm exec tsx watch --conditions=development apps/api/src/main.ts
+```
+
+```powershell
+$env:HOST = '127.0.0.1'
+$env:PORT = $env:SPROUT_WORKER_PORT
+corepack pnpm exec tsx watch --conditions=development apps/worker/src/main.ts
+```
+
+```powershell
+$env:API_PROXY_URL = $env:API_URL
+corepack pnpm exec vite --config apps/web/vite.config.ts apps/web --host 127.0.0.1 --port $env:SPROUT_WEB_PORT
+```
 
 ## Migrations and readiness
 
@@ -94,6 +178,13 @@ rules enforce the project graph and reject workspace dependency cycles. Use
 rules can validate type dependencies too. Future domain modules should be added
 by their owning issue.
 
+Typed ESLint checks reject unhandled promises, unsafe values and narrowing
+assertions, and non-null assertions. Source imports across supported JavaScript
+and TypeScript extensions follow the same ownership rules. Inline ESLint
+configuration cannot disable these checks. The policy tests exercise rejected
+code and permitted dependencies through the installed linter. Typed probes use
+in-memory text against existing project files and do not write to source trees.
+
 UI components share semantic Tailwind tokens through `packages/ui`; the initial
 Button is a source-owned shadcn-style component. Prefer these tokens and public
 components over screen-specific duplicate primitives. Motion is configured to
@@ -102,13 +193,20 @@ no unnecessary animations. Fonts and assets must remain locally available.
 
 ```powershell
 corepack pnpm check
+corepack pnpm run doctor
 corepack pnpm check:affected
 corepack pnpm test:integration
 corepack pnpm test:e2e
 ```
 
-Quality checks formatting, lint, public package boundaries, workspace cycles and
-TypeScript. Nx caches builds locally and includes dependent projects in affected
+Quality checks formatting, lint, React Doctor, public package boundaries,
+workspace cycles and TypeScript. `doctor` scans the full React workspace and
+fails on warnings or errors. It uses pinned React Doctor 0.9.18, disables
+telemetry and the network-backed supply-chain scan, and limits lint workers
+within each project. React Doctor can still scan multiple projects concurrently.
+Prepare its platform-specific dependencies during installation before going offline.
+It runs inside both `check` and the required CI `quality` job.
+Nx caches builds locally and includes dependent projects in affected
 checks. `check:affected` uses Nx's public CLI; set `NX_BASE` to choose its base
 revision. CI checks every project when its base revision is unavailable.
 Unit tests cover readiness failure semantics, migration history, configuration
@@ -132,6 +230,12 @@ docker image save -o sprout-development-images.tar sprout-api-development:local 
 # On the prepared recipient: docker image load -i sprout-development-images.tar
 docker compose up --pull never --no-build --watch
 ```
+
+The image export example uses the default `sprout` project. For an explicit
+worktree project, substitute its project name in all four application image
+tags, and load and start with that same `COMPOSE_PROJECT_NAME`. Transfer prepared
+Node and Corepack installers or caches as well as the pnpm store. Once prepared,
+`node scripts/check-environment.mjs --runtime` checks prerequisites offline.
 
 An image rebuild after dependency changes requires those dependencies in the
 build environment. Offline startup uses the already-built image; it does not run
