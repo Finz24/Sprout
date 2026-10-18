@@ -90,3 +90,28 @@ At line:2 char:802
   ok 2 [mobile] › tests\e2e\screen.spec.ts:3:1 › renders the foundation page and preserves routing after reload (1.3s)
 
   2 passed (2.1s)
+
+React Doctor follow-up. Prepared sprout-agent-hardening images, no pull or build.
+Current button.tsx, button-variants.ts and index.ts copied to the isolated web container before testing.
+WEB_URL=http://127.0.0.1:5193. Runtime preflight passed. Dedicated containers stopped afterward; volumes retained.
+
+> sprout@0.0.0 test:e2e C:\Users\ohadf\.t3\worktrees\sprout\t3-bc5fe128
+> playwright test
+
+
+Running 2 tests using 2 workers
+
+corepack : (node:3152) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At line:3 char:1
++ corepack pnpm test:e2e 2>&1 | Tee-Object "$env:TEMP/sprout-react-doct ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:3152) War... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:33964) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [mobile] › tests\e2e\screen.spec.ts:3:1 › renders the foundation page and preserves routing after reload (1.7s)
+  ok 2 [desktop] › tests\e2e\screen.spec.ts:3:1 › renders the foundation page and preserves routing after reload (1.7s)
+
+  2 passed (3.0s)

@@ -24,6 +24,7 @@ jobs:
       - run: corepack pnpm check:docs
       - run: corepack pnpm format:check
       - run: corepack pnpm lint
+      - run: corepack pnpm run doctor
       - run: corepack pnpm typecheck
   build:
     needs: quality

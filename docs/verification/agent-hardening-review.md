@@ -61,6 +61,33 @@ live GitHub state.
 See [the interactive explanation](hardening-explained.html) for each safeguard's
 before and after behavior and examples.
 
+## React Doctor and standard tools
+
+React Doctor 0.9.18 now runs inside the local `check` command and the required
+CI `quality` job. The full workspace scan fails on warnings and errors.
+Telemetry and the network-backed supply-chain scan are disabled. The first
+scan rejected a non-component export in `button.tsx`. Moving that styling
+function to `button-variants.ts` preserves the package exports and removes the
+warning without suppressing a rule. The subsequent scan reports no issues.
+The independent review caught an overstatement about serial execution.
+`--no-parallel` limits lint workers within each project, while projects can
+still run concurrently. The development guide now states that distinction.
+
+The source policies already use standard ESLint, typescript-eslint and Nx rules.
+Prettier handles formatting. The regression tests exercise these installed rules
+with permitted code and forbidden code. They do not implement another linter.
+The compiler uses the standard `noEmitOnError` option.
+
+At commit `a9bc6ce`, the PR added 1,826 lines. Of those, 162 were in the one new
+environment script, 168 in configuration and workflows, 704 in regression tests,
+and 792 in documentation and evidence. The environment script checks agreement
+between repository pins, exported Compose settings and optional machine
+prerequisites. Formatting rules cannot establish those facts. The independent
+gpt-6-luna audit found no justified replacement or deletion using existing rules.
+
+The earlier hosted rerun completed successfully for all five job types at
+`a9bc6ce`. The React Doctor follow-up requires its own hosted verification.
+
 ## Run evidence
 
 - [Full repository check](agent-hardening-check.txt).

@@ -1,6 +1,6 @@
 
 > sprout@0.0.0 check C:\Users\ohadf\.t3\worktrees\sprout\t3-bc5fe128
-> corepack pnpm check:environment && corepack pnpm format:check && corepack pnpm lint && corepack pnpm typecheck && corepack pnpm test && corepack pnpm build && corepack pnpm check:docs
+> corepack pnpm check:environment && corepack pnpm format:check && corepack pnpm lint && corepack pnpm run doctor && corepack pnpm typecheck && corepack pnpm test && corepack pnpm build && corepack pnpm check:docs
 
 
 > sprout@0.0.0 check:environment C:\Users\ohadf\.t3\worktrees\sprout\t3-bc5fe128
@@ -56,6 +56,18 @@ All matched files use Prettier code style!
 > eslint apps packages tests scripts/*.mjs *.ts eslint.config.mjs --max-warnings=0
 
 
+> sprout@0.0.0 doctor C:\Users\ohadf\.t3\worktrees\sprout\t3-bc5fe128
+> react-doctor . --yes --scope full --verbose --blocking warning --no-telemetry --no-supply-chain --no-parallel
+
+✔ Select projects › @sprout/web, @sprout/ui
+✔ Scanned 7 files in 1.8s
+
+React Doctor — t3-bc5fe128
+Score unavailable.
+
+✔ No issues found!
+  Full diagnostics written to C:\Users\ohadf\AppData\Local\Temp\react-doctor-da73a26b-9472-46fa-a50a-413ac68aae2d
+
 > sprout@0.0.0 typecheck C:\Users\ohadf\.t3\worktrees\sprout\t3-bc5fe128
 > nx run-many -t typecheck --parallel=3 && tsc -p tsconfig.tools.json
 
@@ -65,10 +77,10 @@ All matched files use Prettier code style!
 
 Re-run with --output-style=static to inline logs.
 
-  Run duration:      5.2s
+  Run duration:      8.3s
   Cache:             Skipped (--skip-nx-cache)
-  Critical path:     3.3s (3 tasks)
-  Recoverable time:  1.9s (37% of the run)
+  Critical path:     5.0s (2 tasks)
+  Recoverable time:  3.3s (40% of the run)
 
 > sprout@0.0.0 test C:\Users\ohadf\.t3\worktrees\sprout\t3-bc5fe128
 > vitest run --project unit
@@ -79,8 +91,8 @@ Re-run with --output-style=static to inline logs.
 
  Test Files  7 passed (7)
       Tests  129 passed (129)
-   Start at  08:23:42
-   Duration  22.43s (tests 78%, import 22%, transform 1%)
+   Start at  21:24:20
+   Duration  43.15s (import 52%, tests 48%)
 
 
 > sprout@0.0.0 build C:\Users\ohadf\.t3\worktrees\sprout\t3-bc5fe128
@@ -92,9 +104,9 @@ Re-run with --output-style=static to inline logs.
 
 Re-run with --output-style=static to inline logs.
 
-  Run duration:      933ms
+  Run duration:      6.5s
   Cache:             Skipped (--skip-nx-cache)
-  Critical path:     915ms (2 tasks)
+  Critical path:     6.5s (3 tasks)
   Recoverable time:  <1ms
 
 > sprout@0.0.0 check:docs C:\Users\ohadf\.t3\worktrees\sprout\t3-bc5fe128

@@ -193,13 +193,20 @@ no unnecessary animations. Fonts and assets must remain locally available.
 
 ```powershell
 corepack pnpm check
+corepack pnpm run doctor
 corepack pnpm check:affected
 corepack pnpm test:integration
 corepack pnpm test:e2e
 ```
 
-Quality checks formatting, lint, public package boundaries, workspace cycles and
-TypeScript. Nx caches builds locally and includes dependent projects in affected
+Quality checks formatting, lint, React Doctor, public package boundaries,
+workspace cycles and TypeScript. `doctor` scans the full React workspace and
+fails on warnings or errors. It uses pinned React Doctor 0.9.18, disables
+telemetry and the network-backed supply-chain scan, and limits lint workers
+within each project. React Doctor can still scan multiple projects concurrently.
+Prepare its platform-specific dependencies during installation before going offline.
+It runs inside both `check` and the required CI `quality` job.
+Nx caches builds locally and includes dependent projects in affected
 checks. `check:affected` uses Nx's public CLI; set `NX_BASE` to choose its base
 revision. CI checks every project when its base revision is unavailable.
 Unit tests cover readiness failure semantics, migration history, configuration
