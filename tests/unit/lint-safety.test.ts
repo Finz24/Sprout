@@ -1,7 +1,14 @@
 import { ESLint } from 'eslint';
 import { describe, expect, test } from 'vitest';
 
-const eslint = new ESLint();
+// Probes replace file contents in memory and reuse paths, including in CI.
+const eslint = new ESLint({
+  overrideConfig: {
+    languageOptions: {
+      parserOptions: { disallowAutomaticSingleRunInference: true },
+    },
+  },
+});
 
 describe('typed lint safety policy', () => {
   const probes = [

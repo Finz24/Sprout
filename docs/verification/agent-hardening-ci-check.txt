@@ -1,0 +1,110 @@
+
+> sprout@0.0.0 check C:\Users\ohadf\.t3\worktrees\sprout\t3-bc5fe128
+> corepack pnpm check:environment && corepack pnpm format:check && corepack pnpm lint && corepack pnpm typecheck && corepack pnpm test && corepack pnpm build && corepack pnpm check:docs
+
+
+> sprout@0.0.0 check:environment C:\Users\ohadf\.t3\worktrees\sprout\t3-bc5fe128
+> node scripts/check-environment.mjs
+
+{
+  "results": [
+    {
+      "name": "arguments",
+      "status": "pass",
+      "message": "Supported options."
+    },
+    {
+      "name": "node-pin",
+      "status": "pass",
+      "message": ".nvmrc and package.json declare the same exact Node version."
+    },
+    {
+      "name": "node-runtime",
+      "status": "pass",
+      "message": "The running Node version matches .nvmrc."
+    },
+    {
+      "name": "package-manager",
+      "status": "pass",
+      "message": "packageManager declares an exact pnpm version."
+    },
+    {
+      "name": "package-config",
+      "status": "pass",
+      "message": ".npmrc enforces engines, exact saves and strict peer dependencies."
+    },
+    {
+      "name": "docker-pins",
+      "status": "pass",
+      "message": "Docker pins match Node and pnpm, with pinned Corepack and base digest."
+    },
+    {
+      "name": "compose-environment",
+      "status": "pass",
+      "message": "Compose project identity and distinct host ports are valid."
+    }
+  ]
+}
+
+> sprout@0.0.0 format:check C:\Users\ohadf\.t3\worktrees\sprout\t3-bc5fe128
+> prettier --check apps packages tests scripts/*.mjs *.json *.ts *.yaml eslint.config.mjs .github/workflows docs/development.md docs/adr/0004-effect-api-and-worker.md
+
+Checking formatting...
+All matched files use Prettier code style!
+
+> sprout@0.0.0 lint C:\Users\ohadf\.t3\worktrees\sprout\t3-bc5fe128
+> eslint apps packages tests scripts/*.mjs *.ts eslint.config.mjs --max-warnings=0
+
+
+> sprout@0.0.0 typecheck C:\Users\ohadf\.t3\worktrees\sprout\t3-bc5fe128
+> nx run-many -t typecheck --parallel=3 && tsc -p tsconfig.tools.json
+
+
+ NX   11 tasks: 11 succeeded
+
+
+Re-run with --output-style=static to inline logs.
+
+  Run duration:      5.2s
+  Cache:             Skipped (--skip-nx-cache)
+  Critical path:     3.3s (3 tasks)
+  Recoverable time:  1.9s (37% of the run)
+
+> sprout@0.0.0 test C:\Users\ohadf\.t3\worktrees\sprout\t3-bc5fe128
+> vitest run --project unit
+
+
+ RUN  v5.0.3 C:/Users/ohadf/.t3/worktrees/sprout/t3-bc5fe128
+
+
+ Test Files  7 passed (7)
+      Tests  129 passed (129)
+   Start at  08:23:42
+   Duration  22.43s (tests 78%, import 22%, transform 1%)
+
+
+> sprout@0.0.0 build C:\Users\ohadf\.t3\worktrees\sprout\t3-bc5fe128
+> nx run-many -t build --parallel=3
+
+
+ NX   7 tasks: 7 succeeded
+
+
+Re-run with --output-style=static to inline logs.
+
+  Run duration:      933ms
+  Cache:             Skipped (--skip-nx-cache)
+  Critical path:     915ms (2 tasks)
+  Recoverable time:  <1ms
+
+> sprout@0.0.0 check:docs C:\Users\ohadf\.t3\worktrees\sprout\t3-bc5fe128
+> python -B -X utf8 scripts/check-workflows.py
+
+{
+  "journeys": 13,
+  "nodes": 143,
+  "connections": 172,
+  "fragment_bytes": 422924,
+  "runtime_scripts": 0,
+  "checks": "PASS: workflow contracts, graph identities, SVG XML/markers, native controls, standalone encoding/theme, local links and offline builder"
+}
