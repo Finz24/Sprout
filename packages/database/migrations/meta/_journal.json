@@ -8,6 +8,13 @@
       "when": 1791586800000,
       "tag": "0000_enable_vector",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792647029301,
+      "tag": "0001_even_sharon_carter",
+      "breakpoints": true
     }
   ]
 }

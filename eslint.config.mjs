@@ -19,6 +19,7 @@ const nodeToolingFiles = [
 ];
 const serverPackages = [
   'pg',
+  'better-auth',
   'drizzle-orm',
   '@effect/platform-node',
   'pg-boss',
@@ -173,7 +174,7 @@ export default tseslint.config(
               sourceTag: 'scope:runtime',
               onlyDependOnLibsWithTags: ['scope:database', 'scope:contracts'],
             },
-            { sourceTag: 'scope:database', onlyDependOnLibsWithTags: [] },
+            { sourceTag: 'scope:database', onlyDependOnLibsWithTags: ['scope:contracts'] },
             { sourceTag: 'scope:contracts', onlyDependOnLibsWithTags: [] },
             { sourceTag: 'scope:ui', onlyDependOnLibsWithTags: [] },
           ],

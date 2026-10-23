@@ -2,6 +2,9 @@ import { resolve } from 'node:path';
 import { Context, Data, Effect, Layer } from 'effect';
 import { readMigrationFiles } from 'drizzle-orm/migrator';
 import { Pool } from 'pg';
+import { validateRole } from './private-storage.js';
+
+export { AccessHttp, IdentityLive, type IdentitySettings } from './identity.js';
 
 export type DatabaseFailure = 'connection' | 'migrations' | 'pgvector';
 export class DatabaseUnavailable extends Data.TaggedError(
@@ -11,6 +14,7 @@ export interface DatabaseSettings {
   readonly url: string;
   readonly maxConnections: number;
   readonly migrationsFolder: string;
+  readonly role?: 'sprout_api' | 'sprout_worker';
 }
 export const migrationsFolder = () =>
   resolve(process.env.MIGRATIONS_DIR ?? 'packages/database/migrations');
@@ -58,6 +62,7 @@ export const DatabaseLive = (settings: DatabaseSettings) =>
           ),
       );
       pool.on('error', () => console.error('Database idle connection lost'));
+      if (settings.role) yield* Effect.tryPromise({ try: () => validateRole(pool, settings.role ?? 'sprout_worker'), catch: () => new DatabaseUnavailable({ reason: 'connection' }) });
       const probe = Effect.tryPromise({
         try: async () => {
           await pool.query('SELECT 1');

@@ -8,9 +8,12 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
     proxy: {
-      '/api': {
+      '/api/health': {
         target: process.env.API_PROXY_URL ?? 'http://127.0.0.1:3001',
         rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+      '/api': {
+        target: process.env.API_PROXY_URL ?? 'http://127.0.0.1:3001',
       },
     },
   },

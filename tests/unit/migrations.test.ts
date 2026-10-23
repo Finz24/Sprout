@@ -2,40 +2,40 @@ import { describe, expect, it } from 'vitest';
 import { migrationHistoryMatches } from '@sprout/database';
 
 describe('committed migration history', () => {
-  const committed = ['enable-vector-hash', 'create-library-hash'];
+  const committed = ['9e9b2cfec47519f49ee73cb533c459e22f8ca54fe5ba1cbec59f3d5883fe191c', '7069c7f97acc4c000dcd184757be1c65522723abe1eb2ef3e2b18730a78a0f4c'];
 
   it('accepts exactly the committed migrations in their committed order', () => {
     expect(
       migrationHistoryMatches(committed, [
-        'enable-vector-hash',
-        'create-library-hash',
+        '9e9b2cfec47519f49ee73cb533c459e22f8ca54fe5ba1cbec59f3d5883fe191c',
+        '7069c7f97acc4c000dcd184757be1c65522723abe1eb2ef3e2b18730a78a0f4c',
       ]),
     ).toBe(true);
   });
 
   it.each([
     ['an empty journal', []],
-    ['a pending latest migration', ['enable-vector-hash']],
+    ['a pending latest migration', ['9e9b2cfec47519f49ee73cb533c459e22f8ca54fe5ba1cbec59f3d5883fe191c']],
     [
       'a missing earlier migration with the same latest hash',
-      ['create-library-hash'],
+      ['7069c7f97acc4c000dcd184757be1c65522723abe1eb2ef3e2b18730a78a0f4c'],
     ],
     [
       'an edited earlier migration',
-      ['edited-vector-hash', 'create-library-hash'],
+      ['edited-vector-hash', '7069c7f97acc4c000dcd184757be1c65522723abe1eb2ef3e2b18730a78a0f4c'],
     ],
     [
       'a different latest migration',
-      ['enable-vector-hash', 'unexpected-library-hash'],
+      ['9e9b2cfec47519f49ee73cb533c459e22f8ca54fe5ba1cbec59f3d5883fe191c', 'unexpected-latest-hash'],
     ],
-    ['reordered migrations', ['create-library-hash', 'enable-vector-hash']],
+    ['reordered migrations', ['7069c7f97acc4c000dcd184757be1c65522723abe1eb2ef3e2b18730a78a0f4c', '9e9b2cfec47519f49ee73cb533c459e22f8ca54fe5ba1cbec59f3d5883fe191c']],
     [
       'an additional applied migration',
-      ['enable-vector-hash', 'create-library-hash', 'unknown-migration-hash'],
+      ['9e9b2cfec47519f49ee73cb533c459e22f8ca54fe5ba1cbec59f3d5883fe191c', '7069c7f97acc4c000dcd184757be1c65522723abe1eb2ef3e2b18730a78a0f4c', 'unknown-migration-hash'],
     ],
     [
       'a duplicate applied migration',
-      ['enable-vector-hash', 'enable-vector-hash', 'create-library-hash'],
+      ['9e9b2cfec47519f49ee73cb533c459e22f8ca54fe5ba1cbec59f3d5883fe191c', '9e9b2cfec47519f49ee73cb533c459e22f8ca54fe5ba1cbec59f3d5883fe191c', '7069c7f97acc4c000dcd184757be1c65522723abe1eb2ef3e2b18730a78a0f4c'],
     ],
   ] as const)('rejects %s', (_scenario, applied) => {
     expect(migrationHistoryMatches(committed, applied)).toBe(false);

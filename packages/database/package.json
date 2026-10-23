@@ -11,8 +11,10 @@
     }
   },
   "dependencies": {
-    "effect": "4.0.2",
+    "@sprout/contracts": "workspace:*",
+    "better-auth": "1.6.23",
     "drizzle-orm": "0.45.4",
+    "effect": "4.0.2",
     "pg": "8.23.1"
   }
 }
