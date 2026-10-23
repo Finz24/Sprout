@@ -462,3 +462,45 @@ describe('credential rejection', () => {
     await rejectWithoutOutput(root, destination, contaminated, [name]);
   });
 });
+
+const UNPRESERVABLE_DATA: readonly (readonly [string, () => unknown])[] = [
+  ['function value', () => ({ value: () => 'not-preserved' })],
+  ['undefined value', () => ({ value: undefined })],
+  [
+    'cyclic value',
+    () => {
+      const cycle: Record<string, unknown> = {};
+      cycle.self = cycle;
+      return cycle;
+    },
+  ],
+  [
+    'accessor value',
+    () => {
+      const value: Record<string, unknown> = {};
+      Object.defineProperty(value, 'reported', {
+        enumerable: true,
+        get: () => 'not-preserved',
+      });
+      return value;
+    },
+  ],
+];
+
+describe('data the package cannot preserve faithfully', () => {
+  it.each(UNPRESERVABLE_DATA)(
+    'rejects %s before writing',
+    async (_label, createData) => {
+      const root = await temporaryDirectory();
+      const { snapshot, destination } = await createFixture(root);
+      const contaminated: ExportSnapshot = {
+        ...snapshot,
+        settings: [{ name: 'appearance', data: createData() }],
+      };
+
+      await rejectWithoutOutput(root, destination, contaminated, [
+        'not-preserved',
+      ]);
+    },
+  );
+});

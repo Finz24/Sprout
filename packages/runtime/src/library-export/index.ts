@@ -245,6 +245,55 @@ function assertNoCredentialLogicalNames(snapshot: ExportSnapshot): void {
   }
 }
 
+function assertPreservableData(value: unknown, ancestors: Set<object>): void {
+  if (
+    value === null ||
+    typeof value === 'string' ||
+    typeof value === 'boolean'
+  ) {
+    return;
+  }
+  if (typeof value === 'number') {
+    if (!Number.isFinite(value)) {
+      throw new Error('Export rejected: data is not JSON-compatible.');
+    }
+    return;
+  }
+  if (typeof value !== 'object') {
+    throw new Error('Export rejected: data is not JSON-compatible.');
+  }
+  if (ancestors.has(value)) {
+    throw new Error('Export rejected: cyclic data.');
+  }
+  if (Array.isArray(value)) {
+    ancestors.add(value);
+    for (let index = 0; index < value.length; index += 1) {
+      if (!(index in value)) {
+        throw new Error('Export rejected: data is not JSON-compatible.');
+      }
+      const entry: unknown = value[index];
+      assertPreservableData(entry, ancestors);
+    }
+    ancestors.delete(value);
+    return;
+  }
+  const prototype: unknown = Object.getPrototypeOf(value);
+  if (prototype !== Object.prototype && prototype !== null) {
+    throw new Error('Export rejected: data is not JSON-compatible.');
+  }
+  ancestors.add(value);
+  for (const name of Object.keys(value)) {
+    const descriptor = Object.getOwnPropertyDescriptor(value, name);
+    if (descriptor === undefined) continue;
+    if (descriptor.get !== undefined || descriptor.set !== undefined) {
+      throw new Error('Export rejected: accessor property.');
+    }
+    const child: unknown = descriptor.value;
+    assertPreservableData(child, ancestors);
+  }
+  ancestors.delete(value);
+}
+
 function withLabel(label: string, record: ExportRecord): OutputRecord {
   return { label, id: record.id, data: record.data };
 }
@@ -494,6 +543,7 @@ export async function writeExportPackage(
 ): Promise<ExportReport> {
   assertNoCredentialFields(snapshot, new Set());
   assertNoCredentialLogicalNames(snapshot);
+  assertPreservableData(snapshot, new Set());
   const counts = countPackage(snapshot);
   const built = buildPackage(snapshot);
   const manifest: ExportManifest = {
