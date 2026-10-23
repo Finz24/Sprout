@@ -757,6 +757,10 @@ describe.sequential('private authentication', () => {
           });
         } finally {
           await admin.query(`REVOKE ${privilege} FROM sprout_web`);
+          if (privilege === 'UPDATE ON private.owner_settings')
+            await admin.query(
+              'GRANT UPDATE (library_view, updated_at) ON private.owner_settings TO sprout_web',
+            );
           await admin.query('REVOKE USAGE ON SCHEMA auth FROM sprout_web');
         }
         await validateRole(pool, 'sprout_api');
