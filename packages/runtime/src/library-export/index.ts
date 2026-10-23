@@ -510,7 +510,7 @@ ${gaps.join('\n')}
 Limits
 ------
 ${NOTICE}
-It does not contain a database backup, a schema migration, credentials, or a way to recover material after Trash is purged. A complete records-and-media backup and a tested restore are separate work.
+It does not contain a database backup, a schema migration, or a way to recover material after Trash is purged. Authentication credentials are outside the snapshot contract. Credential-like structured fields are rejected; prose and original bytes are not scanned. A complete records-and-media backup and a tested restore are separate work.
 `;
 }
 
