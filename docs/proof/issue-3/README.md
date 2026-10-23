@@ -85,3 +85,7 @@ seven build tasks passed from cache. Fresh local runtime proof follows below.
 The full check was repeated after the test cleanup fix at `e0e8cd7` and
 exited 0 with the same 129 passing unit tests, 11 typechecks and seven builds.
 
+Fresh local integration on `e0e8cd7` passed 44/44 tests across two files
+in 12.31 seconds. This includes 22 excess schema/table/column grant cases.
+Each negative case restores approved grants and confirms validation succeeds.
+
