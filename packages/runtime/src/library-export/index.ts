@@ -611,12 +611,6 @@ export async function writeExportPackage(
   try {
     staging = await mkdtemp(`${destination}.partial-`);
     const directory = staging;
-    await writeFile(join(directory, 'manifest.json'), json(manifest), 'utf8');
-    await writeFile(
-      join(directory, 'README.txt'),
-      renderReadme(snapshot, built),
-      'utf8',
-    );
     for (let index = 0; index < built.items.length; index += 1) {
       const item = built.items[index];
       if (item === undefined) continue;
@@ -647,6 +641,12 @@ export async function writeExportPackage(
       }
       await copyFile(copy.sourcePath, join(directory, copy.file));
     }
+    await writeFile(
+      join(directory, 'README.txt'),
+      renderReadme(snapshot, built),
+      'utf8',
+    );
+    await writeFile(join(directory, 'manifest.json'), json(manifest), 'utf8');
     await rename(directory, destination);
   } catch (error) {
     if (staging !== undefined) {
