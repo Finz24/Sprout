@@ -1,6 +1,6 @@
 # Issue #3 verification
 
-Runtime evidence for application code at `dc69329f9f32f7b7bb5fa77d1af018aeab8db493`.
+Fresh local evidence for application and test code at `e0e8cd7` on 2026-10-23.
 All users and data are synthetic. Screenshots contain no credentials or account
 details. This record does not authorize deployment or merge.
 
@@ -16,10 +16,12 @@ corepack pnpm check: exit 0
   documentation checks: passed
 
 Local application processes with PostgreSQL:
-  test:integration: 22 passed
-  test:e2e: 20 passed, desktop and mobile
+  test:integration: 2 files, 44 tests passed (12.31s)
+  test:e2e: 20 passed, desktop and mobile (36.4s)
+  workspace runner: exit 0
+  test-results/.last-run.json: status passed, failedTests []
 
-Full Docker Compose:
+Historical full Docker Compose at dc69329:
   test:integration: 22 passed
   test:e2e: 20 passed, desktop and mobile
 ```
@@ -45,7 +47,7 @@ node scripts/auth-workspace.mjs --compose
 | Bootstrap          | Interrupted provisioning rolls back; concurrent invocations create one complete owner; rerun and inconsistent-installation behavior.                                                                  |
 | Two-user RLS       | Separate persisted preferences; foreign reads/updates, owner reassignment, anonymous/forged credentials, and forged owner settings fail.                                                              |
 | Pool lifetime      | Pool size one across commit, rollback, expiry, query cancellation, disconnect and failed cleanup; an abandoned HTTP write cannot persist; late browser responses cannot restore private UI.           |
-| Privilege boundary | Actual runtime logins deny escalation and identity creation; worker credentials cannot reconnect as API/auth; elevated or owning web roles prevent API startup.                                       |
+| Privilege boundary | Actual runtime logins deny escalation and identity creation; worker credentials cannot reconnect as API/auth; elevated or owning web roles and excess schema/table/column grants are rejected by startup validation. |
 | Shell navigation   | Desktop/mobile sign-in and navigation, view preference after reload, deep links, URL search/back, keyboard/reduced motion, drawer focus restoration, return-path rejection, no private-content flash. |
 | Availability       | Database connection loss, API failures, retry states and failed logout hide private content without claiming success.                                                                                 |
 
@@ -77,15 +79,22 @@ navigation is tested, while real-item focus restoration remains future proof.
 
 ## Excess-grant follow-up
 
-At code commit `096c111`, fresh `corepack pnpm check` exited 0 on
-2026-10-23. Format, lint, React Doctor and documentation checks passed.
-Unit tests passed 129/129 across seven files. Eleven typecheck tasks and
-seven build tasks passed from cache. Fresh local runtime proof follows below.
+Startup validation checks the assumable `sprout_web` role directly, including
+column-only grants. The 22 new negative cases failed on checkpoint `83b6f95`
+before the guard landed. All 44 integration tests now pass, including those
+cases and confirmation that the approved permissions remain accepted.
 
-The full check was repeated after the test cleanup fix at `e0e8cd7` and
-exited 0 with the same 129 passing unit tests, 11 typechecks and seven builds.
+The first local follow-up exposed PostgreSQL revoking approved column UPDATE
+grants when the table UPDATE test was cleaned up. The fixture now restores
+`UPDATE (library_view, updated_at)` after that case. The full check, integration,
+then e2e were repeated serially after this fix. The fresh passing e2e artifact
+replaces the earlier failed run. Desktop and mobile captures were refreshed
+from this passing journey and inspected for synthetic-only content.
 
-Fresh local integration on `e0e8cd7` passed 44/44 tests across two files
-in 12.31 seconds. This includes 22 excess schema/table/column grant cases.
-Each negative case restores approved grants and confirms validation succeeds.
+Blast-radius proof covers the shared validator used by API, auth and worker
+startup. The fresh workspace starts with the approved grants; real database
+grants are then rejected and restored by the negative cases. The API startup
+failure test also confirms an unsafe web role exits before listening. No
+migration grants, RLS policies, CI jobs or enforcement requirements changed in
+this follow-up.
 
