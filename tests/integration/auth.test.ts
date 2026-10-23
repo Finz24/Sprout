@@ -595,7 +595,7 @@ describe.sequential('private authentication', () => {
         .poll(
           async () =>
             (
-              await admin?.query<{ count: string }>(
+              await admin.query<{ count: string }>(
                 "SELECT count(*)::text AS count FROM pg_stat_activity WHERE usename='sprout_api' AND wait_event_type='Lock'",
               )
             ).rows[0]?.count,
