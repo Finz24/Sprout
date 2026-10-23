@@ -74,3 +74,11 @@ Actual Galaxy touch, Windows shutdown/recovery, and HTTPS tunnel cookie behavior
 still require the separate device and ingress evidence identified in the approved
 design. The item inspector has no real saved item in this slice; missing-item
 navigation is tested, while real-item focus restoration remains future proof.
+
+## Excess-grant follow-up
+
+At code commit `096c111`, fresh `corepack pnpm check` exited 0 on
+2026-10-23. Format, lint, React Doctor and documentation checks passed.
+Unit tests passed 129/129 across seven files. Eleven typecheck tasks and
+seven build tasks passed from cache. Fresh local runtime proof follows below.
+
