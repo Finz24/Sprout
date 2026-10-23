@@ -705,6 +705,67 @@ describe.sequential('private authentication', () => {
     }
   }, 45000);
 
+  test.each([
+    ['session table read', 'SELECT ON auth.session'],
+    ['session bearer column read', 'SELECT (token) ON auth.session'],
+    ['auth schema access', 'USAGE ON SCHEMA auth'],
+    ['auth schema creation', 'CREATE ON SCHEMA auth'],
+    ['private schema creation', 'CREATE ON SCHEMA private'],
+    ['user creation', 'INSERT ON auth."user"'],
+    ['user column creation', 'INSERT (id) ON auth."user"'],
+    ['user column update', 'UPDATE (email) ON auth."user"'],
+    ['account creation', 'INSERT ON auth.account'],
+    ['account column creation', 'INSERT (id) ON auth.account'],
+    ['account deletion', 'DELETE ON auth.account'],
+    ['verification column read', 'SELECT (value) ON auth.verification'],
+    ['verification column update', 'UPDATE (value) ON auth.verification'],
+    ['settings table update', 'UPDATE ON private.owner_settings'],
+    [
+      'settings owner reassignment',
+      'UPDATE (owner_user_id) ON private.owner_settings',
+    ],
+    [
+      'settings creation timestamp update',
+      'UPDATE (created_at) ON private.owner_settings',
+    ],
+    [
+      'settings column creation',
+      'INSERT (owner_user_id) ON private.owner_settings',
+    ],
+    [
+      'settings column reference',
+      'REFERENCES (owner_user_id) ON private.owner_settings',
+    ],
+    ['settings deletion', 'DELETE ON private.owner_settings'],
+    ['settings truncation', 'TRUNCATE ON private.owner_settings'],
+    ['settings trigger', 'TRIGGER ON private.owner_settings'],
+    ['settings maintenance', 'MAINTAIN ON private.owner_settings'],
+  ])(
+    'API validation refuses excess web privileges: %s',
+    async (_, privilege) => {
+      const url = process.env.API_DATABASE_URL;
+      if (!admin || !url) throw new Error('Database configuration is required');
+      const pool = createPool(url, 1);
+      try {
+        await validateRole(pool, 'sprout_api');
+        try {
+          await admin.query(`GRANT ${privilege} TO sprout_web`);
+          if (privilege === 'SELECT ON auth.session')
+            await admin.query('GRANT USAGE ON SCHEMA auth TO sprout_web');
+          await expect(validateRole(pool, 'sprout_api')).rejects.toMatchObject({
+            _tag: 'Unavailable',
+          });
+        } finally {
+          await admin.query(`REVOKE ${privilege} FROM sprout_web`);
+          await admin.query('REVOKE USAGE ON SCHEMA auth FROM sprout_web');
+        }
+        await validateRole(pool, 'sprout_api');
+      } finally {
+        await pool.end();
+      }
+    },
+  );
+
   test('HTTP disconnect cancels a blocked private update before it can persist', async () => {
     if (!admin || !adminUrl)
       throw new Error('Database configuration is required');
