@@ -1,4 +1,6 @@
 import { randomUUID } from 'node:crypto';
+import { spawn } from 'node:child_process';
+import { createServer } from 'node:net';
 import { Client } from 'pg';
 import {
   createPool,
@@ -341,6 +343,15 @@ describe.sequential('private authentication', () => {
     ).toBe(true);
     const replay = await api('/api/shell', { headers: { cookie } });
     expect(replay.status).toBe(401);
+    expect(
+      (
+        await api('/api/auth/sign-out', {
+          method: 'POST',
+          headers: authHeaders(cookie),
+          body: '{}',
+        })
+      ).status,
+    ).toBe(200);
     expect(await count('auth.session')).toBe(sessionsBefore - 1);
   });
 
@@ -557,6 +568,142 @@ describe.sequential('private authentication', () => {
       await pool.end();
     }
   });
+
+  test('API validation refuses an elevated web role or web-owned protected objects', async () => {
+    const url = process.env.API_DATABASE_URL;
+    if (!admin || !url) throw new Error('Database configuration is required');
+    const pool = createPool(url, 1);
+    try {
+      await validateRole(pool, 'sprout_api');
+      for (const [unsafe, restored] of [
+        ['BYPASSRLS', 'NOBYPASSRLS'],
+        ['SUPERUSER', 'NOSUPERUSER'],
+        ['CREATEDB', 'NOCREATEDB'],
+        ['CREATEROLE', 'NOCREATEROLE'],
+        ['REPLICATION', 'NOREPLICATION'],
+        ['LOGIN', 'NOLOGIN'],
+      ] as const) {
+        try {
+          await admin.query(`ALTER ROLE sprout_web ${unsafe}`);
+          await expect(validateRole(pool, 'sprout_api')).rejects.toMatchObject({
+            _tag: 'Unavailable',
+          });
+          if (unsafe === 'BYPASSRLS') {
+            const reservation = createServer();
+            await new Promise<void>((resolve) => {
+              reservation.listen(0, '127.0.0.1', resolve);
+            });
+            const address = reservation.address();
+            if (!address || typeof address === 'string')
+              throw new Error('Expected an isolated startup port');
+            await new Promise<void>((resolve) => {
+              reservation.close(() => resolve());
+            });
+            const serving = Object.fromEntries(
+              Object.entries(process.env).filter(
+                ([name]) =>
+                  !/DATABASE_URL|PASSWORD|SECRET|OWNER_|TEST_|MIGRATION/.test(
+                    name,
+                  ),
+              ),
+            );
+            const child = spawn(
+              process.execPath,
+              [
+                '--import',
+                'tsx',
+                '--conditions=development',
+                'apps/api/src/main.ts',
+              ],
+              {
+                env: {
+                  ...serving,
+                  DATABASE_URL: url,
+                  AUTH_DATABASE_URL: process.env.AUTH_DATABASE_URL,
+                  BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
+                  SPROUT_ORIGIN: origin,
+                  SPROUT_LOOPBACK_DEVELOPMENT: 'true',
+                  HOST: '127.0.0.1',
+                  PORT: String(address.port),
+                },
+                stdio: ['ignore', 'pipe', 'pipe'],
+                windowsHide: true,
+              },
+            );
+            let output = '';
+            for (const stream of [child.stdout, child.stderr])
+              stream?.on('data', (chunk: Buffer) => {
+                output += chunk.toString();
+              });
+            let timeout: ReturnType<typeof setTimeout> | undefined;
+            try {
+              const code = await new Promise<number | null>(
+                (resolve, reject) => {
+                  child.once('error', reject);
+                  child.once('close', resolve);
+                  timeout = setTimeout(() => resolve(null), 30000);
+                },
+              );
+              expect(code).toBe(1);
+              expect(output.includes('DatabaseUnavailable')).toBe(true);
+              expect(output.includes('Listening')).toBe(false);
+            } finally {
+              clearTimeout(timeout);
+              if (child.exitCode === null) child.kill();
+            }
+          }
+        } finally {
+          await admin.query(`ALTER ROLE sprout_web ${restored}`);
+        }
+        await validateRole(pool, 'sprout_api');
+      }
+      for (const [object, owner, restoreGrants] of [
+        [
+          'TABLE private.owner_settings',
+          'sprout_schema_owner',
+          'GRANT SELECT ON private.owner_settings TO sprout_web; GRANT UPDATE (library_view, updated_at) ON private.owner_settings TO sprout_web',
+        ],
+        [
+          'TABLE auth.session',
+          'sprout_schema_owner',
+          'REVOKE ALL ON auth.session FROM sprout_web',
+        ],
+        [
+          'FUNCTION private.current_owner_id()',
+          'sprout_resolver',
+          'GRANT EXECUTE ON FUNCTION private.current_owner_id() TO sprout_web',
+        ],
+        [
+          'SCHEMA private',
+          'sprout_schema_owner',
+          'GRANT USAGE ON SCHEMA private TO sprout_web',
+        ],
+      ] as const) {
+        try {
+          await admin.query(`ALTER ${object} OWNER TO sprout_web`);
+          await expect(validateRole(pool, 'sprout_api')).rejects.toMatchObject({
+            _tag: 'Unavailable',
+          });
+        } finally {
+          await admin.query(`ALTER ${object} OWNER TO ${owner}`);
+          await admin.query(restoreGrants);
+        }
+        await validateRole(pool, 'sprout_api');
+      }
+      try {
+        await admin.query('GRANT sprout_resolver TO sprout_web');
+        await expect(validateRole(pool, 'sprout_api')).rejects.toMatchObject({
+          _tag: 'Unavailable',
+        });
+      } finally {
+        await admin.query('REVOKE sprout_resolver FROM sprout_web');
+      }
+      await validateRole(pool, 'sprout_api');
+      expect((await api('/api/session')).status).toBe(200);
+    } finally {
+      await pool.end();
+    }
+  }, 45000);
 
   test('HTTP disconnect cancels a blocked private update before it can persist', async () => {
     if (!admin || !adminUrl)

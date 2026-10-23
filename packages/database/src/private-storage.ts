@@ -52,17 +52,32 @@ export async function validateRole(
 ) {
   const result = await pool.query<{ safe: boolean }>(
     `
+    WITH protected_owners AS (
+      SELECT c.relowner AS owner FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+        WHERE n.nspname IN ('auth', 'private')
+      UNION SELECT p.proowner FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+        WHERE n.nspname IN ('auth', 'private')
+      UNION SELECT nspowner FROM pg_namespace WHERE nspname IN ('auth', 'private')
+    )
     SELECT current_user = $1 AND NOT r.rolsuper AND NOT r.rolbypassrls
       AND NOT r.rolcreatedb AND NOT r.rolcreaterole AND NOT r.rolreplication
       AND NOT EXISTS (
-        SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
-        WHERE n.nspname IN ('auth', 'private') AND c.relowner = r.oid
+        SELECT 1 FROM protected_owners WHERE owner = r.oid
       ) AND NOT EXISTS (
         SELECT 1 FROM pg_roles p WHERE pg_has_role(r.oid, p.oid, 'MEMBER')
           AND p.oid <> r.oid AND NOT ($1 = 'sprout_api' AND p.rolname = 'sprout_web')
       ) AND ($1 <> 'sprout_api' OR (NOT r.rolinherit
         AND pg_has_role(r.oid, 'sprout_web', 'SET')
-        AND NOT pg_has_role(r.oid, 'sprout_web', 'USAGE')))
+        AND NOT pg_has_role(r.oid, 'sprout_web', 'USAGE')
+        AND EXISTS (
+          SELECT 1 FROM pg_roles w WHERE w.rolname = 'sprout_web'
+            AND NOT w.rolcanlogin AND NOT w.rolsuper AND NOT w.rolbypassrls
+            AND NOT w.rolcreatedb AND NOT w.rolcreaterole AND NOT w.rolreplication
+            AND NOT EXISTS (SELECT 1 FROM protected_owners WHERE owner = w.oid)
+            AND NOT EXISTS (
+              SELECT 1 FROM pg_roles p WHERE p.oid <> w.oid AND pg_has_role(w.oid, p.oid, 'MEMBER')
+            )
+        )))
       AS safe FROM pg_roles r WHERE r.rolname = current_user`,
     [expected],
   );
