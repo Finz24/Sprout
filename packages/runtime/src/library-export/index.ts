@@ -560,7 +560,9 @@ async function assertDestinationAvailable(destination: string): Promise<void> {
     await lstat(destination);
   } catch (error) {
     if (hasErrnoCode(error, 'ENOENT')) return;
-    throw new Error('Export destination could not be checked.');
+    throw new Error('Export destination could not be checked.', {
+      cause: error,
+    });
   }
   throw new Error('Export destination already exists.');
 }
@@ -646,13 +648,21 @@ export async function writeExportPackage(
       await copyFile(copy.sourcePath, join(directory, copy.file));
     }
     await rename(directory, destination);
-  } catch {
+  } catch (error) {
     if (staging !== undefined) {
-      await rm(staging, { recursive: true, force: true }).catch(
-        () => undefined,
-      );
+      try {
+        await rm(staging, { recursive: true, force: true });
+      } catch (cleanupError) {
+        throw new AggregateError(
+          [error],
+          'Export failed; incomplete staging could not be removed.',
+          { cause: cleanupError },
+        );
+      }
     }
-    throw new Error('Export failed and no package was published.');
+    throw new Error('Export failed and no package was published.', {
+      cause: error,
+    });
   }
 
   return {
