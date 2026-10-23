@@ -84,22 +84,54 @@ export async function validateRole(
   if (result.rows[0]?.safe !== true) throw new Unavailable();
   const grants = await pool.query<{ safe: boolean }>(
     `
+    WITH protected_tables AS (
+      SELECT c.oid, n.nspname, c.relname
+      FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+      WHERE (n.nspname = 'auth' AND c.relname IN ('user', 'account', 'session', 'verification'))
+        OR (n.nspname = 'private' AND c.relname = 'owner_settings')
+    ), resolver AS (
+      SELECT p.oid
+      FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+      WHERE n.nspname = 'private' AND p.proname = 'current_owner_id'
+    )
     SELECT NOT has_schema_privilege(current_user, 'auth', 'CREATE')
       AND NOT has_schema_privilege(current_user, 'private', 'CREATE')
       AND (SELECT count(*) = 5 AND bool_and(NOT has_table_privilege(current_user, c.oid,
         CASE
-          WHEN $1 = 'sprout_auth' AND n.nspname = 'auth' AND c.relname IN ('user', 'account')
+          WHEN $1 = 'sprout_auth' AND c.nspname = 'auth' AND c.relname IN ('user', 'account')
             THEN 'INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER'
-          WHEN $1 = 'sprout_auth' AND n.nspname = 'auth' AND c.relname = 'session'
+          WHEN $1 = 'sprout_auth' AND c.nspname = 'auth' AND c.relname = 'session'
             THEN 'TRUNCATE,REFERENCES,TRIGGER'
           ELSE 'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER'
         END))
-        FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
-        WHERE (n.nspname = 'auth' AND c.relname IN ('user', 'account', 'session', 'verification'))
-          OR (n.nspname = 'private' AND c.relname = 'owner_settings'))
-      AND (SELECT count(*) = 1 AND bool_and(NOT has_function_privilege(current_user, p.oid, 'EXECUTE'))
-        FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
-        WHERE n.nspname = 'private' AND p.proname = 'current_owner_id')
+        FROM protected_tables c)
+      AND (SELECT count(*) = 1 AND bool_and(NOT has_function_privilege(current_user, r.oid, 'EXECUTE'))
+        FROM resolver r)
+      AND ($1 <> 'sprout_api' OR (
+        NOT has_schema_privilege('sprout_web', 'auth', 'USAGE,CREATE')
+        AND NOT has_schema_privilege('sprout_web', 'private', 'CREATE')
+        AND has_schema_privilege('sprout_web', 'private', 'USAGE')
+        AND (SELECT count(*) = 5 AND bool_and(
+          NOT has_table_privilege('sprout_web', c.oid,
+            CASE WHEN c.nspname = 'private' THEN 'INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER,MAINTAIN'
+              ELSE 'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER,MAINTAIN' END)
+          AND NOT EXISTS (
+            SELECT 1 FROM pg_attribute a WHERE a.attrelid = c.oid AND a.attnum > 0 AND NOT a.attisdropped
+              AND has_column_privilege('sprout_web', c.oid, a.attnum,
+                CASE WHEN c.nspname = 'auth' THEN 'SELECT,INSERT,UPDATE,REFERENCES'
+                  WHEN a.attname IN ('library_view', 'updated_at') THEN 'INSERT,REFERENCES'
+                  ELSE 'INSERT,UPDATE,REFERENCES' END)
+          )) FROM protected_tables c)
+        AND (SELECT has_table_privilege('sprout_web', c.oid, 'SELECT')
+          FROM protected_tables c WHERE c.nspname = 'private' AND c.relname = 'owner_settings')
+        AND (SELECT count(*) = 2 AND bool_and(has_column_privilege('sprout_web', c.oid, a.attnum, 'UPDATE'))
+          FROM protected_tables c JOIN pg_attribute a
+            ON a.attrelid = c.oid AND a.attnum > 0 AND NOT a.attisdropped
+          WHERE c.nspname = 'private' AND c.relname = 'owner_settings'
+            AND a.attname IN ('library_view', 'updated_at'))
+        AND (SELECT count(*) = 1 AND bool_and(has_function_privilege('sprout_web', r.oid, 'EXECUTE'))
+          FROM resolver r)
+      ))
       AS safe`,
     [expected],
   );
