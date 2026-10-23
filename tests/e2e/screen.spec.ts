@@ -11,7 +11,7 @@ const owner = {
 async function signIn(page: Page, path = '/login', heading = 'Library') {
   await page.goto(path);
   await page.getByLabel('Email').fill(owner.email);
-  await page.getByLabel('Password').fill(owner.password);
+  await page.getByLabel('Password', { exact: true }).fill(owner.password);
   await page.getByRole('button', { name: 'Sign in' }).click();
   await expect(
     page.getByRole('heading', { name: heading, exact: true }),
@@ -25,6 +25,234 @@ async function noHorizontalOverflow(page: Page) {
     ),
   ).toBe(true);
 }
+
+async function capture(page: Page, name: string) {
+  await page.screenshot({
+    path: test.info().outputPath(`greenhouse-${name}.png`),
+    fullPage: true,
+  });
+}
+
+test('keeps email and clears only the rejected password with an associated alert', async ({
+  page,
+}) => {
+  await page.goto('/login');
+  await expect(
+    page.getByRole('heading', { name: 'Welcome back' }),
+  ).toBeVisible();
+  await capture(page, 'default');
+  const email = page.getByRole('textbox', { name: 'Email', exact: true });
+  const password = page.getByLabel('Password', { exact: true });
+  await email.fill('unknown@example.invalid');
+  await password.fill('synthetic-invalid-input');
+  await password.press('Enter');
+  const alert = page.getByRole('alert');
+  await expect(alert).toContainText("That email and password don't match.");
+  await expect(email).toHaveValue('unknown@example.invalid');
+  await expect(password).toHaveValue('');
+  for (const field of [email, password]) {
+    await expect(field).toHaveAttribute('aria-invalid', 'true');
+    await expect(field).toHaveAttribute(
+      'aria-describedby',
+      (await alert.getAttribute('id')) ?? 'missing-alert',
+    );
+  }
+  await expect(page.locator('.app-shell')).toHaveCount(0);
+  await capture(page, 'wrong-password');
+  await noHorizontalOverflow(page);
+});
+
+test('shows and hides the existing password without submitting or changing it', async ({
+  page,
+}) => {
+  await page.goto('/login');
+  const password = page.getByLabel('Password', { exact: true });
+  await expect(password).toHaveAttribute('autocomplete', 'current-password');
+  await expect(page.getByLabel('Email', { exact: true })).toHaveAttribute(
+    'autocomplete',
+    'username',
+  );
+  await password.fill('synthetic-invalid-input');
+  const show = page.getByRole('button', { name: 'Show password' });
+  await expect(show).toHaveAttribute('aria-pressed', 'false');
+  await show.click();
+  await expect(password).toHaveAttribute('type', 'text');
+  await expect(password).toHaveValue('synthetic-invalid-input');
+  const hide = page.getByRole('button', { name: 'Hide password' });
+  await expect(hide).toHaveAttribute('aria-pressed', 'true');
+  await hide.click();
+  await expect(password).toHaveAttribute('type', 'password');
+  await expect(password).toHaveValue('synthetic-invalid-input');
+  await expect(page.getByRole('alert')).toHaveCount(0);
+  await expect(
+    page.getByRole('button', { name: 'Sign in', exact: true }),
+  ).toBeEnabled();
+});
+
+test('disables the pending form, shows progress, and honors reduced motion', async ({
+  page,
+}) => {
+  let release = () => {};
+  const response = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  let attempts = 0;
+  await page.route('**/api/auth/sign-in/email', async (route) => {
+    attempts++;
+    await response;
+    await route.fulfill({ status: 401, body: '{}' });
+  });
+  await page.goto('/login');
+  await page
+    .getByLabel('Email', { exact: true })
+    .fill('unknown@example.invalid');
+  await page
+    .getByLabel('Password', { exact: true })
+    .fill('synthetic-invalid-input');
+  await page.getByRole('button', { name: 'Sign in', exact: true }).click();
+  const pending = page.getByRole('button', { name: 'Signing in…' });
+  await expect(pending).toBeDisabled();
+  await expect(page.getByLabel('Email', { exact: true })).toBeDisabled();
+  await expect(page.getByLabel('Password', { exact: true })).toBeDisabled();
+  await expect(
+    page.getByRole('button', { name: 'Show password' }),
+  ).toBeDisabled();
+  await expect(page.locator('form')).toHaveAttribute('aria-busy', 'true');
+  await expect(page.locator('.login-spinner')).toBeVisible();
+  await capture(page, 'pending');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  expect(
+    await page
+      .locator('.login-spinner')
+      .evaluate((element) => getComputedStyle(element).animationName),
+  ).toBe('none');
+  await noHorizontalOverflow(page);
+  expect(attempts).toBe(1);
+  release();
+  await expect(page.getByRole('alert')).toContainText(
+    "That email and password don't match.",
+  );
+  await expect(
+    page.getByRole('button', { name: 'Sign in', exact: true }),
+  ).toBeEnabled();
+});
+
+test('retains both fields after a 503 and retries the same form successfully', async ({
+  page,
+}) => {
+  await page.route('**/api/auth/sign-in/email', (route) =>
+    route.fulfill({ status: 503, body: '{}' }),
+  );
+  await page.goto('/login');
+  await page
+    .getByLabel('Email', { exact: true })
+    .fill('unknown@example.invalid');
+  await page
+    .getByLabel('Password', { exact: true })
+    .fill('synthetic-invalid-input');
+  await page.getByRole('button', { name: 'Sign in', exact: true }).click();
+  await expect(page.getByRole('alert')).toContainText(
+    "Can't reach Sprout right now.",
+  );
+  await expect(page.getByRole('alert')).toContainText(
+    'If your PC is asleep, wake it and try again. Nothing was lost.',
+  );
+  await expect(page.getByLabel('Email', { exact: true })).toHaveValue(
+    'unknown@example.invalid',
+  );
+  await expect(page.getByLabel('Password', { exact: true })).toHaveValue(
+    'synthetic-invalid-input',
+  );
+  await expect(page.locator('.app-shell')).toHaveCount(0);
+  await capture(page, 'unavailable');
+  await page.unroute('**/api/auth/sign-in/email');
+  await page.getByLabel('Email', { exact: true }).fill(owner.email);
+  await page.getByLabel('Password', { exact: true }).fill(owner.password);
+  await page.getByRole('button', { name: 'Try again' }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Library', exact: true }),
+  ).toBeVisible();
+  await capture(page, 'authenticated');
+});
+
+test('explains local provisioning without offering public signup', async ({
+  page,
+}) => {
+  await page.goto('/login');
+  const help = page.getByRole('button', { name: 'How sign-in works' });
+  await expect(help).toHaveAttribute('aria-expanded', 'false');
+  await help.click();
+  await expect(help).toHaveAttribute('aria-expanded', 'true');
+  await expect(page.getByRole('note')).toContainText(
+    "There's no public sign-up.",
+  );
+  await expect(page.getByRole('note')).toContainText('pnpm auth:bootstrap');
+  await expect(
+    page.getByRole('link', { name: /sign up|register|create account/i }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole('button', { name: /sign up|register|create account/i }),
+  ).toHaveCount(0);
+  await capture(page, 'help');
+  await noHorizontalOverflow(page);
+  await help.click();
+  await expect(page.getByRole('note')).toHaveCount(0);
+  await expect(help).toHaveAttribute('aria-expanded', 'false');
+});
+
+test('adapts the approved split, mobile band and dark palette without overflow', async ({
+  page,
+}) => {
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await page.goto('/login');
+  await expect(
+    page.getByRole('heading', { name: 'Welcome back' }),
+  ).toBeVisible();
+  expect(
+    await page
+      .locator('.access-layout')
+      .evaluate((element) => getComputedStyle(element).backgroundColor),
+  ).toBe('rgb(17, 26, 21)');
+  await capture(page, 'dark');
+  for (const width of [320, 390, 700, 701, 1024, 1280]) {
+    await page.setViewportSize({ width, height: 844 });
+    await noHorizontalOverflow(page);
+    const panel = await page.locator('.access-side').boundingBox();
+    if (width <= 700) expect(panel?.height).toBe(210);
+    else expect(panel?.width).toBeCloseTo(width * 0.44, 0);
+    const input = await page.getByLabel('Email', { exact: true }).boundingBox();
+    expect(input?.height).toBe(48);
+    await expect(
+      page.getByRole('button', { name: 'Sign in', exact: true }),
+    ).toBeVisible();
+  }
+});
+
+test('shows rate limiting as an associated retryable alert', async ({
+  page,
+}) => {
+  await page.route('**/api/auth/sign-in/email', (route) =>
+    route.fulfill({ status: 429, body: '{}' }),
+  );
+  await page.goto('/login');
+  await page
+    .getByLabel('Email', { exact: true })
+    .fill('unknown@example.invalid');
+  await page
+    .getByLabel('Password', { exact: true })
+    .fill('synthetic-invalid-input');
+  await page.getByRole('button', { name: 'Sign in', exact: true }).click();
+  await expect(page.getByRole('alert')).toContainText(
+    'Too many attempts. Try again shortly.',
+  );
+  await expect(page.getByLabel('Password', { exact: true })).toHaveAttribute(
+    'aria-describedby',
+    'login-error',
+  );
+  await expect(
+    page.getByRole('button', { name: 'Sign in', exact: true }),
+  ).toBeEnabled();
+});
 
 test('returns to the requested private page and keeps the session cookie host-only and HttpOnly', async ({
   page,
@@ -178,11 +406,11 @@ test('hides private state on cross-tab sign-out failure and completes the retry'
   await expect(page).toHaveURL(/\/login/);
   await expect(second).toHaveURL(/\/login/);
   await expect(
-    second.getByRole('heading', { name: 'Welcome back.' }),
+    second.getByRole('heading', { name: 'Welcome back' }),
   ).toBeVisible();
   await page.reload();
   await expect(
-    page.getByRole('heading', { name: 'Welcome back.' }),
+    page.getByRole('heading', { name: 'Welcome back' }),
   ).toBeVisible();
 });
 
@@ -242,10 +470,10 @@ test('failed API reads and sign-in expose retry states without private content',
   await page.route('**/api/auth/sign-in/email', (route) => route.abort());
   await page.goto('/login');
   await page.getByLabel('Email').fill(owner.email);
-  await page.getByLabel('Password').fill(owner.password);
+  await page.getByLabel('Password', { exact: true }).fill(owner.password);
   await page.getByRole('button', { name: 'Sign in' }).click();
-  await expect(page.getByRole('status')).toContainText(
-    'Sign in is unavailable',
+  await expect(page.getByRole('alert')).toContainText(
+    "Can't reach Sprout right now",
   );
   await expect(
     page.getByRole('heading', { name: 'Library', exact: true }),
@@ -255,7 +483,7 @@ test('failed API reads and sign-in expose retry states without private content',
   await page.route('**/api/shell', (route) => route.abort());
   await page.reload();
   await expect(
-    page.getByRole('heading', { name: 'Sprout is unavailable' }),
+    page.getByRole('heading', { name: "Can't reach Sprout right now" }),
   ).toBeVisible();
   await expect(
     page.getByRole('heading', { name: 'Library', exact: true }),
@@ -296,7 +524,7 @@ test('a late preference response cannot restore private UI after sign-out', asyn
   await arrived;
   await page.getByRole('button', { name: 'Sign out' }).click();
   await expect(
-    page.getByRole('heading', { name: 'Welcome back.' }),
+    page.getByRole('heading', { name: 'Welcome back' }),
   ).toBeVisible();
   release();
   await delivered;
@@ -309,7 +537,7 @@ test('a late preference response cannot restore private UI after sign-out', asyn
   await expect(page.getByRole('heading', { name: 'Settings' })).toHaveCount(0);
   await page.reload();
   await expect(
-    page.getByRole('heading', { name: 'Welcome back.' }),
+    page.getByRole('heading', { name: 'Welcome back' }),
   ).toBeVisible();
 });
 
@@ -324,7 +552,7 @@ test('anonymous and unavailable deep links never mount private content', async (
   });
   await page.goto('/settings');
   await expect(
-    page.getByRole('heading', { name: 'Welcome back.' }),
+    page.getByRole('heading', { name: 'Welcome back' }),
   ).toBeVisible();
   expect(
     await page.locator('html').getAttribute('data-private-shell-seen'),
@@ -338,7 +566,7 @@ test('anonymous and unavailable deep links never mount private content', async (
   );
   await page.goto('/library/items/unavailable');
   await expect(
-    page.getByRole('heading', { name: 'Sprout is unavailable' }),
+    page.getByRole('heading', { name: "Can't reach Sprout right now" }),
   ).toBeVisible();
   expect(
     await page.locator('html').getAttribute('data-private-shell-seen'),
@@ -346,6 +574,6 @@ test('anonymous and unavailable deep links never mount private content', async (
   await page.unroute('**/api/session');
   await page.getByRole('button', { name: 'Try again' }).click();
   await expect(
-    page.getByRole('heading', { name: 'Welcome back.' }),
+    page.getByRole('heading', { name: 'Welcome back' }),
   ).toBeVisible();
 });

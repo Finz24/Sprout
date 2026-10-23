@@ -1,4 +1,4 @@
-import { StrictMode, useState } from 'react';
+import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
   createRootRoute,
@@ -11,7 +11,7 @@ import {
   useNavigate,
 } from '@tanstack/react-router';
 import { MotionConfig } from 'motion/react';
-import { Button } from '@sprout/ui';
+import { Login } from './login.js';
 import { session, safeReturn } from './session.js';
 import {
   AccessStatus,
@@ -47,83 +47,18 @@ function returnDestination(value: unknown) {
 function safeReturnRedirect(value: unknown) {
   return { ...returnDestination(value), replace: true };
 }
-function Login() {
+function LoginPage() {
   const state = useSession();
   const navigate = useNavigate();
   const { returnTo } = loginRoute.useSearch();
-  const [message, setMessage] = useState('');
-  const [pending, setPending] = useState(false);
   if (state.kind === 'LogoutFailed' || state.kind === 'SigningOut')
     return <AccessStatus />;
   return (
-    <main className="access-page">
-      <section className="access-card">
-        <p className="wordmark">Sprout</p>
-        <p className="eyebrow">Your private workspace</p>
-        <h1>Welcome back.</h1>
-        <p className="muted">Sign in to your library.</p>
-        <form
-          className="login-form"
-          onSubmit={(event) => {
-            event.preventDefault();
-            const form = event.currentTarget;
-            const data = new FormData(form);
-            const email = String(data.get('email') ?? '');
-            const password = String(data.get('password') ?? '');
-            form.reset();
-            setPending(true);
-            setMessage('');
-            void (async () => {
-              try {
-                const error = await session.signIn(email, password);
-                if (error) setMessage(error);
-                else
-                  await navigate({
-                    ...returnDestination(returnTo),
-                    replace: true,
-                  });
-              } catch {
-                setMessage('Sign in is unavailable. Try again.');
-              } finally {
-                setPending(false);
-              }
-            })();
-          }}
-        >
-          <label htmlFor="email">Email</label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            autoComplete="username"
-            required
-            maxLength={254}
-            disabled={pending}
-          />
-          <label htmlFor="password">Password</label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            autoComplete="current-password"
-            required
-            maxLength={128}
-            disabled={pending}
-          />
-          <p role="status" className="form-message">
-            {message ||
-              (pending
-                ? 'Signing in…'
-                : state.kind === 'Unavailable'
-                  ? 'The service is unavailable. Try signing in again.'
-                  : '')}
-          </p>
-          <Button className="touch-target" type="submit" disabled={pending}>
-            {pending ? 'Signing in…' : 'Sign in'}
-          </Button>
-        </form>
-      </section>
-    </main>
+    <Login
+      onSignedIn={() =>
+        navigate({ ...returnDestination(returnTo), replace: true })
+      }
+    />
   );
 }
 
@@ -159,7 +94,7 @@ const loginRoute = createRoute({
     if (state.kind === 'Ready')
       throw redirect(safeReturnRedirect(search.returnTo));
   },
-  component: Login,
+  component: LoginPage,
 });
 const privateRoute = createRoute({
   getParentRoute: () => rootRoute,

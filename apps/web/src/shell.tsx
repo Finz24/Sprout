@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { Link, Outlet, useNavigate, useRouter } from '@tanstack/react-router';
 import { Button } from '@sprout/ui';
 import { session } from './session.js';
+import { AccessLayout } from './access-layout.js';
 
 export const useSession = () =>
   useSyncExternalStore(session.subscribe, session.snapshot);
@@ -13,14 +14,13 @@ export function AccessStatus() {
     void router.invalidate();
   };
   return (
-    <main className="access-page">
-      <section className="access-card" aria-live="polite">
-        <p className="wordmark">Sprout</p>
+    <AccessLayout>
+      <div className="access-status" aria-live="polite">
         <h1>
           {state.kind === 'LogoutFailed'
             ? 'Sign out needs a retry'
             : state.kind === 'Unavailable'
-              ? 'Sprout is unavailable'
+              ? "Can't reach Sprout right now"
               : 'Checking access…'}
         </h1>
         {state.kind === 'LogoutFailed' ? (
@@ -41,8 +41,7 @@ export function AccessStatus() {
         ) : state.kind === 'Unavailable' ? (
           <>
             <p>
-              We could not check your session. Try again when the connection
-              returns.
+              If your PC is asleep, wake it and try again. Nothing was lost.
             </p>
             <Button className="touch-target" onClick={retry}>
               Try again
@@ -51,8 +50,8 @@ export function AccessStatus() {
         ) : (
           <p>Please wait.</p>
         )}
-      </section>
-    </main>
+      </div>
+    </AccessLayout>
   );
 }
 
