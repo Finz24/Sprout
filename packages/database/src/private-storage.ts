@@ -40,6 +40,7 @@ export function createPool(url: string, max: number) {
     idleTimeoutMillis: 10000,
     statement_timeout: 1500,
     query_timeout: 2000,
+    options: '-c client_connection_check_interval=250',
   });
   pool.on('error', () => undefined);
   return pool;
