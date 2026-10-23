@@ -12,6 +12,7 @@ build/
 coverage/
 .nx/
 playwright-report/
+.playwright-mcp/
 test-results/
 *.tsbuildinfo
 
