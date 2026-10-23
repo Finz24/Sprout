@@ -594,6 +594,23 @@ describe('export completeness', () => {
 });
 
 describe('input immutability', () => {
+  it('exports the metadata supplied at invocation even if the caller later changes it', async () => {
+    const root = await temporaryDirectory();
+    const { snapshot, destination } = await createFixture(root);
+    const data: Record<string, unknown> = { theme: 'dark' };
+    const pending = writeExportPackage(
+      { ...snapshot, settings: [{ name: 'appearance', data }] },
+      destination,
+    );
+    data.theme = 'light';
+    data.apiKey = 'synthetic-test-value';
+    await pending;
+    const settings = await readJson(join(destination, 'settings.json'));
+    expect(settings.settings).toEqual([
+      { label: 'setting', name: 'appearance', data: { theme: 'dark' } },
+    ]);
+  });
+
   it('leaves the snapshot deep-equal after writing', async () => {
     const root = await temporaryDirectory();
     const { snapshot, destination } = await createFixture(root);

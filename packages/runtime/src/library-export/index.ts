@@ -572,6 +572,7 @@ export async function writeExportPackage(
   assertNoCredentialFields(snapshot, new Set());
   assertNoCredentialLogicalNames(snapshot);
   assertPreservableData(snapshot, new Set());
+  snapshot = structuredClone(snapshot);
   const counts = countPackage(snapshot);
   const built = buildPackage(snapshot);
   const manifest: ExportManifest = {
