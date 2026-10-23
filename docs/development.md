@@ -1,8 +1,8 @@
 # Development foundation
 
-This environment runs a React/Vite screen, an Effect API, an idle Effect worker,
-and PostgreSQL with pgvector. It deliberately has no login, provider integration,
-queue processing, or deployment setup yet. Worker readiness proves its initialized
+This environment runs a React/Vite private library shell, an Effect API with
+Better Auth, an idle Effect worker, and PostgreSQL with pgvector. Provider
+integration, saved items, queue processing, and deployment remain future work. Worker readiness proves its initialized
 database dependencies; it does not enqueue or process diagnostic jobs.
 
 ## Tools and first preparation
@@ -20,7 +20,6 @@ npm install --global corepack@0.36.0
 corepack prepare pnpm@10.34.6 --activate
 corepack pnpm install --frozen-lockfile
 corepack pnpm exec playwright install chromium
-docker compose build
 ```
 
 Playwright's browser installation is an explicit preparation step, not a
@@ -30,7 +29,6 @@ From the repository root, run the offline preflight before development:
 
 ```powershell
 node scripts/check-environment.mjs
-node scripts/check-environment.mjs --runtime
 ```
 
 The default checks Node's active version, agreement between `.nvmrc` and
@@ -48,102 +46,85 @@ timeout. This checks browser files, not whether Chromium can launch. Neither mod
 proves service readiness or recovery after a dependency failure. Those require
 the running application and remain separate runtime verification.
 
-## Full Compose development
+## Isolated synthetic auth verification
+
+Choose a new project name and four unused ports before starting a workspace.
+Never share these values with another worktree. The runner checks runtime
+prerequisites before starting services, creates a new synthetic database, applies
+committed migrations, and generates credentials only in process environments.
+It retains databases and volumes when it stops. It never resets an installation.
 
 ```powershell
-docker compose up --build --watch
-```
-
-Open <http://127.0.0.1:5173>. API and worker listen on loopback ports 3001 and 3002.
-For detached startup, run `docker compose up -d --build --wait`, then run
-`docker compose watch --no-up` in a separate terminal to enable source updates.
-Compose starts PostgreSQL, applies committed migrations once, then starts the API
-and worker. Failed migrations block startup. Application source edits are synced
-to the running Linux containers; Vite and tsx reload them. Dependency manifest or
-lockfile edits rebuild images rather than syncing host node_modules.
-
-PostgreSQL uses a persistent named volume. The originals volume reserves private
-local storage for a later issue; the foundation does not write originals. This
-development-only PostgreSQL configuration uses trust authentication on the
-private Compose network and a **loopback-only** host binding at port 54329. Use
-only disposable development data; deployment and real credentials are a later
-decision. No password is embedded in the repository.
-
-`docker compose stop` preserves data. Do not use `down --volumes` to restart.
-
-## Isolate a worktree
-
-The default project remains `sprout`, including `sprout_postgres-data` and
-`sprout_originals`. Keep that identity when resuming existing development data.
-Changing project identity selects different volumes. It does not migrate data.
-
-For concurrent worktrees, explicitly choose a unique `COMPOSE_PROJECT_NAME` and
-four unused host ports. Reuse that choice in every terminal for the worktree.
-Compose also accepts `-p`, which takes precedence over `COMPOSE_PROJECT_NAME`.
-Application image tags include the selected project name so builds in one
-worktree do not replace another worktree's tags. The four `SPROUT_*_PORT`
-variables change loopback host bindings only. Container ports and internal URLs
-stay fixed. Defaults are database 54329, API 3001, worker 3002, and web 5173.
-
-Set this example in each terminal before running Compose, local apps, migrations,
-or tests. Choose different values if another worktree already uses these ports:
-
-```powershell
-$env:COMPOSE_PROJECT_NAME = 'sprout-bc5fe128'
+$env:COMPOSE_PROJECT_NAME = 'sprout-auth-verification'
 $env:SPROUT_DB_PORT = '55439'
 $env:SPROUT_API_PORT = '3103'
 $env:SPROUT_WORKER_PORT = '3104'
 $env:SPROUT_WEB_PORT = '5183'
-$env:DATABASE_URL = "postgresql://sprout@127.0.0.1:$($env:SPROUT_DB_PORT)/sprout"
-$env:API_URL = "http://127.0.0.1:$($env:SPROUT_API_PORT)"
-$env:WORKER_URL = "http://127.0.0.1:$($env:SPROUT_WORKER_PORT)"
-$env:WEB_URL = "http://127.0.0.1:$($env:SPROUT_WEB_PORT)"
-node scripts/check-environment.mjs
-docker compose config --quiet
+node scripts/auth-workspace.mjs
 ```
 
-The preflight validates project syntax and distinct port numbers. It does not
-load Compose `.env` files or observe a later `-p` flag. Use `docker compose config`
-to inspect those resolved settings. It does not reserve ports or infer whether
-another worktree owns a database. Check the project and URLs before migrations
-or tests. Integration tests use `API_URL` and
-`WORKER_URL`; Playwright uses `WEB_URL`. Local database commands use `DATABASE_URL`.
-Compose supplies its own internal database URL. These exported local URLs do not
-change container-to-container routing. Open `WEB_URL` for the selected worktree.
+The default runs local apps with container PostgreSQL, then the real integration
+and browser suites. Add `--compose` to build and verify all services in Compose.
+Initial image builds can require network access. Prepared image layers and the
+platform's package cache are the offline alternative. Host tests still use the
+prepared host Playwright Chromium installation in both modes.
 
-## Local apps with container PostgreSQL
+Use `--integration-only` or `--e2e-only` for an independent CI suite on a fresh
+synthetic database. Both jobs retain their actual test commands. Quality, build,
+and unit-test jobs remain separate. The runner owns its synthetic credential
+environment and service shutdown, so CI never writes credentials to environment
+files or prints raw Compose logs.
 
-```powershell
-docker compose up -d postgres
-corepack pnpm migrate
-corepack pnpm dev
-```
+Add `--interactive` in an interactive terminal to keep the workspace available.
+Commands are `integration`, `e2e`, `check`, `restart`, `status`, and `stop`.
+Run integration once on the initially empty database. It provisions two test
+owners. E2E then uses the first owner without attempting production bootstrap
+on the intentional two-owner fixture. Open the selected loopback web port for
+browser inspection. Runtime output is redacted before it reaches the terminal.
 
-Local defaults point at the loopback database. Optional `DATABASE_URL`, `PORT`,
-`HOST`, and `DATABASE_POOL_SIZE` come from environment variables. API and worker
-use different default ports. `API_PROXY_URL` controls Vite's API proxy. Never
-commit environment files or connection credentials.
+An existing volume requires its original `POSTGRES_PASSWORD` in the parent
+process environment. A new project and unused ports avoid changing that volume.
+The runner refuses an existing volume without its credential. It does not print
+or recover that credential for you.
 
-For an isolated worktree, set the project, ports, and URLs above before starting
-PostgreSQL or migrating. Run local services in separate terminals with those
-same settings. Use these commands instead of `pnpm dev` to select separate ports:
+## Operator-managed development
 
-```powershell
-$env:HOST = '127.0.0.1'
-$env:PORT = $env:SPROUT_API_PORT
-corepack pnpm exec tsx watch --conditions=development apps/api/src/main.ts
-```
+The synthetic runner is a test utility. For a retained personal installation,
+provide credentials through private inherited environment variables. Do not
+put them in command arguments, `.env` files, or shell history.
 
-```powershell
-$env:HOST = '127.0.0.1'
-$env:PORT = $env:SPROUT_WORKER_PORT
-corepack pnpm exec tsx watch --conditions=development apps/worker/src/main.ts
-```
+Before starting services, set a unique `COMPOSE_PROJECT_NAME` and distinct
+`SPROUT_DB_PORT`, `SPROUT_API_PORT`, `SPROUT_WORKER_PORT`, and `SPROUT_WEB_PORT`.
+Provide `POSTGRES_PASSWORD`, `MIGRATION_DATABASE_URL`, `AUTH_DATABASE_URL`,
+`API_DATABASE_URL`, `WORKER_DATABASE_URL`, `MAINTENANCE_DATABASE_URL`,
+`BETTER_AUTH_SECRET`, and canonical `SPROUT_ORIGIN` privately. Compose database
+URLs use the `postgres` service hostname and port 5432. Host-side maintenance
+commands use the selected loopback database port instead. Compose accepts no
+passwordless database fallback.
 
-```powershell
-$env:API_PROXY_URL = $env:API_URL
-corepack pnpm exec vite --config apps/web/vite.config.ts apps/web --host 127.0.0.1 --port $env:SPROUT_WEB_PORT
-```
+Run `corepack pnpm check:runtime` with that environment before services. Start
+PostgreSQL, then run the one-shot migration service, which configures separate
+SCRAM-authenticated logins. Provision the owner explicitly with
+`corepack pnpm auth:bootstrap` using host-side `MAINTENANCE_DATABASE_URL`,
+`SPROUT_OWNER_NAME`, `SPROUT_OWNER_EMAIL`, and `SPROUT_OWNER_PASSWORD` in a private
+maintenance process. The command hashes before its transaction and creates no
+browser session. A complete installation returns `AlreadyProvisioned` without
+changing credentials. `InconsistentInstallation` requires operator investigation.
+No HTTP registration, bootstrap, or recovery endpoint exists.
+
+Start API, worker, and web only after successful migration and provisioning.
+`docker compose up --build --watch` supports source updates after preparation.
+API receives its private-data login, auth login, and signing secret. Worker
+receives only its own readiness login. Migration, maintenance, owner, and
+PostgreSQL administrator credentials must never enter either serving process.
+Local API and worker reject these privileged environment variables at startup.
+
+For local apps, use `DATABASE_URL` for that process's runtime login, `PORT`, and
+`HOST`. API additionally needs `AUTH_DATABASE_URL`, `BETTER_AUTH_SECRET`, and
+`SPROUT_ORIGIN`. Set `SPROUT_LOOPBACK_DEVELOPMENT=true` only for an explicit
+loopback HTTP origin. Vite uses `API_PROXY_URL`; it preserves `/api/auth` and
+rewrites only `/api/health`. HTTPS ingress and real Galaxy access require
+separate cookie and device evidence.
 
 ## Migrations and readiness
 
@@ -209,10 +190,12 @@ It runs inside both `check` and the required CI `quality` job.
 Nx caches builds locally and includes dependent projects in affected
 checks. `check:affected` uses Nx's public CLI; set `NX_BASE` to choose its base
 revision. CI checks every project when its base revision is unavailable.
-Unit tests cover readiness failure semantics, migration history, configuration
-and the configured import boundaries. Vitest integration tests check the API and
-worker's live/ready endpoints. E2E currently exercises
-the simple screen, navigation and reload on desktop and mobile. CI has separate
+Unit tests cover readiness failure semantics, migration history, configuration,
+and import boundaries. Integration tests exercise real PostgreSQL roles,
+bootstrap, sessions, RLS, pool cleanup, and outages. Browser tests exercise the
+sign-in and shell journeys on desktop and mobile viewports. Auth traces are
+disabled because trace network bodies can retain passwords. Screenshots capture
+only the authenticated shell and contain no credentials. CI has separate
 quality, build, test, integration and E2E jobs; there is no deployment stage.
 
 ## Prepared offline use
