@@ -619,7 +619,11 @@ export async function writeExportPackage(
       if (item === undefined) continue;
       const itemDirectory = join(directory, 'items', ordinal(index + 1));
       await mkdir(itemDirectory, { recursive: true });
-      await writeFile(join(itemDirectory, 'item.json'), json(item.json), 'utf8');
+      await writeFile(
+        join(itemDirectory, 'item.json'),
+        json(item.json),
+        'utf8',
+      );
       await writeFile(join(itemDirectory, 'item.md'), item.markdown, 'utf8');
     }
     await writeFile(join(directory, 'spaces.json'), json({ spaces }), 'utf8');
