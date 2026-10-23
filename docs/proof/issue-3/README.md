@@ -82,3 +82,6 @@ At code commit `096c111`, fresh `corepack pnpm check` exited 0 on
 Unit tests passed 129/129 across seven files. Eleven typecheck tasks and
 seven build tasks passed from cache. Fresh local runtime proof follows below.
 
+The full check was repeated after the test cleanup fix at `e0e8cd7` and
+exited 0 with the same 129 passing unit tests, 11 typechecks and seven builds.
+
