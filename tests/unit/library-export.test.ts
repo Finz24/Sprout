@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import {
+  lstat,
   mkdir,
   mkdtemp,
   readFile,
@@ -503,4 +504,97 @@ describe('data the package cannot preserve faithfully', () => {
       ]);
     },
   );
+});
+
+describe('atomic publication', () => {
+  it('rejects a failed original copy without publishing or leaving staging', async () => {
+    const root = await temporaryDirectory();
+    const sources = join(root, 'sources');
+    await mkdir(sources, { recursive: true });
+    const validSource = join(sources, 'valid.bin');
+    await writeFile(validSource, ORIGINAL_BYTES);
+    const directorySource = join(root, 'directory-source');
+    await mkdir(directorySource);
+    const destination = join(root, 'export');
+    const snapshot: ExportSnapshot = {
+      ownerId: 'owner-1',
+      items: [
+        {
+          id: 'first',
+          title: 'First item',
+          location: 'library',
+          records: emptyRecords(),
+          originals: [
+            {
+              kind: 'available',
+              id: 'first-original',
+              name: 'valid.bin',
+              sourcePath: validSource,
+            },
+          ],
+        },
+        {
+          id: 'second',
+          title: 'Second item',
+          location: 'library',
+          records: emptyRecords(),
+          originals: [
+            {
+              kind: 'available',
+              id: 'second-original',
+              name: 'directory-source',
+              sourcePath: directorySource,
+            },
+          ],
+        },
+      ],
+      spaces: [],
+      settings: [],
+      omissions: [],
+    };
+
+    let failure: unknown;
+    try {
+      await writeExportPackage(snapshot, destination);
+    } catch (error) {
+      failure = error;
+    }
+
+    expect(failure).toBeInstanceOf(Error);
+    expect(String(failure)).not.toContain('directory-source');
+    expect(existsSync(destination)).toBe(false);
+    expect((await readdir(root)).sort()).toEqual([
+      'directory-source',
+      'sources',
+    ]);
+    expect((await lstat(directorySource)).isDirectory()).toBe(true);
+    expect(await readFile(validSource)).toEqual(ORIGINAL_BYTES);
+  });
+});
+
+describe('fresh destinations', () => {
+  it('refuses to replace an existing destination', async () => {
+    const root = await temporaryDirectory();
+    const { snapshot, destination } = await createFixture(root);
+    await writeExportPackage(snapshot, destination);
+    const published = await readTree(destination);
+    const entriesBefore = (await readdir(root)).sort();
+
+    let failure: unknown;
+    try {
+      await writeExportPackage(snapshot, destination);
+    } catch (error) {
+      failure = error;
+    }
+
+    expect(failure).toBeInstanceOf(Error);
+    expect(String(failure)).not.toContain(destination);
+    expect(String(failure)).not.toContain('Ramen');
+    expect(Object.keys(await readTree(destination)).length).toBeGreaterThan(0);
+    expect(await readTree(destination)).toEqual(published);
+    expect((await readdir(root)).sort()).toEqual(entriesBefore);
+    expect(
+      (await readdir(root)).some((name) => name.includes('.partial-')),
+    ).toBe(false);
+  });
 });

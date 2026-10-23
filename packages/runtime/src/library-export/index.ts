@@ -1,4 +1,12 @@
-import { copyFile, lstat, mkdir, writeFile } from 'node:fs/promises';
+import {
+  copyFile,
+  lstat,
+  mkdir,
+  mkdtemp,
+  rename,
+  rm,
+  writeFile,
+} from 'node:fs/promises';
 import { join } from 'node:path';
 
 export interface ExportRecord {
@@ -537,6 +545,26 @@ function json(value: unknown): string {
   return `${JSON.stringify(value, null, 2)}\n`;
 }
 
+function hasErrnoCode(error: unknown, code: string): boolean {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'code' in error &&
+    typeof error.code === 'string' &&
+    error.code === code
+  );
+}
+
+async function assertDestinationAvailable(destination: string): Promise<void> {
+  try {
+    await lstat(destination);
+  } catch (error) {
+    if (hasErrnoCode(error, 'ENOENT')) return;
+    throw new Error('Export destination could not be checked.');
+  }
+  throw new Error('Export destination already exists.');
+}
+
 export async function writeExportPackage(
   snapshot: ExportSnapshot,
   destination: string,
@@ -575,38 +603,51 @@ export async function writeExportPackage(
     data: setting.data,
   }));
 
-  await mkdir(destination, { recursive: true });
-  await writeFile(join(destination, 'manifest.json'), json(manifest), 'utf8');
-  await writeFile(
-    join(destination, 'README.txt'),
-    renderReadme(snapshot, built),
-    'utf8',
-  );
-  for (let index = 0; index < built.items.length; index += 1) {
-    const item = built.items[index];
-    if (item === undefined) continue;
-    const directory = join(destination, 'items', ordinal(index + 1));
-    await mkdir(directory, { recursive: true });
-    await writeFile(join(directory, 'item.json'), json(item.json), 'utf8');
-    await writeFile(join(directory, 'item.md'), item.markdown, 'utf8');
-  }
-  await writeFile(join(destination, 'spaces.json'), json({ spaces }), 'utf8');
-  await writeFile(
-    join(destination, 'settings.json'),
-    json({ settings }),
-    'utf8',
-  );
-  if (built.copies.length > 0) {
-    await mkdir(join(destination, 'originals'), { recursive: true });
-  }
-  for (const copy of built.copies) {
-    const stat = await lstat(copy.sourcePath);
-    if (!stat.isFile()) {
-      throw new Error(
-        'Export failed: an original source is not a regular file.',
+  await assertDestinationAvailable(destination);
+  let staging: string | undefined;
+  try {
+    staging = await mkdtemp(`${destination}.partial-`);
+    const directory = staging;
+    await writeFile(join(directory, 'manifest.json'), json(manifest), 'utf8');
+    await writeFile(
+      join(directory, 'README.txt'),
+      renderReadme(snapshot, built),
+      'utf8',
+    );
+    for (let index = 0; index < built.items.length; index += 1) {
+      const item = built.items[index];
+      if (item === undefined) continue;
+      const itemDirectory = join(directory, 'items', ordinal(index + 1));
+      await mkdir(itemDirectory, { recursive: true });
+      await writeFile(join(itemDirectory, 'item.json'), json(item.json), 'utf8');
+      await writeFile(join(itemDirectory, 'item.md'), item.markdown, 'utf8');
+    }
+    await writeFile(join(directory, 'spaces.json'), json({ spaces }), 'utf8');
+    await writeFile(
+      join(directory, 'settings.json'),
+      json({ settings }),
+      'utf8',
+    );
+    if (built.copies.length > 0) {
+      await mkdir(join(directory, 'originals'), { recursive: true });
+    }
+    for (const copy of built.copies) {
+      const stat = await lstat(copy.sourcePath);
+      if (!stat.isFile()) {
+        throw new Error(
+          'Export failed: an original source is not a regular file.',
+        );
+      }
+      await copyFile(copy.sourcePath, join(directory, copy.file));
+    }
+    await rename(directory, destination);
+  } catch {
+    if (staging !== undefined) {
+      await rm(staging, { recursive: true, force: true }).catch(
+        () => undefined,
       );
     }
-    await copyFile(copy.sourcePath, join(destination, copy.file));
+    throw new Error('Export failed and no package was published.');
   }
 
   return {
