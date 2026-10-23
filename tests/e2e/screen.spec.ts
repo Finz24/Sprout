@@ -126,6 +126,11 @@ test('opens and closes the mobile navigation drawer with Escape and restores foc
   const dialog = page.getByRole('dialog', { name: 'Navigation' });
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole('link', { name: 'Settings' })).toBeVisible();
+  for (const target of await dialog.locator('button, a').all()) {
+    const size = await target.boundingBox();
+    expect(size?.width ?? 0).toBeGreaterThanOrEqual(44);
+    expect(size?.height ?? 0).toBeGreaterThanOrEqual(44);
+  }
   for (let tab = 0; tab < 8; tab++) {
     await page.keyboard.press('Tab');
     expect(
@@ -204,6 +209,11 @@ test('keyboard search survives reload and browser back with reduced motion', asy
       () => matchMedia('(prefers-reduced-motion: reduce)').matches,
     ),
   ).toBe(true);
+  expect(
+    await page
+      .getByRole('button', { name: 'Search', exact: true })
+      .evaluate((element) => getComputedStyle(element).transitionDuration),
+  ).toBe('0s');
 });
 
 test('rejects external, encoded, login-loop and credential-bearing return destinations', async ({
@@ -269,11 +279,18 @@ test('a late preference response cannot restore private UI after sign-out', asyn
   const wait = new Promise<void>((resolve) => {
     release = resolve;
   });
+  let finished = () => {};
+  const delivered = new Promise<void>((resolve) => {
+    finished = resolve;
+  });
   await page.route('**/api/settings/library-view', async (route) => {
     const response = await route.fetch();
     received();
     await wait;
-    await route.fulfill({ response }).catch(() => undefined);
+    await route
+      .fulfill({ response })
+      .catch(() => undefined)
+      .finally(finished);
   });
   await page.getByRole('button', { name: 'List' }).click();
   await arrived;
@@ -282,8 +299,52 @@ test('a late preference response cannot restore private UI after sign-out', asyn
     page.getByRole('heading', { name: 'Welcome back.' }),
   ).toBeVisible();
   release();
+  await delivered;
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        requestAnimationFrame(() => resolve());
+      }),
+  );
   await expect(page.getByRole('heading', { name: 'Settings' })).toHaveCount(0);
   await page.reload();
+  await expect(
+    page.getByRole('heading', { name: 'Welcome back.' }),
+  ).toBeVisible();
+});
+
+test('anonymous and unavailable deep links never mount private content', async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    new MutationObserver(() => {
+      if (document.querySelector('.app-shell'))
+        document.documentElement.dataset.privateShellSeen = 'true';
+    }).observe(document, { childList: true, subtree: true });
+  });
+  await page.goto('/settings');
+  await expect(
+    page.getByRole('heading', { name: 'Welcome back.' }),
+  ).toBeVisible();
+  expect(
+    await page.locator('html').getAttribute('data-private-shell-seen'),
+  ).toBeNull();
+  await page.route('**/api/session', (route) =>
+    route.fulfill({
+      status: 503,
+      contentType: 'application/json',
+      body: JSON.stringify({ kind: 'Unavailable' }),
+    }),
+  );
+  await page.goto('/library/items/unavailable');
+  await expect(
+    page.getByRole('heading', { name: 'Sprout is unavailable' }),
+  ).toBeVisible();
+  expect(
+    await page.locator('html').getAttribute('data-private-shell-seen'),
+  ).toBeNull();
+  await page.unroute('**/api/session');
+  await page.getByRole('button', { name: 'Try again' }).click();
   await expect(
     page.getByRole('heading', { name: 'Welcome back.' }),
   ).toBeVisible();
