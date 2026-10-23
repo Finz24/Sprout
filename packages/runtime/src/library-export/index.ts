@@ -657,7 +657,7 @@ export async function writeExportPackage(
   return {
     formatVersion: 1,
     destination,
-    complete: counts.missingOriginals === 0,
+    complete: counts.missingOriginals === 0 && snapshot.omissions.length === 0,
     counts,
   };
 }

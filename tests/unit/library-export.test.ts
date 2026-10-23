@@ -572,6 +572,27 @@ describe('atomic publication', () => {
   });
 });
 
+describe('export completeness', () => {
+  it('reports an omitted scope as incomplete even when no original is missing', async () => {
+    const root = await temporaryDirectory();
+    const destination = join(root, 'export');
+    const report = await writeExportPackage(
+      {
+        ownerId: 'owner-1',
+        items: [],
+        spaces: [],
+        settings: [],
+        omissions: [{ scope: 'source comments', reason: 'Not retained.' }],
+      },
+      destination,
+    );
+    expect(report.complete).toBe(false);
+    expect(
+      (await readJson(join(destination, 'manifest.json'))).omissions,
+    ).toEqual([{ scope: 'source comments', reason: 'Not retained.' }]);
+  });
+});
+
 describe('input immutability', () => {
   it('leaves the snapshot deep-equal after writing', async () => {
     const root = await temporaryDirectory();
