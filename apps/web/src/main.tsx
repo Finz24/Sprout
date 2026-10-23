@@ -154,7 +154,8 @@ const loginRoute = createRoute({
     returnTo: safeReturn(input.returnTo),
   }),
   beforeLoad: async ({ search }) => {
-    const state = await session.enter();
+    const known = session.snapshot();
+    const state = known.kind === 'Anonymous' ? known : await session.enter();
     if (state.kind === 'Ready')
       throw redirect(safeReturnRedirect(search.returnTo));
   },
