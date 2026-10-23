@@ -180,11 +180,10 @@ async function pnpmCommand(args, childEnv = env) {
 async function ready(url) {
   const deadline = Date.now() + 60000;
   while (Date.now() < deadline) {
-    try {
-      if ((await fetch(url, { signal: AbortSignal.timeout(2000) })).ok) return;
-    } catch {
-      /* Startup is bounded by the deadline. */
-    }
+    const response = await fetch(url, {
+      signal: AbortSignal.timeout(2000),
+    }).catch(() => undefined);
+    if (response?.ok) return;
     await new Promise((resolve) => setTimeout(resolve, 250));
   }
   throw new Error('A workspace service did not become ready.');
