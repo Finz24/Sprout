@@ -62,7 +62,11 @@ export const DatabaseLive = (settings: DatabaseSettings) =>
           ),
       );
       pool.on('error', () => console.error('Database idle connection lost'));
-      if (settings.role) yield* Effect.tryPromise({ try: () => validateRole(pool, settings.role ?? 'sprout_worker'), catch: () => new DatabaseUnavailable({ reason: 'connection' }) });
+      if (settings.role)
+        yield* Effect.tryPromise({
+          try: () => validateRole(pool, settings.role ?? 'sprout_worker'),
+          catch: () => new DatabaseUnavailable({ reason: 'connection' }),
+        });
       const probe = Effect.tryPromise({
         try: async () => {
           await pool.query('SELECT 1');

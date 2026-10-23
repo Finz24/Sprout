@@ -2,40 +2,40 @@ import { describe, expect, it } from 'vitest';
 import { migrationHistoryMatches } from '@sprout/database';
 
 describe('committed migration history', () => {
-  const committed = ['9e9b2cfec47519f49ee73cb533c459e22f8ca54fe5ba1cbec59f3d5883fe191c', '7069c7f97acc4c000dcd184757be1c65522723abe1eb2ef3e2b18730a78a0f4c'];
+  const committed = ['vector-fixture-hash', 'auth-fixture-hash'];
 
   it('accepts exactly the committed migrations in their committed order', () => {
     expect(
       migrationHistoryMatches(committed, [
-        '9e9b2cfec47519f49ee73cb533c459e22f8ca54fe5ba1cbec59f3d5883fe191c',
-        '7069c7f97acc4c000dcd184757be1c65522723abe1eb2ef3e2b18730a78a0f4c',
+        'vector-fixture-hash',
+        'auth-fixture-hash',
       ]),
     ).toBe(true);
   });
 
   it.each([
     ['an empty journal', []],
-    ['a pending latest migration', ['9e9b2cfec47519f49ee73cb533c459e22f8ca54fe5ba1cbec59f3d5883fe191c']],
+    ['a pending latest migration', ['vector-fixture-hash']],
     [
       'a missing earlier migration with the same latest hash',
-      ['7069c7f97acc4c000dcd184757be1c65522723abe1eb2ef3e2b18730a78a0f4c'],
+      ['auth-fixture-hash'],
     ],
     [
       'an edited earlier migration',
-      ['edited-vector-hash', '7069c7f97acc4c000dcd184757be1c65522723abe1eb2ef3e2b18730a78a0f4c'],
+      ['edited-vector-hash', 'auth-fixture-hash'],
     ],
     [
       'a different latest migration',
-      ['9e9b2cfec47519f49ee73cb533c459e22f8ca54fe5ba1cbec59f3d5883fe191c', 'unexpected-latest-hash'],
+      ['vector-fixture-hash', 'unexpected-latest-hash'],
     ],
-    ['reordered migrations', ['7069c7f97acc4c000dcd184757be1c65522723abe1eb2ef3e2b18730a78a0f4c', '9e9b2cfec47519f49ee73cb533c459e22f8ca54fe5ba1cbec59f3d5883fe191c']],
+    ['reordered migrations', ['auth-fixture-hash', 'vector-fixture-hash']],
     [
       'an additional applied migration',
-      ['9e9b2cfec47519f49ee73cb533c459e22f8ca54fe5ba1cbec59f3d5883fe191c', '7069c7f97acc4c000dcd184757be1c65522723abe1eb2ef3e2b18730a78a0f4c', 'unknown-migration-hash'],
+      ['vector-fixture-hash', 'auth-fixture-hash', 'unknown-migration-hash'],
     ],
     [
       'a duplicate applied migration',
-      ['9e9b2cfec47519f49ee73cb533c459e22f8ca54fe5ba1cbec59f3d5883fe191c', '9e9b2cfec47519f49ee73cb533c459e22f8ca54fe5ba1cbec59f3d5883fe191c', '7069c7f97acc4c000dcd184757be1c65522723abe1eb2ef3e2b18730a78a0f4c'],
+      ['vector-fixture-hash', 'vector-fixture-hash', 'auth-fixture-hash'],
     ],
   ] as const)('rejects %s', (_scenario, applied) => {
     expect(migrationHistoryMatches(committed, applied)).toBe(false);

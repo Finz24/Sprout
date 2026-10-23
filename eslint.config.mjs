@@ -174,7 +174,10 @@ export default tseslint.config(
               sourceTag: 'scope:runtime',
               onlyDependOnLibsWithTags: ['scope:database', 'scope:contracts'],
             },
-            { sourceTag: 'scope:database', onlyDependOnLibsWithTags: ['scope:contracts'] },
+            {
+              sourceTag: 'scope:database',
+              onlyDependOnLibsWithTags: ['scope:contracts'],
+            },
             { sourceTag: 'scope:contracts', onlyDependOnLibsWithTags: [] },
             { sourceTag: 'scope:ui', onlyDependOnLibsWithTags: [] },
           ],

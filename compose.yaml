@@ -55,7 +55,12 @@ services:
     build: .
     image: ${COMPOSE_PROJECT_NAME}-migrate-development:local
     init: true
-    command: ['sh', '-c', 'corepack pnpm migrate && corepack pnpm auth:configure-logins']
+    command:
+      [
+        'sh',
+        '-c',
+        'corepack pnpm migrate && corepack pnpm auth:configure-logins',
+      ]
     environment:
       <<: *environment
       DATABASE_URL: ${MIGRATION_DATABASE_URL:?Set MIGRATION_DATABASE_URL privately}

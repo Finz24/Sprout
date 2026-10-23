@@ -15,19 +15,22 @@ export async function provisionSyntheticOwner(
       const identity = await client.query<{ allowed: boolean }>(
         "SELECT current_user = 'sprout_maintenance' AS allowed",
       );
-      if (!identity.rows[0]?.allowed) throw new Error('Maintenance login required');
+      if (!identity.rows[0]?.allowed)
+        throw new Error('Maintenance login required');
       await client.query('SELECT pg_advisory_xact_lock(1085934216)');
       const id = randomUUID();
-      await client.query('INSERT INTO auth."user" (id, name, email) VALUES ($1, $2, $3)', [
-        id,
-        input.name.trim(),
-        input.email.trim().toLowerCase(),
-      ]);
+      await client.query(
+        'INSERT INTO auth."user" (id, name, email) VALUES ($1, $2, $3)',
+        [id, input.name.trim(), input.email.trim().toLowerCase()],
+      );
       await client.query(
         'INSERT INTO auth.account (id, user_id, account_id, provider_id, password) VALUES ($1, $2, $2, $3, $4)',
         [randomUUID(), id, 'credential', passwordHash],
       );
-      await client.query('INSERT INTO private.owner_settings (owner_user_id) VALUES ($1)', [id]);
+      await client.query(
+        'INSERT INTO private.owner_settings (owner_user_id) VALUES ($1)',
+        [id],
+      );
       return id;
     });
   } finally {
