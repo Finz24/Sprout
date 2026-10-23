@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { existsSync } from 'node:fs';
 import {
   mkdir,
   mkdtemp,
@@ -206,6 +207,29 @@ async function createFixture(root: string): Promise<{
   return { snapshot, destination };
 }
 
+async function rejectWithoutOutput(
+  root: string,
+  destination: string,
+  snapshot: ExportSnapshot,
+  forbiddenText: readonly string[],
+): Promise<void> {
+  const entriesBefore = (await readdir(root)).sort();
+  let failure: unknown;
+  try {
+    await writeExportPackage(snapshot, destination);
+  } catch (error) {
+    failure = error;
+  }
+  expect(failure).toBeInstanceOf(Error);
+  for (const text of forbiddenText) {
+    expect(String(failure)).not.toContain(text);
+  }
+  expect(existsSync(destination)).toBe(false);
+  const entriesAfter = (await readdir(root)).sort();
+  expect(entriesAfter).toEqual(entriesBefore);
+  expect(entriesAfter.some((entry) => entry.includes('.partial-'))).toBe(false);
+}
+
 describe('readable export package v1', () => {
   it('exports labelled records, originals and gaps that survive outside Sprout', async () => {
     const root = await temporaryDirectory();
@@ -375,5 +399,66 @@ describe('readable export package v1', () => {
     expect(createHash('sha256').update(original).digest('hex')).toBe(
       ORIGINAL_SHA256,
     );
+  });
+});
+
+const CREDENTIAL_KEYS = [
+  'token',
+  'secret',
+  'password',
+  'cookie',
+  'apiKey',
+  'session',
+  'ACCESS_TOKEN',
+  'api-key',
+  'pass_word',
+  'Session',
+] as const;
+
+describe('credential rejection', () => {
+  it.each(CREDENTIAL_KEYS)(
+    'rejects credential-like field %s before writing',
+    async (key) => {
+      const root = await temporaryDirectory();
+      const { snapshot, destination } = await createFixture(root);
+      const contaminated = Object.assign({}, snapshot, {
+        settings: [
+          {
+            name: 'appearance',
+            data: { nested: [{ [key]: 'not-a-real-secret' }] },
+          },
+        ],
+        extraMetadata: { nested: [{ [key]: 'not-a-real-secret' }] },
+      });
+
+      await rejectWithoutOutput(root, destination, contaminated, [
+        'not-a-real-secret',
+        key,
+      ]);
+    },
+  );
+
+  it.each([
+    ['setting', 'session'],
+    ['view preference', 'api_key'],
+  ] as const)('rejects a credential-like %s name', async (kind, name) => {
+    const root = await temporaryDirectory();
+    const { snapshot, destination } = await createFixture(root);
+    const contaminated: ExportSnapshot =
+      kind === 'setting'
+        ? { ...snapshot, settings: [{ name, data: { value: 1 } }] }
+        : {
+            ...snapshot,
+            spaces: [
+              {
+                id: 'space-1',
+                name: 'Friday dinners',
+                memberships: [],
+                viewPreferences: [{ name, data: { value: 1 } }],
+              },
+            ],
+          };
+
+    await rejectWithoutOutput(root, destination, contaminated, [name]);
   });
 });

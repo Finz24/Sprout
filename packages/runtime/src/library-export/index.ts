@@ -97,6 +97,14 @@ export interface ExportReport {
 
 const FORMAT_VERSION = 1;
 const NOTICE = 'This is a readable export, not a disaster-recovery backup.';
+const CREDENTIAL_TERMS = [
+  'token',
+  'secret',
+  'password',
+  'cookie',
+  'apikey',
+  'session',
+] as const;
 
 const LABELS = {
   originalInput: 'original input',
@@ -193,6 +201,48 @@ interface ExportManifest {
 
 function ordinal(index: number): string {
   return index.toString().padStart(6, '0');
+}
+
+function normalizedName(value: string): string {
+  return value.toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+function isCredentialName(value: string): boolean {
+  const normalized = normalizedName(value);
+  return CREDENTIAL_TERMS.some((term) => normalized.includes(term));
+}
+
+function assertNoCredentialFields(value: unknown, seen: Set<object>): void {
+  if (value === null || typeof value !== 'object') return;
+  if (seen.has(value)) return;
+  seen.add(value);
+  for (const name of Object.getOwnPropertyNames(value)) {
+    if (isCredentialName(name)) {
+      throw new Error('Export rejected: credential-like field name.');
+    }
+    const descriptor = Object.getOwnPropertyDescriptor(value, name);
+    if (descriptor === undefined) continue;
+    if (descriptor.get !== undefined || descriptor.set !== undefined) {
+      throw new Error('Export rejected: accessor property.');
+    }
+    const child: unknown = descriptor.value;
+    assertNoCredentialFields(child, seen);
+  }
+}
+
+function assertNoCredentialLogicalNames(snapshot: ExportSnapshot): void {
+  for (const setting of snapshot.settings) {
+    if (isCredentialName(setting.name)) {
+      throw new Error('Export rejected: credential-like field name.');
+    }
+  }
+  for (const space of snapshot.spaces) {
+    for (const preference of space.viewPreferences) {
+      if (isCredentialName(preference.name)) {
+        throw new Error('Export rejected: credential-like field name.');
+      }
+    }
+  }
 }
 
 function withLabel(label: string, record: ExportRecord): OutputRecord {
@@ -442,6 +492,8 @@ export async function writeExportPackage(
   snapshot: ExportSnapshot,
   destination: string,
 ): Promise<ExportReport> {
+  assertNoCredentialFields(snapshot, new Set());
+  assertNoCredentialLogicalNames(snapshot);
   const counts = countPackage(snapshot);
   const built = buildPackage(snapshot);
   const manifest: ExportManifest = {
