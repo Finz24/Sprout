@@ -106,3 +106,8 @@ At `b1bc7da`, lint and typecheck passed. Fresh local integration passed
 API before each browser project, preserving production rate limits, and runs
 Compose down for its selected project during cleanup. Browser proof follows.
 
+Fresh local e2e passed all 34 cases: desktop 17 passed (27.3s), mobile
+17 passed (30.7s), including both formerly failing mobile cases. Both project
+last-run records report passed with no failed tests. The runner exited 0 and
+Compose removed its PostgreSQL container and project network; volumes remain.
+
