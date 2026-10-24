@@ -147,7 +147,6 @@ export function TextComposer({
                 params={{ itemId: state.receipt.itemId }}
                 search={{ from: '/library' }}
                 className="text-link"
-                onClick={onClose}
               >
                 Open Original input
               </Link>

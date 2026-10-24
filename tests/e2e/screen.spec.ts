@@ -443,6 +443,7 @@ test('keyboard search survives reload and browser back with reduced motion', asy
   ).toBe(true);
   expect(
     await page
+      .getByRole('banner')
       .getByRole('button', { name: 'Search', exact: true })
       .evaluate((element) => getComputedStyle(element).transitionDuration),
   ).toBe('0s');
