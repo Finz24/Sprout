@@ -435,6 +435,41 @@ describe.sequential('private authentication', () => {
     );
     expect(pageTwo.items.map((item) => item.itemId)).toEqual([receipt.itemId]);
     expect(pageTwo.nextCursor).toBeNull();
+    if (!admin) throw new Error('Database configuration is required');
+    const olderId = randomUUID();
+    const newerId = randomUUID();
+    await admin.query(
+      `INSERT INTO private.saved_item
+        (id,owner_user_id,submission_id,original_text,retained_at)
+       SELECT $1,owner_user_id,$2,'issue4-submillisecond','2026-10-01T10:00:00.123456Z'
+       FROM private.saved_item WHERE id=$3`,
+      [olderId, randomUUID(), receipt.itemId],
+    );
+    await admin.query(
+      `INSERT INTO private.saved_item
+        (id,owner_user_id,submission_id,original_text,retained_at)
+       SELECT $1,owner_user_id,$2,'issue4-submillisecond','2026-10-01T10:00:00.123457Z'
+       FROM private.saved_item WHERE id=$3`,
+      [newerId, randomUUID(), receipt.itemId],
+    );
+    const precisePage = Schema.decodeUnknownSync(SavedTextPage)(
+      await json(
+        await read('/api/library/search?q=issue4-submillisecond&limit=1'),
+      ),
+    );
+    expect(precisePage.items.map((entry) => entry.itemId)).toEqual([newerId]);
+    expect(precisePage.nextCursor?.retainedAt).toBe(
+      '2026-10-01T10:00:00.123457Z',
+    );
+    const preciseNext = Schema.decodeUnknownSync(SavedTextPage)(
+      await json(
+        await read(
+          `/api/library/search?q=issue4-submillisecond&limit=1&cursor=${encodeURIComponent(JSON.stringify(precisePage.nextCursor))}`,
+        ),
+      ),
+    );
+    expect(preciseNext.items.map((entry) => entry.itemId)).toEqual([olderId]);
+    expect(preciseNext.nextCursor).toBeNull();
     const raceInput = {
       ...input,
       submissionId: randomUUID(),
@@ -466,9 +501,10 @@ describe.sequential('private authentication', () => {
       { ...input, retainedAt: '2000-01-01T00:00:00.000Z' },
     ])
       expect((await save(first, badInput)).status).toBe(400);
-    const tooLarge = await save(first, {
-      ...input,
-      padding: 'x'.repeat(512 * 1024),
+    const tooLarge = await api('/api/library/text', {
+      method: 'POST',
+      headers: authHeaders(first),
+      body: JSON.stringify(input) + ' '.repeat(512 * 1024),
     });
     expect(tooLarge.status).toBe(400);
     for (const path of [

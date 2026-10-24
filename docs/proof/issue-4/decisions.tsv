@@ -1,0 +1,9 @@
+ts	phase	decision	why	evidence	result
+2026-10-24T16:45:56Z	baseline	Fast-forwarded clean issue branch to approved main baseline	Approved specification and lessons were absent on old base	1078256	baseline ready
+2026-10-24T16:52:23Z	runtime	Kept readiness and security gates while diagnosing startup failures	Real runtime evidence must precede browser claims	docs/proof/issue-4/README.md	runtime verification pending
+2026-10-24T16:52:26Z	scope	Kept export acquisition with its future owning slice	Current export writer accepts supplied snapshots and has no application path	packages/runtime/src/library-export/index.ts	no unused export adapter
+2026-10-24T16:54:01Z	contracts	Committed and pushed exact text save wire contracts	Fourteen contract tests and scoped typecheck lint format passed	4930988	green checkpoint pushed
+2026-10-24T16:56:07Z	red	Recorded failing real text-save journey before production implementation	Existing auth must work before a missing capture action counts as red	docs/proof/issue-4/red-e2e.txt	17 existing desktop pass; new journey red
+2026-10-24T17:02:26Z	integration	Required full Compose runtime after first integration failures	Backup service quiescence assertions require real app containers	docs/proof/issue-4/integration-first.txt	12 failed and 44 passed; fixes pending
+2026-10-24T17:09:48Z	backend	Committed and pushed immutable storage and authenticated API	All 57 full Compose integration cases passed after boundary fixes	c865e4a,docs/proof/issue-4/integration-green.txt	green backend checkpoint pushed
+2026-10-24T17:11:18Z	review	Strengthened body-limit and submillisecond pagination evidence	Independent review found the old oversize assertion could pass on schema rejection	tests/integration/auth.test.ts	final runtime rerun pending

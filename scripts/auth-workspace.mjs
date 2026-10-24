@@ -22,6 +22,7 @@ const testOwner = {
 const children = [];
 let composeStarted = false;
 let apiChild;
+let workerChild;
 let ownerProvisioned = false;
 
 const volume = `${composeProject}_postgres-data`;
@@ -227,24 +228,18 @@ function launchApi() {
   children.push(apiChild);
 }
 function launchWorker() {
-  children.push(
-    start(
-      process.execPath,
-      [
-        '--import',
-        'tsx',
-        '--conditions=development',
-        'apps/worker/src/main.ts',
-      ],
-      {
-        ...serving,
-        DATABASE_URL: hostUrls.worker,
-        PORT: workerPort,
-        HOST: host,
-      },
-      'pipe',
-    ),
+  workerChild = start(
+    process.execPath,
+    ['--import', 'tsx', '--conditions=development', 'apps/worker/src/main.ts'],
+    {
+      ...serving,
+      DATABASE_URL: hostUrls.worker,
+      PORT: workerPort,
+      HOST: host,
+    },
+    'pipe',
   );
+  children.push(workerChild);
 }
 function launchWeb() {
   children.push(
@@ -327,6 +322,18 @@ async function action(command) {
     await restartApi();
   } else if (command === 'restart') {
     await restartApi();
+  } else if (command === 'restart-runtime') {
+    if (composeMode)
+      await run('docker', ['compose', 'restart', 'api', 'worker'], composeEnv);
+    else {
+      await Promise.all([stopChild(apiChild), stopChild(workerChild)]);
+      launchApi();
+      launchWorker();
+    }
+    await Promise.all([
+      ready(`${env.API_URL}/health/ready`),
+      ready(`${env.WORKER_URL}/health/ready`),
+    ]);
   } else if (command === 'e2e') {
     await ensureOwner();
     for (const project of ['desktop', 'mobile']) {
@@ -342,7 +349,9 @@ async function action(command) {
     await stop();
     return false;
   } else if (command !== 'status')
-    throw new Error('Use integration, e2e, check, restart, status or stop.');
+    throw new Error(
+      'Use integration, e2e, check, restart, restart-runtime, status or stop.',
+    );
   console.info(`Workspace ${command} finished.`);
   return true;
 }

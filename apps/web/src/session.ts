@@ -113,6 +113,15 @@ export const session = {
     };
   },
   snapshot: () => state,
+  async privateRequest(path: string, init: RequestInit = {}) {
+    if (state.kind !== 'Ready') throw new StaleResponse();
+    const result = await request(path, init);
+    if (result.response.status === 401) {
+      expired(true);
+      throw new StaleResponse();
+    }
+    return result;
+  },
   bind: (callback: () => void) => {
     invalidate = callback;
   },
