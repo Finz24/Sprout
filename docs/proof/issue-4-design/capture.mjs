@@ -44,7 +44,9 @@ try {
         ),
         duplicateIds: ids.filter((id, index) => ids.indexOf(id) !== index),
         elementIds: ids.length,
-        originalUnicode: [...document.querySelectorAll('textarea')].every(
+        originalUnicode: [
+          ...document.querySelectorAll('.original-field'),
+        ].every(
           (field) =>
             field.value.includes('\u05e9\u05dc\u05d5\u05dd') &&
             field.value.includes('e\u0301'),
@@ -62,32 +64,58 @@ try {
     ) {
       throw new Error(JSON.stringify({ name, ...details, errors, external }));
     }
+    const overviewHeight = Math.min(details.height, 10000);
     await page.screenshot({
       path: path.join(output, `${name}.png`),
-      fullPage: true,
+      clip: { x: 0, y: 0, width: details.width, height: overviewHeight },
     });
     for (const direction of ['a', 'b', 'c']) {
       await page
         .locator(`#direction-${direction}`)
         .screenshot({ path: path.join(output, `${name}-${direction}.png`) });
+      for (const theme of ['light', 'dark']) {
+        await page
+          .locator(
+            `#direction-${direction} .screen.${theme}.${name === 'mobile' ? 'phone' : 'desktop'}`,
+          )
+          .first()
+          .screenshot({
+            path: path.join(output, `${name}-${direction}-${theme}.png`),
+          });
+        await page
+          .locator(`#direction-${direction} .end-states.${theme}`)
+          .screenshot({
+            path: path.join(
+              output,
+              `${name}-${direction}-library-${theme}.png`,
+            ),
+          });
+      }
     }
+    await page.locator('.motion-demo summary').click();
+    const reducedAnimation = await page
+      .locator('.motion-scene')
+      .evaluate((node) => getComputedStyle(node).animationName);
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.locator('.motion-demo summary').click();
+    await page.locator('.motion-demo summary').click();
+    const normalAnimation = await page
+      .locator('.motion-scene')
+      .evaluate((node) => getComputedStyle(node).animationName);
+    if (reducedAnimation !== 'none' || normalAnimation !== 'panel-reveal')
+      throw new Error('Motion preference is not respected.');
     await page
-      .locator(
-        name === 'mobile'
-          ? '#direction-a .screen.light.phone'
-          : '#direction-a .screen.light.desktop',
-      )
-      .first()
-      .screenshot({ path: path.join(output, `${name}-a-light.png`) });
-    await page
-      .locator(
-        name === 'mobile'
-          ? '#direction-a .screen.dark.phone'
-          : '#direction-a .screen.dark.desktop',
-      )
-      .first()
-      .screenshot({ path: path.join(output, `${name}-a-dark.png`) });
-    evidence.push({ name, ...details, errors, external });
+      .locator('.motion-demo')
+      .screenshot({ path: path.join(output, `${name}-motion.png`) });
+    evidence.push({
+      name,
+      ...details,
+      overviewHeight,
+      reducedAnimation,
+      normalAnimation,
+      errors,
+      external,
+    });
     await context.close();
   }
 } finally {
