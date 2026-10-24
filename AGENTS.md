@@ -29,6 +29,11 @@ or refactoring that does not depend on library-specific behavior.
 
 ## Agent skills
 
+### React Doctor
+
+Before finishing React changes or handling React Doctor diagnostics, triage or
+rule configuration, read `.agents/skills/react-doctor/SKILL.md`.
+
 ### Issue tracker
 
 Track specs and issues in GitHub: Finz24/Sprout.

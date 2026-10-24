@@ -183,6 +183,8 @@ no unnecessary animations. Fonts and assets must remain locally available.
 ```powershell
 corepack pnpm check
 corepack pnpm check:affected
+corepack pnpm run doctor
+corepack pnpm run doctor:changed
 corepack pnpm test:integration
 corepack pnpm test:e2e
 ```
@@ -191,6 +193,15 @@ Quality checks formatting, lint, public package boundaries, workspace cycles and
 TypeScript. Nx caches builds locally and includes dependent projects in affected
 checks. `check:affected` uses Nx's public CLI; set `NX_BASE` to choose its base
 revision. CI checks every project when its base revision is unavailable.
+
+React Doctor **0.9.17** is a pinned workspace development dependency.
+`doctor` scans all detected React projects; `doctor:changed` reports newly
+introduced findings against its detected Git base (pass `--base <ref>` to select
+one explicitly). Both commands use the installed local executable, disable
+network supply-chain checks and telemetry/score services, and require no runtime
+downloads once dependencies and platform binaries are prepared. They complement
+the existing quality checks. Repository-specific agent guidance lives in
+`.agents/skills/react-doctor/SKILL.md` and is linked from `AGENTS.md`.
 Unit tests cover readiness failure semantics, migration history, configuration
 and the configured import boundaries. Vitest integration tests check the API and
 worker's live/ready endpoints. E2E exercises private login, reload, logout,
