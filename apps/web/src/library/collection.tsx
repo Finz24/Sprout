@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from '@tanstack/react-router';
-import { motion, useReducedMotion } from 'motion/react';
+import { useReducedMotion } from 'motion/react';
+import * as m from 'motion/react-m';
 import type {
   LibraryCursor,
   SavedTextItem,
@@ -36,11 +37,11 @@ function firstPage(query?: string): Promise<SavedTextPage> {
 export function useTextCollection(query?: string) {
   const [state, setState] = useState<CollectionState>({ kind: 'loading' });
   const [refreshKey, setRefreshKey] = useState(0);
+  const [seenQuery, setSeenQuery] = useState(query);
   const requestGeneration = useRef(0);
-  const currentQuery = useRef(query);
-  if (currentQuery.current !== query) {
-    currentQuery.current = query;
-    requestGeneration.current += 1;
+  if (seenQuery !== query) {
+    setSeenQuery(query);
+    setState({ kind: 'loading' });
   }
   useEffect(() => {
     const generation = requestGeneration.current;
@@ -123,7 +124,7 @@ function SavedCard({
 }) {
   const reducedMotion = useReducedMotion() ?? false;
   return (
-    <motion.article
+    <m.article
       className="saved-card"
       initial={reducedMotion ? false : { opacity: 0, y: 8 }}
       animate={reducedMotion ? false : { opacity: 1, y: 0 }}
@@ -167,7 +168,7 @@ function SavedCard({
         <span>{item.understanding}</span>
         <span>{item.actions}</span>
       </div>
-    </motion.article>
+    </m.article>
   );
 }
 

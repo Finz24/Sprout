@@ -97,12 +97,12 @@ export async function getText(itemId: string): Promise<SavedTextItemValue> {
   return item;
 }
 
+const retentionTime = new Intl.DateTimeFormat(undefined, {
+  dateStyle: 'medium',
+  timeStyle: 'short',
+});
+
 export function displayRetentionTime(retainedAt: string) {
   const date = new Date(retainedAt);
-  return Number.isNaN(date.valueOf())
-    ? retainedAt
-    : new Intl.DateTimeFormat(undefined, {
-        dateStyle: 'medium',
-        timeStyle: 'short',
-      }).format(date);
+  return Number.isNaN(date.valueOf()) ? retainedAt : retentionTime.format(date);
 }

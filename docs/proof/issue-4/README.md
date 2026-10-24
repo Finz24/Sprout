@@ -72,3 +72,23 @@ include the new immutable originals, separate intents and submission identities.
 
 Physical Galaxy behavior and production ingress are separate from emulated
 mobile browser evidence. No deployment or merge is requested by this work.
+
+## Pickup and completion
+
+The stalled Codex worktree was checkpointed at `ffb2d2a` (unverified UI) on
+`feat/issue-4-text-save-grok`. Lint and typecheck were corrected first, then
+the capture UI was finished against the approved control contract.
+
+A local non-Compose integration run cannot prove backup-restore because those
+assertions require real `api` and `worker` containers. See `full-suites.txt`.
+Compose project `sprout-text-save-4k` then passed all 57 integration cases in
+`full-suites-compose.txt`. Its browser run still failed leftover-library
+locators. Those cases were corrected. Isolated e2e-only project
+`sprout-text-save-4o` later passed 23 desktop and 23 mobile cases after the
+React Doctor cleanup. See `e2e.txt`.
+
+`corepack pnpm check` passed on that same UI: format, lint, React Doctor, typecheck,
+194 unit tests, build, and documentation checks. See `check-output.txt`.
+
+The runner removed the selected Compose containers and networks. Volumes were
+retained. No deployment or merge is requested by this work.

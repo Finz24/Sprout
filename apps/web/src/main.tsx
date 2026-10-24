@@ -10,7 +10,7 @@ import {
   Link,
   useNavigate,
 } from '@tanstack/react-router';
-import { MotionConfig } from 'motion/react';
+import { LazyMotion, MotionConfig, domMax } from 'motion/react';
 import { Login } from './login.js';
 import { session, safeReturn } from './session.js';
 import { LibraryPage } from './library/page.js';
@@ -190,8 +190,10 @@ const root = document.getElementById('root');
 if (!root) throw new Error('Missing application root');
 createRoot(root).render(
   <StrictMode>
-    <MotionConfig reducedMotion="user">
-      <RouterProvider router={router} />
-    </MotionConfig>
+    <LazyMotion features={domMax} strict>
+      <MotionConfig reducedMotion="user">
+        <RouterProvider router={router} />
+      </MotionConfig>
+    </LazyMotion>
   </StrictMode>,
 );
