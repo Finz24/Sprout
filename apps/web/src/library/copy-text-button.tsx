@@ -12,12 +12,16 @@ export function CopyTextButton({ text }: { text: string }) {
           void navigator.clipboard
             .writeText(text)
             .then(() => setStatus('Copied'))
-            .catch(() => setStatus('Copy unavailable. Select the text to copy.'));
+            .catch(() =>
+              setStatus('Copy unavailable. Select the text to copy.'),
+            );
         }}
       >
         Copy text
       </Button>
-      <span role="status" aria-live="polite">{status}</span>
+      <span role="status" aria-live="polite">
+        {status}
+      </span>
     </span>
   );
 }

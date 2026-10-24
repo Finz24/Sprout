@@ -12,8 +12,8 @@ export function OriginalSearch() {
   return (
     <section className="search-page">
       <header className="search-heading">
-        <h1>Search original text</h1>
-        <p>Find a phrase exactly as it appears in what you saved.</p>
+        <h1>Find and ask</h1>
+        <p>Exact text in originals.</p>
       </header>
       <form
         className="original-search-form"
@@ -32,15 +32,20 @@ export function OriginalSearch() {
           onChange={(event) => setQuery(event.currentTarget.value)}
           placeholder="Search saved text"
         />
-        <Button className="touch-target" type="submit">Search</Button>
+        <Button className="touch-target" type="submit">
+          Search
+        </Button>
       </form>
-      <p className="search-scope">Search is case-sensitive. Intent and status are not searched.</p>
+      <p className="search-scope">
+        Case-sensitive originals only.
+        {q ? ` Your query “${q}” is kept in this URL.` : ''}
+      </p>
       {q ? (
         <section className="search-results" aria-label="Search results">
           <TextCollection query={q} collection={collection} />
         </section>
       ) : (
-        <p className="search-hint">Enter a phrase to search original text.</p>
+        <p className="search-hint">Type a phrase from an original.</p>
       )}
     </section>
   );

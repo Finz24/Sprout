@@ -64,66 +64,11 @@
 }
 
 .library-heading {
-  position: relative;
-  isolation: isolate;
-  min-height: 150px;
-  overflow: hidden;
-  padding: 27px 31px;
-  border-radius: 18px;
-  background: #244b35;
-  box-shadow: 0 14px 30px rgb(28 50 36 / 15%);
-  color: #f1f6ef;
-}
-
-.library-heading > * {
-  position: relative;
-  z-index: 1;
-}
-
-.library-heading::after,
-.library-heading::before {
-  position: absolute;
-  z-index: 0;
-  content: '';
-  pointer-events: none;
-  border: 1px solid rgb(211 232 211 / 19%);
-  border-radius: 50%;
-}
-
-.library-heading::before {
-  width: 320px;
-  height: 320px;
-  top: -226px;
-  right: 7%;
-}
-
-.library-heading::after {
-  width: 250px;
-  height: 250px;
-  top: -184px;
-  right: 10%;
-}
-
-.library-heading h1 {
-  color: #f2f6ef;
-}
-
-.library-heading .view-choice legend {
-  color: #d8e5d9;
-}
-
-.library-heading .view-choice .touch-target {
-  border-color: #9db8a2;
-  color: #f2f6ef;
+  align-items: end;
 }
 
 .library-heading .new-card-button {
-  background: #dbe9d9;
-  color: #203e2b;
-}
-
-.library-heading .new-card-button:hover {
-  background: #c9dec8;
+  min-height: 48px;
 }
 
 .search-heading p {
@@ -175,6 +120,18 @@
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr));
   align-items: stretch;
   gap: 18px;
+}
+
+.saved-grid.is-list {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.saved-grid.is-list .saved-card {
+  min-height: 0;
+}
+
+.saved-grid.is-list .saved-excerpt {
+  -webkit-line-clamp: 3;
 }
 
 .saved-card {
@@ -315,7 +272,26 @@
   padding: 27px;
   border-radius: 17px;
   background: #fbfcf9;
-  box-shadow: 0 20px 48px rgb(30 48 38 / 16%), 0 3px 10px rgb(30 48 38 / 8%);
+  box-shadow:
+    0 20px 48px rgb(30 48 38 / 16%),
+    0 3px 10px rgb(30 48 38 / 8%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .text-composer {
+    animation: composer-in 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+
+@keyframes composer-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .composer-form {

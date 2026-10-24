@@ -71,7 +71,7 @@ function Navigation({ close }: { close?: () => void }) {
         onClick={close}
         activeProps={{ 'aria-current': 'page' }}
       >
-        Search text
+        Find and ask
       </Link>
       <Link
         to="/spaces"
@@ -165,13 +165,13 @@ function SearchForm() {
       }}
     >
       <label className="sr-only" htmlFor="header-query">
-        Search saved text
+        Find and ask
       </label>
       <input
         id="header-query"
         name="q"
         type="search"
-        placeholder="Search saved text"
+        placeholder="Find something you kept"
         maxLength={500}
       />
       <Button variant="outline" className="touch-target" type="submit">
@@ -292,4 +292,3 @@ export function Placeholder({
     </section>
   );
 }
-

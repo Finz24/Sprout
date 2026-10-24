@@ -12,7 +12,8 @@ import {
 } from '@sprout/contracts';
 import { session } from '../session.js';
 
-export type LibraryFailureKind = 'conflict' | 'invalid' | 'missing' | 'unavailable';
+export type LibraryFailureKind =
+  'conflict' | 'invalid' | 'missing' | 'unavailable';
 
 export class LibraryFailure extends Error {
   constructor(readonly kind: LibraryFailureKind) {
@@ -59,11 +60,7 @@ export async function saveText(
 
 function pagePath(path: string, limit = 50, cursor?: LibraryCursor) {
   const query = new URLSearchParams({ limit: String(limit) });
-  if (cursor)
-    query.set(
-      'cursor',
-      JSON.stringify(cursor),
-    );
+  if (cursor) query.set('cursor', JSON.stringify(cursor));
   return `${path}?${query.toString()}`;
 }
 
@@ -82,11 +79,7 @@ export async function searchText(
   cursor?: LibraryCursor,
 ): Promise<SavedTextPageValue> {
   const params = new URLSearchParams({ q: queryText, limit: '50' });
-  if (cursor)
-    params.set(
-      'cursor',
-      JSON.stringify(cursor),
-    );
+  if (cursor) params.set('cursor', JSON.stringify(cursor));
   const { response, body } = await session.privateRequest(
     `/api/library/search?${params.toString()}`,
   );

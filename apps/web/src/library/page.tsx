@@ -12,20 +12,28 @@ export function LibraryPage() {
   return (
     <section className="library-page">
       <header className="library-heading">
-        <div>
-          <h1>Library</h1>
-        </div>
+        <h1>Library</h1>
         <div className="library-heading-actions">
           <ViewPreference />
           {!composerOpen ? (
-            <Button className="touch-target new-card-button" onClick={() => setComposerOpen(true)}>
+            <Button
+              className="touch-target new-card-button"
+              onClick={() => setComposerOpen(true)}
+            >
               New card
             </Button>
           ) : null}
         </div>
       </header>
-      <div className={composerOpen ? 'library-workbench is-composing' : 'library-workbench'}>
-        <section className="library-collection" aria-label="Saved text collection">
+      <div
+        className={
+          composerOpen ? 'library-workbench is-composing' : 'library-workbench'
+        }
+      >
+        <section
+          className="library-collection"
+          aria-label="Saved text collection"
+        >
           <TextCollection collection={collection} />
         </section>
         {composerOpen ? (

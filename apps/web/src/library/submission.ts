@@ -7,7 +7,11 @@ export type TextDraft = {
 
 export type SubmissionState =
   | { readonly kind: 'closed' }
-  | { readonly kind: 'editing'; readonly draft: TextDraft; readonly issue?: 'invalid' | 'offline' }
+  | {
+      readonly kind: 'editing';
+      readonly draft: TextDraft;
+      readonly issue?: 'invalid' | 'offline';
+    }
   | { readonly kind: 'saving'; readonly payload: TextSubmission }
   | {
       readonly kind: 'unconfirmed';
@@ -23,7 +27,11 @@ export type SubmissionState =
 
 export type SubmissionAction =
   | { readonly type: 'open' }
-  | { readonly type: 'edit'; readonly field: keyof TextDraft; readonly value: string }
+  | {
+      readonly type: 'edit';
+      readonly field: keyof TextDraft;
+      readonly value: string;
+    }
   | { readonly type: 'clear-issue' }
   | { readonly type: 'invalid' }
   | { readonly type: 'offline' }

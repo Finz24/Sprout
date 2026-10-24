@@ -7,6 +7,7 @@ import type {
   SavedTextPage,
 } from '@sprout/contracts';
 import { Button } from '@sprout/ui';
+import { useSession } from '../shell.js';
 import { displayRetentionTime, listText, searchText } from './api.js';
 
 type CollectionState =
@@ -135,7 +136,9 @@ function SavedCard({
     >
       <div className="saved-card-meta">
         <span>{item.review}</span>
-        <time dateTime={item.retainedAt}>{displayRetentionTime(item.retainedAt)}</time>
+        <time dateTime={item.retainedAt}>
+          {displayRetentionTime(item.retainedAt)}
+        </time>
       </div>
       <div className="saved-card-content">
         {links ? (
@@ -145,16 +148,18 @@ function SavedCard({
             search={{ from }}
             className="saved-excerpt-link"
           >
-            <span className="sr-only">Open Original input: </span>
-            <span className="saved-excerpt" dir="auto">{item.originalText}</span>
+            <span className="saved-excerpt" dir="auto">
+              {item.originalText}
+            </span>
           </Link>
         ) : (
-          <p className="saved-excerpt" dir="auto">{item.originalText}</p>
+          <p className="saved-excerpt" dir="auto">
+            {item.originalText}
+          </p>
         )}
       </div>
       {item.submittedIntent !== null && item.submittedIntent !== '' ? (
         <p className="saved-intent">
-          <span>Why you kept it</span>
           <span dir="auto">{item.submittedIntent}</span>
         </p>
       ) : null}
@@ -162,16 +167,6 @@ function SavedCard({
         <span>{item.understanding}</span>
         <span>{item.actions}</span>
       </div>
-      {links ? (
-        <Link
-          to="/library/items/$itemId"
-          params={{ itemId: item.itemId }}
-          search={{ from }}
-          className="text-link saved-card-open"
-        >
-          Open Original input
-        </Link>
-      ) : null}
     </motion.article>
   );
 }
@@ -186,13 +181,24 @@ export function TextCollection({
   readonly collection: ReturnType<typeof useTextCollection>;
 }) {
   const { state, loadMore } = collection;
+  const sessionState = useSession();
+  const view =
+    sessionState.kind === 'Ready' ? sessionState.shell.libraryView : 'grid';
   if (state.kind === 'loading')
-    return <p className="collection-status" role="status">Loading saved text…</p>;
+    return (
+      <p className="collection-status" role="status">
+        Loading saved text…
+      </p>
+    );
   if (state.kind === 'unavailable')
     return (
       <section className="collection-message" role="alert">
         <p>Saved text is unavailable right now.</p>
-        <Button variant="outline" className="touch-target" onClick={collection.reload}>
+        <Button
+          variant="outline"
+          className="touch-target"
+          onClick={collection.reload}
+        >
           Try again
         </Button>
       </section>
@@ -200,24 +206,36 @@ export function TextCollection({
 
   const items = state.items;
   const hasNext = state.nextCursor !== null;
-  const back = query === undefined ? '/library' : `/search?q=${encodeURIComponent(query)}`;
+  const back =
+    query === undefined ? '/library' : `/search?q=${encodeURIComponent(query)}`;
   if (items.length === 0)
     return (
       <section className="collection-empty">
-        <h2>{query === undefined ? 'Your library is growing.' : 'No matching text'}</h2>
+        <h2>
+          {query === undefined ? 'Nothing saved yet' : 'No matching text'}
+        </h2>
         <p>
           {query === undefined
-            ? 'The words you save will be kept here.'
-            : 'Search looks for this exact text inside originals.'}
+            ? 'New card keeps the original exactly.'
+            : 'Exact original text only.'}
         </p>
       </section>
     );
 
   return (
     <>
-      <div className="saved-grid" aria-label={query === undefined ? 'Saved text' : 'Search results'}>
+      <div
+        className={view === 'list' ? 'saved-grid is-list' : 'saved-grid'}
+        aria-label={query === undefined ? 'Saved text' : 'Search results'}
+      >
         {items.map((item, index) => (
-          <SavedCard key={item.itemId} item={item} from={back} links={links} index={index} />
+          <SavedCard
+            key={item.itemId}
+            item={item}
+            from={back}
+            links={links}
+            index={index}
+          />
         ))}
       </div>
       {state.kind === 'more-unavailable' ? (

@@ -10,7 +10,12 @@ import {
 import { Button, Textarea, buttonVariants } from '@sprout/ui';
 import { session } from '../session.js';
 import { CopyTextButton } from './copy-text-button.js';
-import { displayRetentionTime, freezeSubmission, LibraryFailure, saveText } from './api.js';
+import {
+  displayRetentionTime,
+  freezeSubmission,
+  LibraryFailure,
+  saveText,
+} from './api.js';
 import { submissionReducer, type SubmissionState } from './submission.js';
 
 const freshState: SubmissionState = {
@@ -28,13 +33,19 @@ export function TextComposer({
   readonly onStartNew: () => void;
 }) {
   const [state, dispatch] = useReducer(submissionReducer, freshState);
-  const [discardPrompt, setDiscardPrompt] = useState<'draft' | 'uncertain' | null>(null);
+  const [discardPrompt, setDiscardPrompt] = useState<
+    'draft' | 'uncertain' | null
+  >(null);
   const savedHeading = useRef<HTMLHeadingElement>(null);
   const originalInput = useRef<HTMLTextAreaElement>(null);
   const submitting = state.kind === 'saving';
-  const canLose = state.kind === 'editing'
-    ? state.draft.originalText.length > 0 || state.draft.savingIntent.length > 0
-    : state.kind === 'saving' || state.kind === 'unconfirmed' || state.kind === 'conflict';
+  const canLose =
+    state.kind === 'editing'
+      ? state.draft.originalText.length > 0 ||
+        state.draft.savingIntent.length > 0
+      : state.kind === 'saving' ||
+        state.kind === 'unconfirmed' ||
+        state.kind === 'conflict';
   const blocker = useBlocker({
     shouldBlockFn: () => canLose,
     withResolver: true,
@@ -58,7 +69,10 @@ export function TextComposer({
       } else if (error instanceof LibraryFailure && error.kind === 'invalid') {
         dispatch({ type: 'invalid' });
       } else {
-        dispatch({ type: 'unconfirmed', issue: navigator.onLine ? 'unavailable' : 'offline' });
+        dispatch({
+          type: 'unconfirmed',
+          issue: navigator.onLine ? 'unavailable' : 'offline',
+        });
       }
     }
   };
@@ -94,9 +108,13 @@ export function TextComposer({
     }
   };
 
-  const payload = state.kind === 'saving' || state.kind === 'unconfirmed' || state.kind === 'conflict' || state.kind === 'saved'
-    ? state.payload
-    : undefined;
+  const payload =
+    state.kind === 'saving' ||
+    state.kind === 'unconfirmed' ||
+    state.kind === 'conflict' ||
+    state.kind === 'saved'
+      ? state.payload
+      : undefined;
   const busy = submitting;
 
   return (
@@ -112,13 +130,16 @@ export function TextComposer({
             >
               Saved
             </motion.h2>
-            <p>Your original is in the library.</p>
             <time dateTime={state.receipt.retainedAt}>
               {displayRetentionTime(state.receipt.retainedAt)}
             </time>
-            <p className="receipt-original" dir="auto">{state.payload.originalText}</p>
+            <p className="receipt-original" dir="auto">
+              {state.payload.originalText}
+            </p>
             {state.payload.savingIntent !== null ? (
-              <p className="receipt-intent" dir="auto">{state.payload.savingIntent}</p>
+              <p className="receipt-intent" dir="auto">
+                {state.payload.savingIntent}
+              </p>
             ) : null}
             <div className="receipt-actions">
               <Link
@@ -131,12 +152,17 @@ export function TextComposer({
                 Open Original input
               </Link>
               <CopyTextButton text={state.payload.originalText} />
-              <Button variant="outline" className="touch-target" onClick={onStartNew}>
+              <Button
+                variant="outline"
+                className="touch-target"
+                onClick={onStartNew}
+              >
                 New card
               </Button>
             </div>
             <p className="schedule-notice">
-              Not scheduled. Requests in this text are kept only. Nothing is scheduled.
+              Not scheduled. Requests in this text are kept only. Nothing is
+              scheduled.
             </p>
           </div>
         ) : (
@@ -153,7 +179,15 @@ export function TextComposer({
                 variant="outline"
                 className="touch-target composer-close"
                 disabled={busy}
-                onClick={() => setDiscardPrompt('draft')}
+                onClick={() => {
+                  if (!canLose) {
+                    onClose();
+                    return;
+                  }
+                  setDiscardPrompt(
+                    state.kind === 'editing' ? 'draft' : 'uncertain',
+                  );
+                }}
               >
                 Close
               </Button>
@@ -161,7 +195,8 @@ export function TextComposer({
             <div className="composer-field">
               <div className="field-heading">
                 <label htmlFor="original-input">Original input</label>
-                {state.kind === 'editing' && state.draft.originalText.length > 0 ? (
+                {state.kind === 'editing' &&
+                state.draft.originalText.length > 0 ? (
                   <CopyTextButton text={state.draft.originalText} />
                 ) : null}
               </div>
@@ -174,14 +209,33 @@ export function TextComposer({
                 spellCheck
                 required
                 disabled={state.kind !== 'editing'}
-                value={state.kind === 'editing' ? state.draft.originalText : payload?.originalText ?? ''}
-                onChange={(event) => dispatch({ type: 'edit', field: 'originalText', value: event.currentTarget.value })}
+                value={
+                  state.kind === 'editing'
+                    ? state.draft.originalText
+                    : (payload?.originalText ?? '')
+                }
+                onChange={(event) =>
+                  dispatch({
+                    type: 'edit',
+                    field: 'originalText',
+                    value: event.currentTarget.value,
+                  })
+                }
                 onKeyDown={(event) => {
-                  if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+                  if (
+                    (event.ctrlKey || event.metaKey) &&
+                    event.key === 'Enter'
+                  ) {
                     event.preventDefault();
                     event.currentTarget.form?.requestSubmit();
                   }
-                  if (event.key === 'Escape') setDiscardPrompt('draft');
+                  if (event.key === 'Escape') {
+                    if (!canLose) {
+                      onClose();
+                      return;
+                    }
+                    setDiscardPrompt('draft');
+                  }
                 }}
                 placeholder="Paste or write something to keep"
                 className="original-textarea"
@@ -195,13 +249,24 @@ export function TextComposer({
                 dir="auto"
                 rows={3}
                 disabled={state.kind !== 'editing'}
-                value={state.kind === 'editing' ? state.draft.savingIntent : payload?.savingIntent ?? ''}
-                onChange={(event) => dispatch({ type: 'edit', field: 'savingIntent', value: event.currentTarget.value })}
+                value={
+                  state.kind === 'editing'
+                    ? state.draft.savingIntent
+                    : (payload?.savingIntent ?? '')
+                }
+                onChange={(event) =>
+                  dispatch({
+                    type: 'edit',
+                    field: 'savingIntent',
+                    value: event.currentTarget.value,
+                  })
+                }
                 placeholder="Why do you want to keep it? (optional)"
               />
             </div>
             <p className="schedule-notice">
-              Not scheduled. Requests in this text are kept only. Nothing is scheduled.
+              Not scheduled. Requests in this text are kept only. Nothing is
+              scheduled.
             </p>
             {state.kind === 'editing' && state.issue === 'invalid' ? (
               <p className="composer-error" role="alert">
@@ -227,7 +292,11 @@ export function TextComposer({
                 >
                   Retry save
                 </Button>
-                <Button variant="outline" className="touch-target" onClick={() => setDiscardPrompt('uncertain')}>
+                <Button
+                  variant="outline"
+                  className="touch-target"
+                  onClick={() => setDiscardPrompt('uncertain')}
+                >
                   Start a new save
                 </Button>
               </div>
@@ -235,7 +304,11 @@ export function TextComposer({
             {state.kind === 'conflict' ? (
               <div className="composer-error" role="alert">
                 <p>This save identity already holds different text.</p>
-                <Button variant="outline" className="touch-target" onClick={() => setDiscardPrompt('uncertain')}>
+                <Button
+                  variant="outline"
+                  className="touch-target"
+                  onClick={() => setDiscardPrompt('uncertain')}
+                >
                   Start a new save
                 </Button>
               </div>
@@ -258,10 +331,13 @@ export function TextComposer({
                   className="touch-target"
                   onClick={() => {
                     setDiscardPrompt(null);
-                    onClose();
+                    if (discardPrompt === 'uncertain') onStartNew();
+                    else onClose();
                   }}
                 >
-                  Discard and close
+                  {discardPrompt === 'uncertain'
+                    ? 'Start a new save'
+                    : 'Discard and close'}
                 </Button>
               </div>
             ) : null}
@@ -269,7 +345,9 @@ export function TextComposer({
               {state.kind === 'editing' || state.kind === 'saving' ? (
                 <motion.button
                   layoutId="text-save-action"
-                  className={buttonVariants({ className: 'touch-target save-submit' })}
+                  className={buttonVariants({
+                    className: 'touch-target save-submit',
+                  })}
                   type="submit"
                   disabled={busy}
                   onClick={() => dispatch({ type: 'clear-issue' })}
@@ -283,7 +361,11 @@ export function TextComposer({
         {blocker.status === 'blocked' ? (
           <div className="discard-check" role="alert">
             <p>Leave without a confirmed save?</p>
-            <Button variant="outline" className="touch-target" onClick={() => blocker.reset()}>
+            <Button
+              variant="outline"
+              className="touch-target"
+              onClick={() => blocker.reset()}
+            >
               Stay here
             </Button>
             <Button className="touch-target" onClick={() => blocker.proceed()}>
