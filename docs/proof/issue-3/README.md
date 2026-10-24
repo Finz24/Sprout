@@ -1,6 +1,6 @@
 # Issue #3 verification
 
-Fresh local evidence for application and test code at `e0e8cd7` on 2026-10-23.
+Fresh local evidence for application and test code at `b1bc7da` on 2026-10-24.
 All users and data are synthetic. Screenshots contain no credentials or account
 details. This record does not authorize deployment or merge.
 
@@ -16,10 +16,11 @@ corepack pnpm check: exit 0
   documentation checks: passed
 
 Local application processes with PostgreSQL:
-  test:integration: 2 files, 44 tests passed (12.31s)
-  test:e2e: 20 passed, desktop and mobile (36.4s)
+  test:integration: 2 files, 44 tests passed (19.63s)
+  test:e2e: desktop 17 passed (27.3s), mobile 17 passed (30.7s)
   workspace runner: exit 0
-  test-results/.last-run.json: status passed, failedTests []
+  test-results/desktop/.last-run.json: status passed, failedTests []
+  test-results/mobile/.last-run.json: status passed, failedTests []
 
 Historical full Docker Compose at dc69329:
   test:integration: 22 passed
@@ -64,11 +65,11 @@ timed out twice; this inspection used Playwright instead.
 The desktop and mobile library captures come from the authenticated Playwright
 journey. The login capture shows generic feedback after invalid synthetic input.
 
-![Sign-in page with generic failure feedback](login.png)
+![Greenhouse sign-in with generic failure feedback](greenhouse-desktop-wrong-password.png)
 
-![Authenticated desktop empty library](desktop.png)
+![Authenticated desktop empty library](greenhouse-desktop-authenticated.png)
 
-![Authenticated mobile empty library](mobile.png)
+![Authenticated mobile empty library](greenhouse-mobile-authenticated.png)
 
 ## Evidence limits
 
@@ -110,4 +111,28 @@ Fresh local e2e passed all 34 cases: desktop 17 passed (27.3s), mobile
 17 passed (30.7s), including both formerly failing mobile cases. Both project
 last-run records report passed with no failed tests. The runner exited 0 and
 Compose removed its PostgreSQL container and project network; volumes remain.
+
+The approved Greenhouse direction uses Inter from the supplied review sheet,
+abstract shapes only, and the existing sage palette. The fresh captures below
+come from the passing run at `b1bc7da`; all inputs and content are synthetic.
+
+| Approved state | Fresh capture |
+| --- | --- |
+| Desktop sign-in | [Default](greenhouse-desktop-default.png) |
+| Desktop wrong password, email retained | [Mismatch alert](greenhouse-desktop-wrong-password.png) |
+| Mobile signing in | [Pending](greenhouse-mobile-pending.png) |
+| Mobile 503 and retry | [Unavailable](greenhouse-mobile-unavailable.png) |
+| Mobile local owner help | [New here](greenhouse-mobile-help.png) |
+| Mobile dark mode | [Dark](greenhouse-mobile-dark.png) |
+| Successful sign-in | [Authenticated library](greenhouse-desktop-authenticated.png) |
+| Mobile shell navigation | [Navigation drawer](greenhouse-mobile-navigation.png) |
+
+The former failures shared the API's in-memory sign-in budget across browser
+projects. The runner now starts each project with a fresh API process; it does
+not alter limits, mock successful sign-in, or add a reset endpoint. Both projects
+retain their original tests and independent passing `.last-run.json` artifacts.
+
+The fresh full `corepack pnpm check` exited 0 after the runtime run, including
+129 unit tests in seven files, clean lint/format/React Doctor, 11 cached
+typechecks, seven cached builds, and passing documentation checks.
 
