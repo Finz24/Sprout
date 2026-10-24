@@ -572,6 +572,18 @@ describe('atomic publication', () => {
   });
 });
 
+describe('input immutability', () => {
+  it('leaves the snapshot deep-equal after writing', async () => {
+    const root = await temporaryDirectory();
+    const { snapshot, destination } = await createFixture(root);
+    const before = structuredClone(snapshot);
+
+    await writeExportPackage(snapshot, destination);
+
+    expect(snapshot).toEqual(before);
+  });
+});
+
 describe('fresh destinations', () => {
   it('refuses to replace an existing destination', async () => {
     const root = await temporaryDirectory();
