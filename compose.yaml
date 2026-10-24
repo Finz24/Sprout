@@ -3,7 +3,6 @@ x-app: &app
   build: .
   init: true
   environment: &environment
-    DATABASE_URL: postgresql://sprout@postgres:5432/sprout
     HOST: 0.0.0.0
     NX_DAEMON: 'false'
   depends_on:
@@ -29,9 +28,24 @@ services:
     environment:
       POSTGRES_USER: sprout
       POSTGRES_DB: sprout
-      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD privately}
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+    command:
+      - postgres
+      - -c
+      - hba_file=/etc/postgresql/sprout-pg_hba.conf
+      - -c
+      - password_encryption=scram-sha-256
+      - -c
+      - log_statement=none
+      - -c
+      - log_min_error_statement=panic
+      - -c
+      - log_parameter_max_length_on_error=0
     ports: ['127.0.0.1:${SPROUT_DB_PORT:-54329}:5432']
-    volumes: ['postgres-data:/var/lib/postgresql/data']
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./config/pg_hba.conf:/etc/postgresql/sprout-pg_hba.conf:ro
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U sprout -d sprout']
       interval: 3s
@@ -41,8 +55,20 @@ services:
     build: .
     image: ${COMPOSE_PROJECT_NAME}-migrate-development:local
     init: true
-    command: ['corepack', 'pnpm', 'migrate']
-    environment: *environment
+    command:
+      [
+        'sh',
+        '-c',
+        'corepack pnpm migrate && corepack pnpm auth:configure-logins',
+      ]
+    environment:
+      <<: *environment
+      DATABASE_URL: ${MIGRATION_DATABASE_URL:?Set MIGRATION_DATABASE_URL privately}
+      AUTH_DATABASE_URL: ${AUTH_DATABASE_URL:?Set AUTH_DATABASE_URL privately}
+      API_DATABASE_URL: ${API_DATABASE_URL:?Set API_DATABASE_URL privately}
+      WORKER_DATABASE_URL: ${WORKER_DATABASE_URL:?Set WORKER_DATABASE_URL privately}
+      MAINTENANCE_DATABASE_URL: ${MAINTENANCE_DATABASE_URL:?Set MAINTENANCE_DATABASE_URL privately}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD privately}
     depends_on:
       postgres:
         condition: service_healthy
@@ -62,6 +88,11 @@ services:
     environment:
       <<: *environment
       PORT: '3001'
+      DATABASE_URL: ${API_DATABASE_URL:?Set API_DATABASE_URL privately}
+      AUTH_DATABASE_URL: ${AUTH_DATABASE_URL:?Set AUTH_DATABASE_URL privately}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?Set BETTER_AUTH_SECRET privately}
+      SPROUT_ORIGIN: ${SPROUT_ORIGIN:?Set SPROUT_ORIGIN}
+      SPROUT_LOOPBACK_DEVELOPMENT: ${SPROUT_LOOPBACK_DEVELOPMENT:-false}
     ports: ['127.0.0.1:${SPROUT_API_PORT:-3001}:3001']
     volumes: ['originals:/workspace/originals']
     develop:
@@ -116,6 +147,7 @@ services:
     environment:
       <<: *environment
       PORT: '3002'
+      DATABASE_URL: ${WORKER_DATABASE_URL:?Set WORKER_DATABASE_URL privately}
     ports: ['127.0.0.1:${SPROUT_WORKER_PORT:-3002}:3002']
     volumes: ['originals:/workspace/originals']
     develop:

@@ -1,4 +1,27 @@
 import { Schema } from 'effect';
+
+export const LibraryView = Schema.Literals(['grid', 'list']);
+export type LibraryView = typeof LibraryView.Type;
+export const OwnerSummary = Schema.Struct({
+  name: Schema.String,
+  email: Schema.String,
+});
+export const Access = Schema.Union([
+  Schema.Struct({ kind: Schema.Literal('Anonymous') }),
+  Schema.Struct({
+    kind: Schema.Literal('Authenticated'),
+    owner: OwnerSummary,
+    expiresAt: Schema.String,
+  }),
+  Schema.Struct({ kind: Schema.Literal('Unavailable') }),
+]);
+export type Access = typeof Access.Type;
+export const ShellSummary = Schema.Struct({
+  owner: OwnerSummary,
+  libraryView: LibraryView,
+});
+export type ShellSummary = typeof ShellSummary.Type;
+export const SetLibraryView = Schema.Struct({ libraryView: LibraryView });
 import {
   HttpApi,
   HttpApiEndpoint,
