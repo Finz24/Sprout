@@ -1,5 +1,6 @@
 import { spawnSync } from 'node:child_process';
 import {
+  existsSync,
   mkdirSync,
   mkdtempSync,
   rmSync,
@@ -457,4 +458,53 @@ test('rejects verify-only without a source directory', () => {
   expect(failure(result.stdout)).toMatchObject({
     reason: 'invalid-arguments',
   });
+});
+
+test('checks backup bytes before accessing Docker or restore targets', () => {
+  const { root, directory } = createBackup();
+  writeFileSync(join(directory, 'originals', 'notes.txt'), 'corrupt');
+  const target = join(root, 'untouched');
+  const result = verify(directory, [
+    '--from',
+    directory,
+    '--database',
+    'new_scratch',
+    '--originals',
+    target,
+  ]);
+  expect(result.status).toBe(1);
+  expect(failure(result.stdout)).toMatchObject({
+    reason: 'size-mismatch',
+    path: 'originals/notes.txt',
+  });
+  expect(result.stdout).not.toContain('redaction-probe');
+  expect(existsSync(target)).toBe(false);
+});
+
+test.each([
+  ['--from', 'backup'],
+  ['--from', 'backup', '--database', 'new_scratch'],
+  [
+    '--verify-only',
+    '--from',
+    'backup',
+    '--database',
+    'new_scratch',
+    '--originals',
+    'empty',
+  ],
+  [
+    '--from',
+    'backup',
+    '--from',
+    'other',
+    '--database',
+    'new_scratch',
+    '--originals',
+    'empty',
+  ],
+])('rejects incomplete or mixed restore arguments %j', (...args: string[]) => {
+  const result = verify('', args);
+  expect(result.status).toBe(1);
+  expect(failure(result.stdout).reason).toBe('invalid-arguments');
 });
