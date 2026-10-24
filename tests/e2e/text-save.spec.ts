@@ -83,7 +83,11 @@ test('retains exact text after a committed response is lost and the same save is
   ).toBeFocused();
   expect(requestBodies).toHaveLength(2);
   expect(requestBodies.at(0)).toBe(requestBodies.at(1));
-  await expect(page.getByText(originalText, { exact: true })).toBeVisible();
+  await expect(
+    page
+      .getByRole('region', { name: 'New card' })
+      .getByText(originalText, { exact: true }),
+  ).toBeVisible();
   await expect(page.getByRole('button', { name: 'Copy text' })).toBeVisible();
   await expect(
     page.getByText(
@@ -202,9 +206,11 @@ test('offers a confirmed new save after a 409 without editing the winner', async
   await page
     .getByRole('button', { name: 'Start a new save', exact: true })
     .click();
-  await expect(page.getByRole('alert')).toContainText(
-    'This save may already be in your library. A new save can keep a second copy.',
-  );
+  await expect(
+    page.getByText(
+      'This save may already be in your library. A new save can keep a second copy.',
+    ),
+  ).toBeVisible();
   await page
     .getByRole('button', { name: 'Start a new save', exact: true })
     .click();

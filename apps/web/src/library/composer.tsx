@@ -292,25 +292,29 @@ export function TextComposer({
                 >
                   Retry save
                 </Button>
-                <Button
-                  variant="outline"
-                  className="touch-target"
-                  onClick={() => setDiscardPrompt('uncertain')}
-                >
-                  Start a new save
-                </Button>
+                {discardPrompt ? null : (
+                  <Button
+                    variant="outline"
+                    className="touch-target"
+                    onClick={() => setDiscardPrompt('uncertain')}
+                  >
+                    Start a new save
+                  </Button>
+                )}
               </div>
             ) : null}
             {state.kind === 'conflict' ? (
               <div className="composer-error" role="alert">
                 <p>This save identity already holds different text.</p>
-                <Button
-                  variant="outline"
-                  className="touch-target"
-                  onClick={() => setDiscardPrompt('uncertain')}
-                >
-                  Start a new save
-                </Button>
+                {discardPrompt ? null : (
+                  <Button
+                    variant="outline"
+                    className="touch-target"
+                    onClick={() => setDiscardPrompt('uncertain')}
+                  >
+                    Start a new save
+                  </Button>
+                )}
               </div>
             ) : null}
             {discardPrompt ? (

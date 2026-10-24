@@ -212,7 +212,9 @@ export function TextCollection({
     return (
       <section className="collection-empty">
         <h2>
-          {query === undefined ? 'Nothing saved yet' : 'No matching text'}
+          {query === undefined
+            ? 'Your library is ready for a fresh start'
+            : 'No matching text'}
         </h2>
         <p>
           {query === undefined
