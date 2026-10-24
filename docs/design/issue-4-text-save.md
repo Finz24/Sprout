@@ -337,7 +337,7 @@ caller simplicity. Reject content-hash-only deduplication, frontend-only owner
 filters, one global status, “Saved” on send, and offline queues. They either erase
 intent, weaken privacy or promise behavior outside #4. The visual Opus runner
 failed with a usage limit before producing an artifact; the configured Luna
-fallback produced the sheet under the same brief.
+fallback produced an initial sheet under the same brief. Parent visual review found undersized text, missing element IDs and weak composition; the parent rebuilt the final sheet and checked the resulting captures.
 
 ## Proof: the implementation's TDD red step
 
