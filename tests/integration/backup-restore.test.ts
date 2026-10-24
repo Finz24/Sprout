@@ -68,6 +68,47 @@ function jsonRows(output: string): unknown {
   return rows;
 }
 
+function backupRole() {
+  for (const candidate of [
+    process.env.SPROUT_BACKUP_DATABASE_URL,
+    process.env.DATABASE_URL,
+  ]) {
+    if (!candidate) {
+      continue;
+    }
+    try {
+      const url = new URL(candidate);
+      if (
+        (url.protocol === 'postgres:' || url.protocol === 'postgresql:') &&
+        url.username
+      ) {
+        return {
+          user: decodeURIComponent(url.username),
+          password: decodeURIComponent(url.password),
+        };
+      }
+    } catch {
+      // Ignore non-URL sentinels. The password stays in the process environment.
+    }
+  }
+  return {
+    user: 'sprout',
+    password: process.env.POSTGRES_PASSWORD ?? '',
+  };
+}
+
+function roleUrl(
+  hostPort: string,
+  database: string,
+  role: { user: string; password: string },
+) {
+  const user = encodeURIComponent(role.user);
+  const auth = role.password
+    ? `${user}:${encodeURIComponent(role.password)}`
+    : user;
+  return `postgresql://${auth}@${hostPort}/${database}`;
+}
+
 async function committedHistory() {
   const folder = resolve('packages/database/migrations');
   const journal: unknown = JSON.parse(
@@ -131,7 +172,10 @@ test('backs up and restores independent PostgreSQL and originals fixtures, refus
   const restoredOriginals = join(root, 'restored-originals');
   const rejectedOriginals = join(root, 'rejected-originals');
   const nonemptyOriginals = join(root, 'nonempty-originals');
-  const databaseUrl = `postgresql://sprout@postgres:5432/${source}`;
+  const role = backupRole();
+  const hostPort = `127.0.0.1:${process.env.SPROUT_DB_PORT ?? '54329'}`;
+  const databaseUrl = roleUrl('postgres:5432', source, role);
+  const hostDatabaseUrl = roleUrl(hostPort, source, role);
   const backupScript = resolve('scripts/backup-workspace.mjs');
   const cliEnv = {
     ...process.env,
@@ -188,17 +232,24 @@ test('backs up and restores independent PostgreSQL and originals fixtures, refus
           '-T',
           '-e',
           'PGCLIENTENCODING=UTF8',
+          '-e',
+          'PGUSER',
+          '-e',
+          'PGPASSWORD',
           'postgres',
           'psql',
           '-X',
           '-qAt',
           '-v',
           'ON_ERROR_STOP=1',
-          '-U',
-          'sprout',
           '-d',
           database,
         ],
+        env: {
+          ...process.env,
+          PGUSER: role.user,
+          PGPASSWORD: role.password,
+        },
         input,
       }),
       'Scratch PostgreSQL command',
@@ -227,6 +278,10 @@ test('backs up and restores independent PostgreSQL and originals fixtures, refus
       /MODULE_NOT_FOUND|invalid-arguments|internal-error/,
     );
     expect(output).not.toContain(databaseUrl);
+    expect(output).not.toContain(hostDatabaseUrl);
+    if (role.password) {
+      expect(output).not.toContain(role.password);
+    }
   };
   const readFixture = async (database: string) => {
     expect(
@@ -309,7 +364,7 @@ test('backs up and restores independent PostgreSQL and originals fixtures, refus
       args: [join(corepackRoot, 'dist/corepack.js'), 'pnpm', 'migrate'],
       env: {
         ...process.env,
-        DATABASE_URL: `postgresql://sprout@127.0.0.1:${process.env.SPROUT_DB_PORT ?? '54329'}/${source}`,
+        DATABASE_URL: hostDatabaseUrl,
         MIGRATIONS_DIR: resolve('packages/database/migrations'),
       },
     });
@@ -349,9 +404,13 @@ test('backs up and restores independent PostgreSQL and originals fixtures, refus
 
     backupWasAvailable = existsSync(backupScript);
     const backup = await backupTo(destination, {
-      SPROUT_BACKUP_DATABASE_URL: `postgresql://sprout@127.0.0.1:${process.env.SPROUT_DB_PORT ?? '54329'}/${source}`,
+      SPROUT_BACKUP_DATABASE_URL: hostDatabaseUrl,
     });
     expect(`${backup.stdout}\n${backup.stderr}`).not.toContain(databaseUrl);
+    expect(`${backup.stdout}\n${backup.stderr}`).not.toContain(hostDatabaseUrl);
+    if (role.password) {
+      expect(`${backup.stdout}\n${backup.stderr}`).not.toContain(role.password);
+    }
     successful(backup, 'Back up scratch database and synthetic originals');
     for (const url of [
       process.env.API_URL ?? 'http://127.0.0.1:3001',
@@ -395,6 +454,14 @@ test('backs up and restores independent PostgreSQL and originals fixtures, refus
     expect(`${restoredResult.stdout}\n${restoredResult.stderr}`).not.toContain(
       databaseUrl,
     );
+    expect(`${restoredResult.stdout}\n${restoredResult.stderr}`).not.toContain(
+      hostDatabaseUrl,
+    );
+    if (role.password) {
+      expect(
+        `${restoredResult.stdout}\n${restoredResult.stderr}`,
+      ).not.toContain(role.password);
+    }
     successful(
       restoredResult,
       'Restore into a new database and empty originals folder',
