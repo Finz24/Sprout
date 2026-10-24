@@ -2,12 +2,13 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: './tests/e2e',
   fullyParallel: true,
+  workers: 1,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? 'github' : 'list',
   use: {
     baseURL: process.env.WEB_URL ?? 'http://127.0.0.1:5173',
-    trace: 'retain-on-failure',
+    trace: 'off',
   },
   projects: [
     { name: 'desktop', use: { ...devices['Desktop Chrome'] } },

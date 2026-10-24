@@ -4,6 +4,8 @@
   "private": true,
   "type": "module",
   "dependencies": {
+    "@sprout/contracts": "workspace:*",
+    "effect": "4.0.2",
     "@sprout/ui": "workspace:*",
     "react": "19.3.0",
     "react-dom": "19.3.0",
