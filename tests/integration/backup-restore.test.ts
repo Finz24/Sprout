@@ -324,6 +324,32 @@ test('backs up and restores independent PostgreSQL and originals fixtures, refus
       args: [backupScript, '--dest', folder],
       env: { ...cliEnv, ...overrides },
     });
+  const waitForApplications = async (message: string) => {
+    for (const url of [
+      process.env.API_URL ?? 'http://127.0.0.1:3001',
+      process.env.WORKER_URL ?? 'http://127.0.0.1:3002',
+    ]) {
+      await expect
+        .poll(
+          async () => {
+            try {
+              return (
+                await fetch(`${url}/health/ready`, {
+                  signal: AbortSignal.timeout(3_000),
+                })
+              ).status;
+            } catch {
+              return 0;
+            }
+          },
+          {
+            timeout: 30_000,
+            message,
+          },
+        )
+        .toBe(200);
+    }
+  };
   const dropScratchDatabase = async (database: string) => {
     if (!database.startsWith(`${prefix}_`) || !/^[a-z0-9_]+$/.test(database)) {
       throw new Error("Cleanup may only drop this test's generated databases.");
@@ -412,30 +438,7 @@ test('backs up and restores independent PostgreSQL and originals fixtures, refus
       expect(`${backup.stdout}\n${backup.stderr}`).not.toContain(role.password);
     }
     successful(backup, 'Back up scratch database and synthetic originals');
-    for (const url of [
-      process.env.API_URL ?? 'http://127.0.0.1:3001',
-      process.env.WORKER_URL ?? 'http://127.0.0.1:3002',
-    ]) {
-      await expect
-        .poll(
-          async () => {
-            try {
-              return (
-                await fetch(`${url}/health/ready`, {
-                  signal: AbortSignal.timeout(3_000),
-                })
-              ).status;
-            } catch {
-              return 0;
-            }
-          },
-          {
-            timeout: 30_000,
-            message: 'Backup must restart the running API and worker',
-          },
-        )
-        .toBe(200);
-    }
+    await waitForApplications('Backup must restart the running API and worker');
     successful(
       await command({
         executable: process.execPath,
@@ -747,8 +750,11 @@ test('backs up and restores independent PostgreSQL and originals fixtures, refus
     try {
       if (backupWasAvailable) {
         successful(
-          await compose(['up', '-d', '--no-deps', '--wait', 'api', 'worker']),
-          'Keep API and worker running after the restore exercise',
+          await compose(['start', 'api', 'worker']),
+          'Start the recorded API and worker after the restore exercise',
+        );
+        await waitForApplications(
+          'API and worker must be ready after the restore exercise',
         );
       }
     } finally {

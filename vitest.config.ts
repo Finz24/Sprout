@@ -17,6 +17,9 @@ export default defineConfig({
         test: {
           name: 'integration',
           include: ['tests/integration/**/*.test.ts'],
+          // Backup quiesces this project's API and worker. Parallel files would
+          // observe those stopped containers as connection failures.
+          fileParallelism: false,
         },
       },
     ],
