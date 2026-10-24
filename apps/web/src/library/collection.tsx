@@ -76,17 +76,21 @@ export function useTextCollection(query?: string) {
     setRefreshKey((key) => key + 1);
   };
   const loadMore = async () => {
-    if (
-      (state.kind !== 'ready' && state.kind !== 'more-unavailable') ||
-      !state.nextCursor
-    )
-      return;
+    if (state.kind !== 'ready' && state.kind !== 'more-unavailable') return;
+    const cursor = state.nextCursor;
+    if (cursor === null) return;
     const previous = state;
-    const cursor = previous.nextCursor;
     const generation = requestGeneration.current;
-    setState({ kind: 'loading-more', items: previous.items, nextCursor: cursor });
+    setState({
+      kind: 'loading-more',
+      items: previous.items,
+      nextCursor: cursor,
+    });
     try {
-      const page = query === undefined ? await listText(cursor) : await searchText(query, cursor);
+      const page =
+        query === undefined
+          ? await listText(cursor)
+          : await searchText(query, cursor);
       if (generation !== requestGeneration.current) return;
       setState({
         kind: 'ready',
@@ -121,8 +125,8 @@ function SavedCard({
     <motion.article
       className="saved-card"
       initial={reducedMotion ? false : { opacity: 0, y: 8 }}
-      animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
-      whileHover={reducedMotion ? undefined : { y: -3 }}
+      animate={reducedMotion ? false : { opacity: 1, y: 0 }}
+      {...(reducedMotion ? {} : { whileHover: { y: -3 } })}
       transition={{
         duration: 0.34,
         ease: [0.16, 1, 0.3, 1],

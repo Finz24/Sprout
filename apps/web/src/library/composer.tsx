@@ -2,7 +2,11 @@ import { useEffect, useReducer, useRef, useState } from 'react';
 import { Link, useBlocker } from '@tanstack/react-router';
 import { Schema } from 'effect';
 import { LayoutGroup, motion } from 'motion/react';
-import { OriginalText, type TextSubmission } from '@sprout/contracts';
+import {
+  OriginalText,
+  SubmissionId,
+  type TextSubmission,
+} from '@sprout/contracts';
 import { Button, Textarea, buttonVariants } from '@sprout/ui';
 import { session } from '../session.js';
 import { CopyTextButton } from './copy-text-button.js';
@@ -76,9 +80,12 @@ export function TextComposer({
     try {
       Schema.decodeUnknownSync(OriginalText)(state.draft.originalText);
       const payload = freezeSubmission({
-        submissionId: crypto.randomUUID(),
+        submissionId: Schema.decodeUnknownSync(SubmissionId)(
+          crypto.randomUUID(),
+        ),
         originalText: state.draft.originalText,
-        savingIntent: state.draft.savingIntent === '' ? null : state.draft.savingIntent,
+        savingIntent:
+          state.draft.savingIntent === '' ? null : state.draft.savingIntent,
       });
       await performSave(payload);
     } catch {

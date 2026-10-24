@@ -28,9 +28,9 @@ function failure(status: number): LibraryFailure {
   return new LibraryFailure('unavailable');
 }
 
-function parse<S extends Schema.Top>(schema: S, body: unknown): S['Type'] {
+function parse<A>(decode: (input: unknown) => A, body: unknown): A {
   try {
-    return Schema.decodeUnknownSync(schema)(body);
+    return decode(body);
   } catch {
     throw new LibraryFailure('unavailable');
   }
@@ -51,7 +51,7 @@ export async function saveText(
     body: JSON.stringify(submission),
   });
   if (!response.ok) throw failure(response.status);
-  const receipt = parse(SaveReceipt, body);
+  const receipt = parse(Schema.decodeUnknownSync(SaveReceipt), body);
   if (receipt.submissionId !== submission.submissionId)
     throw new LibraryFailure('unavailable');
   return receipt;
@@ -74,7 +74,7 @@ export async function listText(
     pagePath('/api/library/items', 50, cursor),
   );
   if (!response.ok) throw failure(response.status);
-  return parse(SavedTextPage, body);
+  return parse(Schema.decodeUnknownSync(SavedTextPage), body);
 }
 
 export async function searchText(
@@ -91,7 +91,7 @@ export async function searchText(
     `/api/library/search?${params.toString()}`,
   );
   if (!response.ok) throw failure(response.status);
-  return parse(SavedTextPage, body);
+  return parse(Schema.decodeUnknownSync(SavedTextPage), body);
 }
 
 export async function getText(itemId: string): Promise<SavedTextItemValue> {
@@ -99,7 +99,7 @@ export async function getText(itemId: string): Promise<SavedTextItemValue> {
     `/api/library/items/${encodeURIComponent(itemId)}`,
   );
   if (!response.ok) throw failure(response.status);
-  const item = parse(SavedTextItem, body);
+  const item = parse(Schema.decodeUnknownSync(SavedTextItem), body);
   if (item.itemId !== itemId) throw new LibraryFailure('unavailable');
   return item;
 }

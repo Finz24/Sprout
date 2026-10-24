@@ -4,8 +4,8 @@ import { Button } from '@sprout/ui';
 import { useTextCollection, TextCollection } from './collection.js';
 
 export function OriginalSearch() {
-  const { q } = useSearch({ from: '/search' });
-  const navigate = useNavigate({ from: '/search' });
+  const { q } = useSearch({ from: '/authenticated/search' });
+  const navigate = useNavigate();
   const collection = useTextCollection(q);
   const [query, setQuery] = useState(q);
   useEffect(() => setQuery(q), [q]);

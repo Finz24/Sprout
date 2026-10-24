@@ -11,7 +11,9 @@ type ItemState =
   | { readonly kind: 'unavailable' };
 
 export function TextInspector({ itemId }: { itemId: string }) {
-  const from = useSearch({ from: '/library/items/$itemId' }).from;
+  const from = useSearch({
+    from: '/authenticated/library/items/$itemId',
+  }).from;
   const heading = useRef<HTMLHeadingElement>(null);
   const [state, setState] = useState<ItemState>({ kind: 'loading' });
   const [retry, setRetry] = useState(0);
