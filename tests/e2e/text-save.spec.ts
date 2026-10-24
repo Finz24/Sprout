@@ -100,11 +100,12 @@ test('retains exact text after a committed response is lost and the same save is
   await originalLink.click();
 
   const original = page.getByRole('region', { name: 'Original input' });
+  const detail = page.getByRole('region', { name: 'Saved item' });
   await expect(original).toBeVisible();
   expect(await original.textContent()).toBe(originalText);
-  await expect(page.getByText(savingIntent, { exact: true })).toBeVisible();
+  await expect(detail.getByText(savingIntent, { exact: true })).toBeVisible();
   await expect(
-    page.getByText(
+    detail.getByText(
       'Requests in this text are kept only. Nothing is scheduled.',
     ),
   ).toBeVisible();
@@ -112,7 +113,7 @@ test('retains exact text after a committed response is lost and the same save is
   await page.reload();
   await expect(original).toBeVisible();
   expect(await original.textContent()).toBe(originalText);
-  await expect(page.getByText(savingIntent, { exact: true })).toBeVisible();
+  await expect(detail.getByText(savingIntent, { exact: true })).toBeVisible();
 
   await page
     .getByRole('link', { name: 'Back to Library', exact: true })

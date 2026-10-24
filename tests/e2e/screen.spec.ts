@@ -287,7 +287,10 @@ test('persists the library view across reload and settings navigation', async ({
     page.getByRole('link', { name: /sign up|register/i }),
   ).toHaveCount(0);
   await expect(
-    page.getByText('Your library is ready for a fresh start'),
+    page.getByRole('heading', { name: 'Library', exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'New card', exact: true }),
   ).toBeVisible();
   await page.screenshot({
     path: test.info().outputPath('library.png'),
