@@ -1,0 +1,122 @@
+
+> sprout@0.0.0 check C:\Users\ohadf\.t3\worktrees\sprout\docs-issue-4-design
+> corepack pnpm check:environment && corepack pnpm format:check && corepack pnpm lint && corepack pnpm run doctor && corepack pnpm typecheck && corepack pnpm test && corepack pnpm build && corepack pnpm check:docs
+
+
+> sprout@0.0.0 check:environment C:\Users\ohadf\.t3\worktrees\sprout\docs-issue-4-design
+> node scripts/check-environment.mjs
+
+{
+  "results": [
+    {
+      "name": "arguments",
+      "status": "pass",
+      "message": "Supported options."
+    },
+    {
+      "name": "node-pin",
+      "status": "pass",
+      "message": ".nvmrc and package.json declare the same exact Node version."
+    },
+    {
+      "name": "node-runtime",
+      "status": "pass",
+      "message": "The running Node version matches .nvmrc."
+    },
+    {
+      "name": "package-manager",
+      "status": "pass",
+      "message": "packageManager declares an exact pnpm version."
+    },
+    {
+      "name": "package-config",
+      "status": "pass",
+      "message": ".npmrc enforces engines, exact saves and strict peer dependencies."
+    },
+    {
+      "name": "docker-pins",
+      "status": "pass",
+      "message": "Docker pins match Node and pnpm, with pinned Corepack and base digest."
+    },
+    {
+      "name": "compose-environment",
+      "status": "pass",
+      "message": "Compose project identity and distinct host ports are valid."
+    }
+  ]
+}
+
+> sprout@0.0.0 format:check C:\Users\ohadf\.t3\worktrees\sprout\docs-issue-4-design
+> prettier --check apps packages tests scripts/*.mjs *.json *.ts *.yaml eslint.config.mjs .github/workflows docs/development.md docs/adr/0004-effect-api-and-worker.md
+
+Checking formatting...
+All matched files use Prettier code style!
+
+> sprout@0.0.0 lint C:\Users\ohadf\.t3\worktrees\sprout\docs-issue-4-design
+> eslint apps packages tests scripts/*.mjs *.ts eslint.config.mjs --max-warnings=0
+
+
+> sprout@0.0.0 doctor C:\Users\ohadf\.t3\worktrees\sprout\docs-issue-4-design
+> react-doctor . --yes --scope full --verbose --blocking warning --no-telemetry --no-supply-chain --no-parallel
+
+✔ Select projects › @sprout/web, @sprout/ui
+✔ Scanned 11 files in 3.0s
+
+React Doctor — docs-issue-4-design
+Score unavailable.
+
+✔ No issues found!
+  Full diagnostics written to C:\Users\ohadf\AppData\Local\Temp\react-doctor-e25118e8-dc46-486a-9ea7-5357cd39c388
+
+> sprout@0.0.0 typecheck C:\Users\ohadf\.t3\worktrees\sprout\docs-issue-4-design
+> nx run-many -t typecheck --parallel=3 && tsc -p tsconfig.tools.json
+
+
+ NX   11 tasks: 11 succeeded, 11 cached
+
+
+Re-run with --output-style=static to inline logs.
+
+  Run duration:      136ms
+  Cache:             11/11 hit (100%)
+  Critical path:     14ms (4 tasks)
+  Recoverable time:  <1ms
+
+> sprout@0.0.0 test C:\Users\ohadf\.t3\worktrees\sprout\docs-issue-4-design
+> vitest run --project unit
+
+
+ RUN  v4.1.12 C:/Users/ohadf/.t3/worktrees/sprout/docs-issue-4-design
+
+
+ Test Files  9 passed (9)
+      Tests  180 passed (180)
+   Start at  18:25:22
+   Duration  81.04s (transform 312ms, setup 0ms, import 41.03s, tests 36.44s, environment 1ms)
+
+
+> sprout@0.0.0 build C:\Users\ohadf\.t3\worktrees\sprout\docs-issue-4-design
+> nx run-many -t build --parallel=3
+
+
+ NX   7 tasks: 7 succeeded, 7 cached
+
+
+Re-run with --output-style=static to inline logs.
+
+  Run duration:      92ms
+  Cache:             7/7 hit (100%)
+  Critical path:     25ms (4 tasks)
+  Recoverable time:  <1ms
+
+> sprout@0.0.0 check:docs C:\Users\ohadf\.t3\worktrees\sprout\docs-issue-4-design
+> python -B -X utf8 scripts/check-workflows.py
+
+{
+  "journeys": 13,
+  "nodes": 143,
+  "connections": 172,
+  "fragment_bytes": 422924,
+  "runtime_scripts": 0,
+  "checks": "PASS: workflow contracts, graph identities, SVG XML/markers, native controls, standalone encoding/theme, local links and offline builder"
+}
