@@ -42,7 +42,7 @@ const receipt = () =>
 const heading = (title = 'Library') =>
   `<div class="heading"><div><h3>${number()}${title}</h3>${p('Your words, kept for later.', 'muted')}</div>${button('New card', 'primary')}</div>`;
 function specimen(direction, theme, phone) {
-  const title = `${phone ? 'Galaxy · 360 CSS px layout' : 'Desktop · responsive workspace'} / ${theme}`;
+  const title = `${phone ? 'Galaxy · responsive phone layout' : 'Desktop · responsive workspace'} / ${theme}`;
   const top = `<div class="spec-caption">${number()}${title}<span>Illustrative state</span></div>`;
   let body;
   if (direction === 'A') {

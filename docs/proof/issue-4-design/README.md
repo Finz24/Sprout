@@ -19,6 +19,8 @@ RLS, action execution or real-device behavior tested for this docs task.
 - `desktop-motion.png` / `mobile-motion.png`: replayable receipt-panel specimen.
 - `render-evidence.json`: viewport, overflow, loaded Inter, Unicode preservation,
   unique IDs, reduced motion, script errors and external-request observations.
+- `check-output.txt`: complete fresh `corepack pnpm check` output for revision 2,
+  normalized to UTF-8 with terminal color escapes removed.
 
 The revised sheet includes 487 numbered content/control groups; direction and state IDs
 are additional document anchors. Light/dark examples are shown simultaneously,
