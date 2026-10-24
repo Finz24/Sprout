@@ -10,19 +10,21 @@ import {
   Link,
   useNavigate,
 } from '@tanstack/react-router';
-import { MotionConfig } from 'motion/react';
+import { LazyMotion, MotionConfig, domMax } from 'motion/react';
 import { Login } from './login.js';
 import { session, safeReturn } from './session.js';
+import { LibraryPage } from './library/page.js';
+import { OriginalSearch } from './library/search.js';
+import { TextInspector } from './library/inspector.js';
 import {
   AccessStatus,
-  Inspector,
-  Library,
   Placeholder,
   Settings,
   Shell,
   useSession,
 } from './shell.js';
 import './styles.css';
+import './library/library.css';
 
 function returnDestination(value: unknown) {
   const url = new URL(safeReturn(value), window.location.origin);
@@ -41,6 +43,7 @@ function returnDestination(value: unknown) {
     return {
       to: '/library/items/$itemId',
       params: { itemId: item[1] },
+      search: { from: '/library' },
     } as const;
   return { to: '/library' } as const;
 }
@@ -62,15 +65,6 @@ function LoginPage() {
   );
 }
 
-function Search() {
-  const { q } = searchRoute.useSearch();
-  return (
-    <Placeholder title="Find and ask">
-      Search is not available yet.
-      {q ? ` Your query “${q}” is kept in this URL.` : ''}
-    </Placeholder>
-  );
-}
 const rootRoute = createRootRoute({
   component: Outlet,
   pendingComponent: AccessStatus,
@@ -122,12 +116,15 @@ const indexRoute = createRoute({
 const libraryRoute = createRoute({
   getParentRoute: () => privateRoute,
   path: '/library',
-  component: Library,
+  component: LibraryPage,
 });
 const inspectorRoute = createRoute({
   getParentRoute: () => libraryRoute,
   path: '/items/$itemId',
-  component: Inspector,
+  validateSearch: (input: Record<string, unknown>) => ({
+    from: safeReturn(input.from),
+  }),
+  component: () => <TextInspector itemId={inspectorRoute.useParams().itemId} />,
 });
 const searchRoute = createRoute({
   getParentRoute: () => privateRoute,
@@ -135,7 +132,7 @@ const searchRoute = createRoute({
   validateSearch: (input: Record<string, unknown>) => ({
     q: typeof input.q === 'string' ? input.q.slice(0, 500) : '',
   }),
-  component: Search,
+  component: OriginalSearch,
 });
 const spacesRoute = createRoute({
   getParentRoute: () => privateRoute,
@@ -193,8 +190,10 @@ const root = document.getElementById('root');
 if (!root) throw new Error('Missing application root');
 createRoot(root).render(
   <StrictMode>
-    <MotionConfig reducedMotion="user">
-      <RouterProvider router={router} />
-    </MotionConfig>
+    <LazyMotion features={domMax} strict>
+      <MotionConfig reducedMotion="user">
+        <RouterProvider router={router} />
+      </MotionConfig>
+    </LazyMotion>
   </StrictMode>,
 );

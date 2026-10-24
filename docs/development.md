@@ -77,7 +77,9 @@ environment and service shutdown, so CI never writes credentials to environment
 files or prints raw Compose logs.
 
 Add `--interactive` in an interactive terminal to keep the workspace available.
-Commands are `integration`, `e2e`, `check`, `restart`, `status`, and `stop`.
+Commands are `integration`, `e2e`, `check`, `restart`, `restart-runtime`, `status`,
+and `stop`. `restart` restarts the API. `restart-runtime` restarts both API and
+worker while retaining the database, for persistence verification.
 Run integration once on the initially empty database. It provisions two test
 owners. E2E then uses the first owner without attempting production bootstrap
 on the intentional two-owner fixture. Open the selected loopback web port for

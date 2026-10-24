@@ -40,17 +40,21 @@ body {
   box-sizing: border-box;
 }
 body {
-  font-family: system-ui, sans-serif;
+  font-family: Inter, system-ui, sans-serif;
   line-height: 1.5;
 }
 a,
 button,
-input {
+input,
+textarea {
   -webkit-tap-highlight-color: transparent;
 }
 a:focus-visible,
 button:focus-visible,
-input:focus-visible {
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 4px;
 }

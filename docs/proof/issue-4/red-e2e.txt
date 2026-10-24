@@ -1,0 +1,25 @@
+Command: node scripts/auth-workspace.mjs --interactive, then e2e
+Project: sprout-text-save-4c
+Browser project: desktop
+Baseline: 4930988, before text-save production behavior
+
+17 existing tests passed.
+
+1) [desktop] tests/e2e/text-save.spec.ts:18:1
+retains exact text after a committed response is lost and the same save is retried
+
+Error: expect(locator).toBeVisible() failed
+Locator: getByRole('button', { name: 'New card', exact: true })
+Expected: visible
+Timeout: 5000ms
+Error: element(s) not found
+
+tests/e2e/text-save.spec.ts:29:25
+await expect(newCard).toBeVisible();
+
+1 failed
+17 passed (1.0m)
+ELIFECYCLE Command failed with exit code 1.
+
+The real authenticated application reached Library. Capture was absent.
+This is the expected feature failure, not a setup failure.
