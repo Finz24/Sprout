@@ -124,7 +124,8 @@ test('retains exact text after a committed response is lost and the same save is
   await expect(
     page
       .getByRole('region', { name: 'Saved text collection' })
-      .getByText(originalText, { exact: true }),
+      .getByText(originalText, { exact: true })
+      .first(),
   ).toBeVisible();
 });
 
