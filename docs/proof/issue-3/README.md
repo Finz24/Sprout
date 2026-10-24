@@ -98,3 +98,11 @@ failure test also confirms an unsafe web role exits before listening. No
 migration grants, RLS policies, CI jobs or enforcement requirements changed in
 this follow-up.
 
+
+## Browser project isolation follow-up (2026-10-24)
+
+At `b1bc7da`, lint and typecheck passed. Fresh local integration passed
+44/44 tests across two files in 19.63 seconds. The runner now restarts the
+API before each browser project, preserving production rate limits, and runs
+Compose down for its selected project during cleanup. Browser proof follows.
+
