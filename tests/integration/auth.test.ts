@@ -2,6 +2,8 @@ import { randomUUID } from 'node:crypto';
 import { spawn } from 'node:child_process';
 import { createServer } from 'node:net';
 import { Client } from 'pg';
+import { Schema } from 'effect';
+import { SaveReceipt, SavedTextItem, SavedTextPage } from '@sprout/contracts';
 import {
   createPool,
   transaction,
@@ -294,6 +296,215 @@ describe.sequential('private authentication', () => {
     });
   });
 
+  test('retains exact text once per owner submission and retrieves it by literal original search', async () => {
+    const first = await signedIn();
+    const second = await signedIn(other.email, other.password);
+    const input = {
+      submissionId: randomUUID(),
+      originalText:
+        '  issue4-original שלום 🍋 é e\u0301\r\n\n%_\\ "schedule a reminder"  ',
+      savingIntent: '  issue4-intent-only\r\nKeep these exact characters  ',
+    };
+    const save = (cookie: string, body: unknown) =>
+      api('/api/library/text', {
+        method: 'POST',
+        headers: authHeaders(cookie),
+        body: JSON.stringify(body),
+      });
+    const read = (path: string, cookie = first) =>
+      api(path, { headers: { cookie } });
+    const response = await save(first, input);
+    expect(response.status).toBe(200);
+    expect(response.headers.get('cache-control')).toBe('no-store');
+    const receipt = Schema.decodeUnknownSync(SaveReceipt)(await json(response));
+    expect(receipt.submissionId).toBe(input.submissionId);
+    expect(receipt.retained).toBe('text');
+    const itemPath = `/api/library/items/${receipt.itemId}`;
+    const original = Schema.decodeUnknownSync(SavedTextItem)(
+      await json(await read(itemPath)),
+    );
+    expect(original).toEqual({
+      ...receipt,
+      originalText: input.originalText,
+      submittedIntent: input.savingIntent,
+      review: 'New',
+      understanding: 'Not started',
+      lifecycle: 'live',
+      actions: 'Not scheduled',
+    });
+    for (const retry of await Promise.all([
+      save(first, input),
+      save(first, input),
+    ])) {
+      expect(retry.status).toBe(200);
+      expect(await json(retry)).toEqual(receipt);
+    }
+    for (const changed of [
+      { ...input, originalText: `${input.originalText}!` },
+      { ...input, savingIntent: null },
+    ])
+      expect((await save(first, changed)).status).toBe(409);
+    expect(await json(await read(itemPath))).toEqual(original);
+    const freshEqual = {
+      ...input,
+      submissionId: randomUUID(),
+      originalText: 'fresh concurrent equal original',
+    };
+    const equalReplies = await Promise.all([
+      save(first, freshEqual),
+      save(first, freshEqual),
+    ]);
+    expect(equalReplies.map((entry) => entry.status)).toEqual([200, 200]);
+    const equalReceipts = await Promise.all(
+      equalReplies.map(async (entry) =>
+        Schema.decodeUnknownSync(SaveReceipt)(await json(entry)),
+      ),
+    );
+    expect(equalReceipts[0]).toEqual(equalReceipts[1]);
+    const equalReceipt = equalReceipts[0];
+    if (!equalReceipt)
+      throw new Error('A committed equal-payload receipt is required');
+    expect(
+      await json(await read(`/api/library/items/${equalReceipt.itemId}`)),
+    ).toMatchObject({
+      ...equalReceipt,
+      originalText: freshEqual.originalText,
+      submittedIntent: freshEqual.savingIntent,
+    });
+    const equalMatches = Schema.decodeUnknownSync(SavedTextPage)(
+      await json(
+        await read('/api/library/search?q=fresh%20concurrent%20equal'),
+      ),
+    );
+    expect(equalMatches.items.map((item) => item.itemId)).toEqual([
+      equalReceipt.itemId,
+    ]);
+    for (const q of ['issue4-original', '%_\\', 'e\u0301', 'é']) {
+      const matches = Schema.decodeUnknownSync(SavedTextPage)(
+        await json(
+          await read(`/api/library/search?q=${encodeURIComponent(q)}`),
+        ),
+      );
+      expect(matches.items.map((item) => item.itemId)).toContain(
+        receipt.itemId,
+      );
+    }
+    for (const q of ['ISSUE4-ORIGINAL', 'issue4-intent-only']) {
+      expect(
+        await json(
+          await read(`/api/library/search?q=${encodeURIComponent(q)}`),
+        ),
+      ).toEqual({ items: [], nextCursor: null });
+    }
+    expect((await read(itemPath, second)).status).toBe(404);
+    expect(
+      (await read(`/api/library/items/${randomUUID()}`, second)).status,
+    ).toBe(404);
+    expect(
+      await json(await read('/api/library/search?q=issue4-original', second)),
+    ).toEqual({ items: [], nextCursor: null });
+    const separateOwner = await save(second, input);
+    expect(separateOwner.status).toBe(200);
+    const separateReceipt = Schema.decodeUnknownSync(SaveReceipt)(
+      await json(separateOwner),
+    );
+    expect(separateReceipt.itemId).not.toBe(receipt.itemId);
+    const deliberate = await save(first, {
+      ...input,
+      submissionId: randomUUID(),
+      savingIntent: 'Different deliberate reason',
+    });
+    expect(deliberate.status).toBe(200);
+    const deliberateReceipt = Schema.decodeUnknownSync(SaveReceipt)(
+      await json(deliberate),
+    );
+    expect(deliberateReceipt.itemId).not.toBe(receipt.itemId);
+    const pageOne = Schema.decodeUnknownSync(SavedTextPage)(
+      await json(await read('/api/library/search?q=issue4-original&limit=1')),
+    );
+    expect(pageOne.items.map((item) => item.itemId)).toEqual([
+      deliberateReceipt.itemId,
+    ]);
+    expect(pageOne.nextCursor).not.toBeNull();
+    const pageTwo = Schema.decodeUnknownSync(SavedTextPage)(
+      await json(
+        await read(
+          `/api/library/search?q=issue4-original&limit=1&cursor=${encodeURIComponent(JSON.stringify(pageOne.nextCursor))}`,
+        ),
+      ),
+    );
+    expect(pageTwo.items.map((item) => item.itemId)).toEqual([receipt.itemId]);
+    expect(pageTwo.nextCursor).toBeNull();
+    const raceInput = {
+      ...input,
+      submissionId: randomUUID(),
+      originalText: 'race winner A',
+    };
+    const race = await Promise.all([
+      save(first, raceInput),
+      save(first, { ...raceInput, originalText: 'race winner B' }),
+    ]);
+    expect(race.map((entry) => entry.status).sort()).toEqual([200, 409]);
+    const winner = race.find((entry) => entry.status === 200);
+    if (!winner) throw new Error('One committed race winner is required');
+    const winningReceipt = Schema.decodeUnknownSync(SaveReceipt)(
+      await json(winner),
+    );
+    const storedWinner = Schema.decodeUnknownSync(SavedTextItem)(
+      await json(await read(`/api/library/items/${winningReceipt.itemId}`)),
+    );
+    expect(storedWinner.originalText).toBe(
+      race[0]?.status === 200 ? 'race winner A' : 'race winner B',
+    );
+    for (const badInput of [
+      { ...input, originalText: '\u0000' },
+      { ...input, originalText: '\ud800' },
+      { ...input, originalText: ' \r\n' },
+      { ...input, originalText: '🍋'.repeat(16385) },
+      { ...input, savingIntent: 'é'.repeat(2049) },
+      { ...input, ownerUserId: 'forged' },
+      { ...input, retainedAt: '2000-01-01T00:00:00.000Z' },
+    ])
+      expect((await save(first, badInput)).status).toBe(400);
+    const tooLarge = await save(first, {
+      ...input,
+      padding: 'x'.repeat(512 * 1024),
+    });
+    expect(tooLarge.status).toBe(400);
+    for (const path of [
+      '/api/library/search?q=',
+      `/api/library/search?q=${'x'.repeat(501)}`,
+      '/api/library/items?limit=51',
+      '/api/library/items?cursor=malformed',
+    ])
+      expect((await read(path)).status).toBe(400);
+    expect(
+      (
+        await api('/api/library/text', {
+          method: 'POST',
+          headers: { origin, 'content-type': 'application/json' },
+          body: JSON.stringify(input),
+        })
+      ).status,
+    ).toBe(401);
+    for (const path of [
+      '/api/library/items',
+      '/api/library/search?q=original',
+      `/api/library/items/${receipt.itemId}`,
+    ])
+      expect((await api(path)).status).toBe(401);
+    expect(
+      (
+        await api('/api/library/text', {
+          method: 'POST',
+          headers: { ...authHeaders(first), origin: 'https://foreign.invalid' },
+          body: JSON.stringify(input),
+        })
+      ).status,
+    ).toBe(403);
+    expect(await json(await read(itemPath))).toEqual(original);
+  }, 30000);
+
   test('an expired session cannot read private state', async () => {
     if (!admin) throw new Error('DATABASE_URL is required');
     const cookie = await signedIn();
@@ -303,6 +514,25 @@ describe.sequential('private authentication', () => {
     );
     const shell = await api('/api/shell', { headers: { cookie } });
     expect(shell.status).toBe(401);
+    for (const path of [
+      '/api/library/items',
+      '/api/library/search?q=original',
+      `/api/library/items/${randomUUID()}`,
+    ])
+      expect((await api(path, { headers: { cookie } })).status).toBe(401);
+    expect(
+      (
+        await api('/api/library/text', {
+          method: 'POST',
+          headers: authHeaders(cookie),
+          body: JSON.stringify({
+            submissionId: randomUUID(),
+            originalText: 'expired',
+            savingIntent: null,
+          }),
+        })
+      ).status,
+    ).toBe(401);
     const session = await api('/api/session', { headers: { cookie } });
     expect(await json(session)).toEqual({ kind: 'Anonymous' });
   });
@@ -444,6 +674,15 @@ describe.sequential('private authentication', () => {
       try {
         await validateRole(pool, role);
         for (const statement of [
+          'SELECT * FROM private.saved_item',
+          "INSERT INTO private.saved_item (id,owner_user_id,submission_id,original_text) VALUES (gen_random_uuid(),'forged',gen_random_uuid(),'forged')",
+          "UPDATE private.saved_item SET original_text='changed'",
+          'DELETE FROM private.saved_item',
+        ])
+          await expect(pool.query(statement)).rejects.toMatchObject({
+            code: '42501',
+          });
+        for (const statement of [
           'SET ROLE sprout_schema_owner',
           'SET ROLE sprout_maintenance',
           'SET ROLE sprout_resolver',
@@ -500,6 +739,23 @@ describe.sequential('private authentication', () => {
       );
       const token = session.rows[0]?.token;
       if (!token) throw new Error('A live second-owner session is required');
+      for (const statement of [
+        `INSERT INTO private.saved_item (id,owner_user_id,submission_id,original_text) VALUES (gen_random_uuid(),'${a}',gen_random_uuid(),'foreign original')`,
+        "INSERT INTO private.saved_item (id,owner_user_id,submission_id,original_text,retained_at) VALUES (gen_random_uuid(),private.current_owner_id(),gen_random_uuid(),'forged time',now())",
+        "UPDATE private.saved_item SET original_text='changed'",
+        'DELETE FROM private.saved_item',
+      ]) {
+        await expect(
+          transaction(pool, new AbortController().signal, async (client) => {
+            await client.query('SET LOCAL ROLE sprout_web');
+            await client.query(
+              "SELECT set_config('sprout.session_token',$1,true)",
+              [token],
+            );
+            await client.query(statement);
+          }),
+        ).rejects.toMatchObject({ code: '42501' });
+      }
       await transaction(pool, new AbortController().signal, async (client) => {
         await client.query('SET LOCAL ROLE sprout_web');
         await client.query(
@@ -553,6 +809,9 @@ describe.sequential('private authentication', () => {
             expect(
               (await client.query('SELECT * FROM private.owner_settings'))
                 .rowCount,
+            ).toBe(0);
+            expect(
+              (await client.query('SELECT * FROM private.saved_item')).rowCount,
             ).toBe(0);
             expect(
               (
@@ -740,6 +999,23 @@ describe.sequential('private authentication', () => {
     ['settings truncation', 'TRUNCATE ON private.owner_settings'],
     ['settings trigger', 'TRIGGER ON private.owner_settings'],
     ['settings maintenance', 'MAINTAIN ON private.owner_settings'],
+    ['saved-item table insert', 'INSERT ON private.saved_item'],
+    [
+      'saved-item fake receipt time',
+      'INSERT (retained_at) ON private.saved_item',
+    ],
+    [
+      'saved-item original mutation',
+      'UPDATE (original_text) ON private.saved_item',
+    ],
+    [
+      'saved-item intent mutation',
+      'UPDATE (submitted_intent) ON private.saved_item',
+    ],
+    ['saved-item deletion', 'DELETE ON private.saved_item'],
+    ['saved-item truncation', 'TRUNCATE ON private.saved_item'],
+    ['saved-item references', 'REFERENCES (id) ON private.saved_item'],
+    ['saved-item maintenance', 'MAINTAIN ON private.saved_item'],
   ])(
     'API validation refuses excess web privileges: %s',
     async (_, privilege) => {
@@ -761,6 +1037,10 @@ describe.sequential('private authentication', () => {
             await admin.query(
               'GRANT UPDATE (library_view, updated_at) ON private.owner_settings TO sprout_web',
             );
+          if (privilege === 'INSERT ON private.saved_item')
+            await admin.query(
+              'GRANT INSERT (id, owner_user_id, submission_id, original_text, submitted_intent) ON private.saved_item TO sprout_web',
+            );
           await admin.query('REVOKE USAGE ON SCHEMA auth FROM sprout_web');
         }
         await validateRole(pool, 'sprout_api');
@@ -769,6 +1049,136 @@ describe.sequential('private authentication', () => {
       }
     },
   );
+
+  test('saved-item audit checks forced RLS and actual denied runtime column ACLs', async () => {
+    if (!admin) throw new Error('Database configuration is required');
+    for (const [role, name] of [
+      ['sprout_api', 'API_DATABASE_URL'],
+      ['sprout_auth', 'AUTH_DATABASE_URL'],
+      ['sprout_worker', 'WORKER_DATABASE_URL'],
+    ] as const) {
+      const url = process.env[name];
+      if (!url) throw new Error('Runtime role configuration is required');
+      const pool = createPool(url, 1);
+      try {
+        await validateRole(pool, role);
+        try {
+          await admin.query(
+            `GRANT SELECT (original_text) ON private.saved_item TO ${role}`,
+          );
+          await expect(validateRole(pool, role)).rejects.toMatchObject({
+            _tag: 'Unavailable',
+          });
+        } finally {
+          await admin.query(
+            `REVOKE SELECT (original_text) ON private.saved_item FROM ${role}`,
+          );
+        }
+        try {
+          await admin.query(
+            'ALTER TABLE private.saved_item NO FORCE ROW LEVEL SECURITY',
+          );
+          await expect(validateRole(pool, role)).rejects.toMatchObject({
+            _tag: 'Unavailable',
+          });
+        } finally {
+          await admin.query(
+            'ALTER TABLE private.saved_item FORCE ROW LEVEL SECURITY',
+          );
+        }
+        await validateRole(pool, role);
+      } finally {
+        await pool.end();
+      }
+    }
+  });
+
+  test('a cancelled blocked save rolls back and its same-identity retry commits once', async () => {
+    if (!admin || !adminUrl)
+      throw new Error('Database configuration is required');
+    const cookie = await signedIn();
+    const input = {
+      submissionId: randomUUID(),
+      originalText: 'Cancelled save keeps no premature receipt',
+      savingIntent: null,
+    };
+    const lock = new Client({ connectionString: adminUrl });
+    const controller = new AbortController();
+    await lock.connect();
+    try {
+      await lock.query('BEGIN');
+      await lock.query(
+        'LOCK TABLE private.saved_item IN ACCESS EXCLUSIVE MODE',
+      );
+      const pending = fetch(`${apiUrl}/api/library/text`, {
+        method: 'POST',
+        headers: authHeaders(cookie),
+        body: JSON.stringify(input),
+        signal: controller.signal,
+      }).catch(() => undefined);
+      await expect
+        .poll(
+          async () =>
+            (
+              await admin?.query<{ blocked: boolean }>(
+                "SELECT EXISTS (SELECT 1 FROM pg_stat_activity WHERE usename='sprout_api' AND wait_event_type='Lock' AND query LIKE 'INSERT INTO private.saved_item%') AS blocked",
+              )
+            )?.rows[0]?.blocked,
+        )
+        .toBe(true);
+      controller.abort();
+      await pending;
+      await expect
+        .poll(
+          async () =>
+            (
+              await admin?.query<{ count: string }>(
+                "SELECT count(*)::text AS count FROM pg_stat_activity WHERE usename='sprout_api' AND wait_event_type='Lock'",
+              )
+            )?.rows[0]?.count,
+        )
+        .toBe('0');
+      await lock.query('ROLLBACK');
+      expect(
+        (
+          await admin.query(
+            'SELECT 1 FROM private.saved_item WHERE submission_id=$1',
+            [input.submissionId],
+          )
+        ).rowCount,
+      ).toBe(0);
+      const retry = await api('/api/library/text', {
+        method: 'POST',
+        headers: authHeaders(cookie),
+        body: JSON.stringify(input),
+      });
+      expect(retry.status).toBe(200);
+      const receipt = Schema.decodeUnknownSync(SaveReceipt)(await json(retry));
+      expect(
+        await json(
+          await api(`/api/library/items/${receipt.itemId}`, {
+            headers: { cookie },
+          }),
+        ),
+      ).toMatchObject({
+        ...receipt,
+        originalText: input.originalText,
+        submittedIntent: null,
+      });
+      expect(
+        (
+          await admin.query(
+            'SELECT 1 FROM private.saved_item WHERE submission_id=$1',
+            [input.submissionId],
+          )
+        ).rowCount,
+      ).toBe(1);
+    } finally {
+      controller.abort();
+      await lock.query('ROLLBACK');
+      await lock.end();
+    }
+  });
 
   test('HTTP disconnect cancels a blocked private update before it can persist', async () => {
     if (!admin || !adminUrl)
@@ -972,6 +1382,63 @@ describe.sequential('private authentication', () => {
       await admin.query('ALTER ROLE sprout_auth LOGIN');
     }
     expect((await api('/api/shell', { headers: { cookie } })).status).toBe(200);
+  });
+
+  test('private-pool outage returns unavailable and same-identity retry recovers', async () => {
+    if (!admin) throw new Error('Database configuration is required');
+    const cookie = await signedIn();
+    const input = {
+      submissionId: randomUUID(),
+      originalText: 'Private pool recovery original',
+      savingIntent: 'Preserve the same identity',
+    };
+    const save = () =>
+      api('/api/library/text', {
+        method: 'POST',
+        headers: authHeaders(cookie),
+        body: JSON.stringify(input),
+      });
+    await admin.query('ALTER ROLE sprout_api NOLOGIN');
+    try {
+      await admin.query(
+        "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE usename='sprout_api' AND pid<>pg_backend_pid()",
+      );
+      expect((await save()).status).toBe(503);
+      for (const path of [
+        '/api/library/items',
+        '/api/library/search?q=recovery',
+      ])
+        expect((await api(path, { headers: { cookie } })).status).toBe(503);
+      expect(
+        (
+          await admin.query(
+            'SELECT 1 FROM private.saved_item WHERE submission_id=$1',
+            [input.submissionId],
+          )
+        ).rowCount,
+      ).toBe(0);
+    } finally {
+      await admin.query('ALTER ROLE sprout_api LOGIN');
+    }
+    const recovered = await save();
+    expect(recovered.status).toBe(200);
+    const receipt = Schema.decodeUnknownSync(SaveReceipt)(
+      await json(recovered),
+    );
+    const retry = await save();
+    expect(retry.status).toBe(200);
+    expect(await json(retry)).toEqual(receipt);
+    expect(
+      await json(
+        await api(`/api/library/items/${receipt.itemId}`, {
+          headers: { cookie },
+        }),
+      ),
+    ).toMatchObject({
+      ...receipt,
+      originalText: input.originalText,
+      submittedIntent: input.savingIntent,
+    });
   });
 
   test('sign-in is rate limited after repeated attempts', async () => {

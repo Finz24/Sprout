@@ -1,0 +1,44 @@
+Sprout issue 4 backend focused verification
+2026-10-24. Synthetic fixture tests. No credentials in this record.
+
+corepack pnpm exec tsc -b packages/database packages/runtime
+Exit 0. No stdout/stderr.
+
+corepack pnpm exec tsc -p tsconfig.tools.json
+Exit 0. No stdout/stderr.
+
+corepack pnpm exec eslint packages/contracts/src/index.ts packages/contracts/src/library.ts packages/database/src/schema.ts packages/database/src/private-storage.ts packages/database/src/library-storage.ts packages/database/src/identity.ts tests/unit/text-submission.test.ts tests/integration/auth.test.ts tests/integration/backup-restore.test.ts --max-warnings=0
+Exit 0. No stdout/stderr.
+
+corepack pnpm exec vitest run --project unit tests/unit/text-submission.test.ts tests/unit/migrations.test.ts
+Exit 0.
+RUN v4.1.12
+Test Files 2 passed (2)
+Tests 24 passed (24)
+Start at 19:58:28
+Duration 4.55s (transform 163ms, setup 0ms, import 3.28s, tests 21ms, environment 0ms)
+
+corepack pnpm exec prettier --check packages/contracts/src/index.ts packages/contracts/src/library.ts packages/database/src/schema.ts packages/database/src/private-storage.ts packages/database/src/library-storage.ts packages/database/src/identity.ts tests/unit/text-submission.test.ts tests/integration/auth.test.ts tests/integration/backup-restore.test.ts packages/database/migrations/meta/_journal.json packages/database/migrations/meta/0002_snapshot.json
+Exit 0.
+Checking formatting...
+All matched files use Prettier code style!
+
+Focused static and unit checks do not establish persistence or authorization.
+The parent owns the isolated real integration suite, browser suite, final full
+corepack pnpm check, checkpoint commits and pushes. Runtime results are recorded
+separately by the parent. No new deterministic uncertain-COMMIT seam was added.
+
+After first real integration feedback, corrected oversized-body stream handling
+and grant-test cleanup. Added the approved private-pool outage HTTP variant.
+
+corepack pnpm exec eslint packages/database/src/private-storage.ts --max-warnings=0
+Exit 0. No stdout/stderr.
+
+corepack pnpm exec eslint packages/database/src/identity.ts tests/integration/auth.test.ts --max-warnings=0
+Exit 0. No stdout/stderr.
+
+corepack pnpm exec tsc -p tsconfig.tools.json
+Exit 0. No stdout/stderr.
+
+git diff --check
+Exit 0. No stdout/stderr.

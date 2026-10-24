@@ -206,6 +206,10 @@ test('backs up and restores independent PostgreSQL and originals fixtures, refus
     [null, '0001feff'],
     ['שלום café 🥬', ''],
   ];
+  const savedOriginal = '  Backup original שלום 🍋 é e\u0301\r\n\n  ';
+  const savedIntent = '  Keep this reason separately\r\n  ';
+  const savedItemId = 'd8faef47-9c94-4f0b-972f-178e539927d8';
+  const savedSubmissionId = 'aefcb021-a971-4075-8f8b-13fa4f9ac438';
   const otherTable = '"Backup ""schema"."Rows ""with quotes"';
   const otherSequence = '"Backup ""schema"."Uncalled ""sequence"';
   const envelopeText =
@@ -284,6 +288,35 @@ test('backs up and restores independent PostgreSQL and originals fixtures, refus
     }
   };
   const readFixture = async (database: string) => {
+    expect(
+      jsonRows(
+        await sql(
+          database,
+          `SELECT json_build_array(id, owner_user_id, submission_id, original_text, submitted_intent, to_char(retained_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"')) FROM private.saved_item;`,
+        ),
+      ),
+    ).toEqual([
+      [
+        savedItemId,
+        'backup-owner',
+        savedSubmissionId,
+        savedOriginal,
+        savedIntent,
+        '2026-10-24T12:34:56.123456Z',
+      ],
+    ]);
+    expect(
+      await sql(
+        database,
+        "SELECT relrowsecurity AND relforcerowsecurity FROM pg_class WHERE oid='private.saved_item'::regclass;",
+      ),
+    ).toBe('t');
+    expect(
+      await sql(
+        database,
+        "SELECT has_table_privilege('sprout_web','private.saved_item','SELECT') AND has_column_privilege('sprout_web','private.saved_item','original_text','INSERT') AND NOT has_column_privilege('sprout_web','private.saved_item','retained_at','INSERT') AND NOT has_column_privilege('sprout_web','private.saved_item','original_text','UPDATE') AND NOT has_table_privilege('sprout_worker','private.saved_item','SELECT') AND NOT has_table_privilege('sprout_auth','private.saved_item','SELECT');",
+      ),
+    ).toBe('t');
     expect(
       jsonRows(
         await sql(
@@ -401,6 +434,14 @@ test('backs up and restores independent PostgreSQL and originals fixtures, refus
     const expectedHistory = await committedHistory();
     expect(expectedHistory.length).toBeGreaterThan(0);
     expect(jsonRows(await sql(source, migrationSql))).toEqual(expectedHistory);
+    await sql(
+      source,
+      `
+      INSERT INTO auth."user" (id, name, email) VALUES ('backup-owner', 'Backup Owner', 'backup-owner@example.invalid');
+      INSERT INTO private.saved_item (id,owner_user_id,submission_id,original_text,submitted_intent,retained_at)
+      VALUES ('${savedItemId}','backup-owner','${savedSubmissionId}',convert_from(decode('${Buffer.from(savedOriginal).toString('hex')}', 'hex'),'UTF8'),convert_from(decode('${Buffer.from(savedIntent).toString('hex')}', 'hex'),'UTF8'),'2026-10-24T12:34:56.123456Z');
+    `,
+    );
     await sql(
       source,
       `

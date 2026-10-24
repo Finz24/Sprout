@@ -136,6 +136,39 @@ export async function validateRole(
     [expected],
   );
   if (grants.rows[0]?.safe !== true) throw new Unavailable();
+  const library = await pool.query<{ safe: boolean }>(`
+    WITH saved AS (
+      SELECT c.oid, c.relrowsecurity, c.relforcerowsecurity FROM pg_class c
+      JOIN pg_namespace n ON n.oid=c.relnamespace
+      WHERE n.nspname='private' AND c.relname='saved_item' AND c.relkind='r'
+    )
+    SELECT count(*) = 1 AND bool_and(
+      s.relrowsecurity AND s.relforcerowsecurity
+      AND NOT has_table_privilege(current_user,s.oid,'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER,MAINTAIN')
+      AND NOT EXISTS (
+        SELECT 1 FROM pg_attribute a WHERE a.attrelid=s.oid AND a.attnum>0 AND NOT a.attisdropped
+          AND has_column_privilege(current_user,s.oid,a.attnum,'SELECT,INSERT,UPDATE,REFERENCES')
+      )
+      AND has_table_privilege('sprout_web',s.oid,'SELECT')
+      AND NOT has_table_privilege('sprout_web',s.oid,'INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER,MAINTAIN')
+      AND (SELECT count(*)=6 AND bool_and(
+        has_column_privilege('sprout_web',s.oid,a.attnum,'SELECT')
+        AND has_column_privilege('sprout_web',s.oid,a.attnum,'INSERT') =
+          (a.attname IN ('id','owner_user_id','submission_id','original_text','submitted_intent'))
+        AND NOT has_column_privilege('sprout_web',s.oid,a.attnum,'UPDATE,REFERENCES')
+      ) FROM pg_attribute a WHERE a.attrelid=s.oid AND a.attnum>0 AND NOT a.attisdropped)
+      AND (SELECT count(*)=2 AND bool_and(
+        p.polpermissive AND p.polroles=ARRAY[(SELECT oid FROM pg_roles WHERE rolname='sprout_web')]
+        AND CASE p.polcmd
+          WHEN 'r' THEN p.polname='saved_item_read' AND p.polwithcheck IS NULL
+            AND COALESCE(pg_get_expr(p.polqual,p.polrelid)='(owner_user_id = private.current_owner_id())',false)
+          WHEN 'a' THEN p.polname='saved_item_insert' AND p.polqual IS NULL
+            AND COALESCE(pg_get_expr(p.polwithcheck,p.polrelid)='(owner_user_id = private.current_owner_id())',false)
+          ELSE false END
+      ) FROM pg_policy p WHERE p.polrelid=s.oid)
+    ) AS safe FROM saved s
+  `);
+  if (library.rows[0]?.safe !== true) throw new Unavailable();
 }
 
 const connectionLost = (error: unknown) => {
