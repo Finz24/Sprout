@@ -354,6 +354,7 @@ test('opens and closes the mobile navigation drawer with Escape and restores foc
   const dialog = page.getByRole('dialog', { name: 'Navigation' });
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole('link', { name: 'Settings' })).toBeVisible();
+  await capture(page, 'navigation');
   for (const target of await dialog.locator('button, a').all()) {
     const size = await target.boundingBox();
     expect(size?.width ?? 0).toBeGreaterThanOrEqual(44);

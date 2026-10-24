@@ -203,15 +203,11 @@ async function stopChild(child) {
   ]);
 }
 async function stop() {
+  await Promise.allSettled(children.map((child) => stopChild(child)));
   if (composeStarted) {
-    await run(
-      'docker',
-      ['compose', 'stop', 'api', 'worker', 'web'],
-      composeEnv,
-    ).catch(() => undefined);
+    await run('docker', ['compose', '-p', composeProject, 'down'], composeEnv);
     composeStarted = false;
   }
-  await Promise.allSettled(children.map((child) => stopChild(child)));
 }
 function launchApi() {
   apiChild = start(
@@ -299,7 +295,6 @@ async function startServices() {
       ['compose', 'up', '-d', '--wait', 'api', 'worker', 'web'],
       composeEnv,
     );
-    composeStarted = true;
   } else {
     launchApi();
     launchWorker();
@@ -317,8 +312,8 @@ async function restartApi() {
   else {
     await stopChild(apiChild);
     launchApi();
-    await ready(`${env.API_URL}/health/ready`);
   }
+  await ready(`${env.API_URL}/health/ready`);
 }
 async function ensureOwner() {
   if (ownerProvisioned) return;
@@ -334,7 +329,14 @@ async function action(command) {
     await restartApi();
   } else if (command === 'e2e') {
     await ensureOwner();
-    await pnpmCommand(['test:e2e']);
+    for (const project of ['desktop', 'mobile']) {
+      await restartApi();
+      await pnpmCommand([
+        'test:e2e',
+        `--project=${project}`,
+        `--output=test-results/${project}`,
+      ]);
+    }
   } else if (command === 'check') await pnpmCommand(['check']);
   else if (command === 'stop') {
     await stop();
@@ -346,6 +348,7 @@ async function action(command) {
 }
 try {
   await pnpmCommand(['check:runtime']);
+  composeStarted = true;
   await run(
     'docker',
     ['compose', 'up', '-d', '--wait', 'postgres'],
@@ -377,12 +380,15 @@ try {
   } else {
     if (!process.argv.includes('--e2e-only')) await action('integration');
     if (!process.argv.includes('--integration-only')) await action('e2e');
-    await stop();
   }
 } catch {
   console.error(
     'Auth workspace setup or verification failed. Existing data and volumes were retained. Supply the existing private credential environment when resuming a volume.',
   );
-  await stop();
   process.exitCode = 1;
+} finally {
+  await stop().catch(() => {
+    console.error(`Workspace cleanup failed for ${composeProject}.`);
+    process.exitCode = 1;
+  });
 }

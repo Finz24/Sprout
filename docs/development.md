@@ -52,7 +52,8 @@ Choose a new project name and four unused ports before starting a workspace.
 Never share these values with another worktree. The runner checks runtime
 prerequisites before starting services, creates a new synthetic database, applies
 committed migrations, and generates credentials only in process environments.
-It retains databases and volumes when it stops. It never resets an installation.
+It runs Compose `down` for its selected project when it stops, including after a
+failed check. It retains databases and volumes and never resets an installation.
 
 ```powershell
 $env:COMPOSE_PROJECT_NAME = 'sprout-auth-verification'
@@ -81,6 +82,11 @@ Run integration once on the initially empty database. It provisions two test
 owners. E2E then uses the first owner without attempting production bootstrap
 on the intentional two-owner fixture. Open the selected loopback web port for
 browser inspection. Runtime output is redacted before it reaches the terminal.
+
+The runner restarts the API before each browser project so desktop and mobile
+have independent in-memory rate-limit buckets. Both projects exercise the real
+sign-in flow with production limits. Their artifacts and `.last-run.json` records
+are retained separately under `test-results/desktop` and `test-results/mobile`.
 
 An existing volume requires its original `POSTGRES_PASSWORD` in the parent
 process environment. A new project and unused ports avoid changing that volume.
