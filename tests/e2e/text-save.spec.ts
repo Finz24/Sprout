@@ -119,8 +119,13 @@ test('retains exact text after a committed response is lost and the same save is
     .getByRole('link', { name: 'Back to Library', exact: true })
     .click();
   await expect(
-    page.getByRole('link', { name: 'Open Original input' }),
-  ).toHaveCount(1);
+    page.getByRole('heading', { name: 'Library', exact: true }),
+  ).toBeVisible();
+  await expect(
+    page
+      .getByRole('region', { name: 'Saved text collection' })
+      .getByText(originalText, { exact: true }),
+  ).toBeVisible();
 });
 
 test('does not send an offline first save and names the reconnect step', async ({
