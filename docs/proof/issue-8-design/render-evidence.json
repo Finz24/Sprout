@@ -1,0 +1,28 @@
+[
+  {
+    "name": "desktop",
+    "width": 1440,
+    "contentWidth": 1440,
+    "height": 22408,
+    "interLoaded": true,
+    "duplicateIds": [],
+    "elementIds": 478,
+    "originalUnicode": true,
+    "reducedMotion": true,
+    "errors": [],
+    "external": []
+  },
+  {
+    "name": "mobile",
+    "width": 320,
+    "contentWidth": 320,
+    "height": 33289,
+    "interLoaded": true,
+    "duplicateIds": [],
+    "elementIds": 478,
+    "originalUnicode": true,
+    "reducedMotion": true,
+    "errors": [],
+    "external": []
+  }
+]
