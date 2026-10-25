@@ -1,18 +1,19 @@
 # Issue #8 design evidence
 
-These captures show the static [red-pen sheet](../../design/issue-8-review.html),
+Round 2. These captures show the static [red-pen sheet](../../design/issue-8-review.html),
 not a running Spaces flow. All names and originals are synthetic. No product
-code changed. No app services or Docker stacks started. Full-page section captures stay local and gitignored. Light and dark
-specimens for list, view, capture, and delete are committed. Re-run
-`capture.mjs` to regenerate every file.
+code changed. No app services or Docker stacks started. Full-page section
+captures stay local and gitignored. Light and dark specimens for empty list,
+populated list, view, capture, and delete are committed. Re-run `capture.mjs`
+to regenerate every file.
 
 ## Review artifacts
 
 - `desktop.png` and `mobile.png`: the first 10,000 pixels of the sheet.
 - `desktop-spaces-list.png` through `mobile-empty-delete.png`: each numbered
   section on both device classes.
-- `desktop-list-light.png` and the matching view, capture, and delete files:
-  complete specimens for light and dark.
+- `desktop-list-empty-light.png`, `desktop-list-light.png`, and the matching
+  view, capture, and delete files: complete specimens for light and dark.
 - `render-evidence.json`: viewport, overflow, loaded Inter, Unicode, unique IDs,
   reduced motion, script errors, and external requests.
 

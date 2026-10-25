@@ -1,11 +1,11 @@
 ---
-pid: 12276
+pid: 2100
 cwd: "C:\\Users\\ohadf\\.t3\\worktrees\\sprout\\docs-issue-8-design"
 command: "corepack pnpm check"
-title: "Run full static check suite"
+title: "Run full workspace static check suite"
 status: succeeded
-started_at: 2026-10-25T10:34:03.144Z
-running_for_ms: 134791   
+started_at: 2026-10-25T12:42:15.184Z
+running_for_ms: 241334   
 ---
 
 > sprout@0.0.0 check C:\Users\ohadf\.t3\worktrees\sprout\docs-issue-8-design
@@ -69,13 +69,13 @@ All matched files use Prettier code style!
 > react-doctor . --yes --scope full --verbose --blocking warning --no-telemetry --no-supply-chain --no-parallel
 
 ✔ Select projects › @sprout/web, @sprout/ui
-✔ Scanned 20 files in 2.6s
+✔ Scanned 20 files in 2.8s
 
 React Doctor — docs-issue-8-design
 Score unavailable.
 
 ✔ No issues found!
-  Full diagnostics written to C:\Users\ohadf\AppData\Local\Temp\react-doctor-3d62afd4-2a03-4670-81f8-1d9a13fbf3e5
+  Full diagnostics written to C:\Users\ohadf\AppData\Local\Temp\react-doctor-f81e5d2d-0c81-45a7-a16d-27a444995daf
 
 > sprout@0.0.0 typecheck C:\Users\ohadf\.t3\worktrees\sprout\docs-issue-8-design
 > nx run-many -t typecheck --parallel=3 && tsc -p tsconfig.tools.json
@@ -112,9 +112,9 @@ Nx read the output from the cache instead of running the command for 11 out of 1
 
 Output of 11 successful tasks were not shown. Run with --verbose or --output-style=static to see it.
 
-  Run duration:      100ms
+  Run duration:      122ms
   Cache:             11/11 hit (100%)
-  Critical path:     15ms (4 tasks)
+  Critical path:     13ms (3 tasks)
   Recoverable time:  <1ms
 
 > sprout@0.0.0 test C:\Users\ohadf\.t3\worktrees\sprout\docs-issue-8-design
@@ -126,8 +126,8 @@ Output of 11 successful tasks were not shown. Run with --verbose or --output-sty
 
  Test Files  10 passed (10)
       Tests  194 passed (194)
-   Start at  12:35:21
-   Duration  49.84s (transform 338ms, setup 0ms, import 12.41s, tests 34.11s, environment 1ms)
+   Start at  14:44:47
+   Duration  80.31s (transform 375ms, setup 0ms, import 43.44s, tests 32.70s, environment 2ms)
 
 
 > sprout@0.0.0 build C:\Users\ohadf\.t3\worktrees\sprout\docs-issue-8-design
@@ -161,9 +161,9 @@ Nx read the output from the cache instead of running the command for 7 out of 7 
 
 Output of 7 successful tasks were not shown. Run with --verbose or --output-style=static to see it.
 
-  Run duration:      92ms
+  Run duration:      102ms
   Cache:             7/7 hit (100%)
-  Critical path:     31ms (4 tasks)
+  Critical path:     33ms (4 tasks)
   Recoverable time:  <1ms
 
 > sprout@0.0.0 check:docs C:\Users\ohadf\.t3\worktrees\sprout\docs-issue-8-design
@@ -180,6 +180,6 @@ Output of 7 successful tasks were not shown. Run with --verbose or --output-styl
 
 ---
 exit_code: 0
-elapsed_ms: 134791
-ended_at: 2026-10-25T10:36:17.935Z
+elapsed_ms: 241334
+ended_at: 2026-10-25T12:46:16.518Z
 ---

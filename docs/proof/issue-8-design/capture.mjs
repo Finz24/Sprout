@@ -81,6 +81,13 @@ try {
     for (const theme of ['light', 'dark']) {
       await page
         .locator(
+          `#list-empty-${theme}-${name === 'mobile' ? 'phone' : 'desktop'}`,
+        )
+        .screenshot({
+          path: path.join(output, `${name}-list-empty-${theme}.png`),
+        });
+      await page
+        .locator(
           `#list-full-${theme}-${name === 'mobile' ? 'phone' : 'desktop'}`,
         )
         .screenshot({
