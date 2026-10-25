@@ -1,0 +1,34 @@
+[
+  {
+    "name": "desktop",
+    "width": 1440,
+    "contentWidth": 1440,
+    "height": 6592,
+    "interLoaded": true,
+    "duplicateIds": [],
+    "elementIds": 177,
+    "originalUnicode": true,
+    "reducedMotion": true,
+    "overviewHeight": 6592,
+    "reducedAnimation": "none",
+    "normalAnimation": "panel-reveal",
+    "errors": [],
+    "external": []
+  },
+  {
+    "name": "mobile",
+    "width": 320,
+    "contentWidth": 320,
+    "height": 11475,
+    "interLoaded": true,
+    "duplicateIds": [],
+    "elementIds": 177,
+    "originalUnicode": true,
+    "reducedMotion": true,
+    "overviewHeight": 10000,
+    "reducedAnimation": "none",
+    "normalAnimation": "panel-reveal",
+    "errors": [],
+    "external": []
+  }
+]
