@@ -2,10 +2,11 @@
 
 Proposed for [issue #8](https://github.com/Finz24/Sprout/issues/8), October 25, 2026.
 **Design review only. Implementation waits for Ohad's markup.** This PR does not
-close #8. The [numbered red-pen sheet](issue-8-review.html) extends Conservatory
-from [PR #42](https://github.com/Finz24/Sprout/pull/42) as shipped in
-[PR #43](https://github.com/Finz24/Sprout/pull/43). All screen content is
-synthetic. Visual research is in [issue-8-research.md](issue-8-research.md).
+close #8. Round 2 of the [numbered red-pen sheet](issue-8-review.html) keeps the
+Conservatory greenhouse palette from [PR #42](https://github.com/Finz24/Sprout/pull/42)
+and [PR #43](https://github.com/Finz24/Sprout/pull/43), and drops the childish
+bed/leaf/canopy treatment Ohad rejected. All screen content is synthetic. Visual
+research is in [issue-8-research.md](issue-8-research.md).
 
 ## Problem
 
@@ -194,19 +195,34 @@ There is no default Space. Name uniqueness is exact and owner-scoped after trim.
 
 ## Visual contract
 
-One Conservatory extension. Alive, few words, Inter only. Named later
-`@sprout/ui` pieces: Button, Textarea, Field, Input, Label, Dialog, AlertDialog,
-Command, Combobox, Sheet, Empty, Badge. Touch targets stay 44px. Keyboard reaches
-every membership action. Hover-only remove is rejected.
+One mature Conservatory extension: bright greenhouse color, few words, no toy
+hero. Default face is Inter. An optional Iowan/Palatino display pairing is shown
+on the sheet for Ohad to accept or reject; it is not a product font until he
+picks it. Named later `@sprout/ui` pieces: Button, Textarea, Field, Input, Label,
+Dialog, AlertDialog, Command, Combobox, Popover, DropdownMenu, Sheet, Empty,
+Badge. Touch targets stay 44px. Keyboard reaches every membership action.
+Hover-only remove is rejected.
 
-| Surface        | Composition                                                                                    |
-| -------------- | ---------------------------------------------------------------------------------------------- |
-| Spaces list    | Canopy plus uneven living beds. Empty uses shadcn Empty and **New Space**.                     |
-| Space view     | Reuses `SavedCard`. Each card has **Add**, **Move**, and **Remove** buttons. Phone uses Sheet. |
-| Capture picker | Combobox under saving intent. Empty value is valid. Chip appears only after a choice.          |
-| Delete Space   | AlertDialog. Copy says items stay in the library.                                              |
+Copy is plain: **Spaces**, **New space**, **12**. Never bed, canopy, seed, or
+cartoon leaf. Search is **Ask**.
 
-Reduced motion removes travel. Status never depends on color or motion.
+| Surface        | Composition                                                                                                                                                                                           |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Chrome         | Slim ~64px glass header. Subtle animated gradient, light-tinted by the open Space. Sidebar lists live Spaces with accent dots and tabular counts. Cmd-K is Command.                                   |
+| Spaces list    | Deliberate bento sized by count and recency. Each card is a mosaic of the latest 3–4 originals. One small count. No random tilt. Empty: three ghost cards that breathe, **New space**, starter chips. |
+| Space view     | Reuses `SavedCard`. Colored Space chips on the card. Item actions live in one **…** DropdownMenu with shortcuts. Phone: one 44px icon opens Sheet.                                                    |
+| Capture picker | Recent-Space chips plus a **+** Combobox. Composer edges tint to the chosen Space. Empty value is valid.                                                                                              |
+| Delete Space   | Glass AlertDialog. Copy and tiles show the items staying in the library.                                                                                                                              |
+
+Per-Space accent (bright greenhouse) tints the card glow, optional geometric
+icon, sidebar dot, and header. Motion: card grows into the Space page
+(`layoutId`), spring stagger on the bento, chip flies to the sidebar on move,
+hover tilt on pointer. Reduced motion removes travel. Status never depends on
+color or motion. Depth is light grain, glass dialogs, an inner highlight, and a
+rich near-black-green dark mode.
+
+Type: tight large headings, tabular counts, small meta labels. One heading and
+one short line in the header. No kicker.
 
 ## Slice plan
 
@@ -216,11 +232,12 @@ Count the slice before delivery. Split it rather than exceed 299.
 1. Additive migration, grants, forced RLS, and startup audit. Budget 240.
 2. Contracts plus `organizationOperations` next to `libraryOperations`. Budget 260.
 3. Identity allowlist and HTTP handlers for Space and membership. Budget 260.
-4. Spaces list, create Dialog, rename Field, empty and unavailable states. Budget 280.
-5. Export `SavedCard`, list memberships, and add, move, and remove with keyboard
-   and 44px touch controls. Budget 280.
-6. Capture Combobox and post-receipt `add`, including retry of a failed attach.
-   Budget 280.
+4. Spaces list, create Dialog, rename Field, bento mosaics, empty ghosts, and
+   unavailable states. Budget 280.
+5. Export `SavedCard`, Space chips, and add, move, and remove from one
+   DropdownMenu (Sheet on phone) with keyboard and 44px targets. Budget 280.
+6. Capture recent-Space chips, **+** Combobox, composer edge tint, and
+   post-receipt `add`, including retry of a failed attach. Budget 280.
 7. Delete AlertDialog and the red Playwright journey: one item in two Spaces,
    remove one membership, reload, the other membership and original remain.
    Budget 280.
@@ -247,16 +264,21 @@ This docs PR records pinned install, environment, format, and `corepack pnpm che
 Playwright renders the sheet under `docs/proof/issue-8-design/`. That is artifact
 quality, not persistence or authorization. Context7 checked
 [Command](https://ui.shadcn.com/docs/components/base/command),
-[Combobox](https://ui.shadcn.com/docs/components/base/combobox), and
+[Combobox](https://ui.shadcn.com/docs/components/base/combobox),
+[Dropdown Menu](https://ui.shadcn.com/docs/components/base/dropdown-menu),
+[Sheet](https://ui.shadcn.com/docs/components/base/sheet), and
 [Alert Dialog](https://ui.shadcn.com/docs/components/base/alert-dialog).
-The local pinned source remains the authority for later installs.
+Magic UI, Aceternity, Motion Primitives, Origin UI, and shadcn Blocks stay
+pattern references. They are not added to `@sprout/ui`. The local pinned source
+remains the authority for later installs.
 
 ## Review
 
 Ohad's markup must resolve these before product implementation.
 
-1. Approve Conservatory Spaces, or mark numbered sheet IDs to change. Confirm
-   Inter, light and dark, desktop and Galaxy, and the named shadcn set.
+1. Approve the mature greenhouse Spaces, or mark numbered sheet IDs to change.
+   Confirm Inter (and whether the optional Iowan/Palatino pairing is in or out),
+   light and dark, desktop and Galaxy, and the named shadcn set.
 2. Approve the two-table RLS sketch, composite FKs, no `saved_item` mutation, and
    post-receipt optional `add`.
 3. When a Space is deleted, should memberships drop immediately, or should the
