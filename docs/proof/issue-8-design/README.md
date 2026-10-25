@@ -1,6 +1,6 @@
 # Issue #8 design evidence
 
-Round 2. These captures show the static [red-pen sheet](../../design/issue-8-review.html),
+Round 2 redo. These captures show the static [red-pen sheet](../../design/issue-8-review.html),
 not a running Spaces flow. All names and originals are synthetic. No product
 code changed. No app services or Docker stacks started. Full-page section
 captures stay local and gitignored. Light and dark specimens for empty list,

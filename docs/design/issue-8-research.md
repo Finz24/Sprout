@@ -1,9 +1,9 @@
 # Spaces visual research
 
 October 25, 2026. Round 2. Informs the [review sheet](issue-8-review.html).
-Extends the Conservatory greenhouse palette from [issue #4](issue-4-research.md)
-and shipped PR #43. Drops the childish bed, leaf, and toy-block canopy Ohad
-rejected. No schema or product code.
+Extends the Conservatory tokens from [issue #4](issue-4-research.md) and shipped
+PR #43. Bright accents on paper, not a mint wash and not a toy greenhouse. No
+schema or product code.
 
 ## Repository guidance
 
@@ -45,10 +45,10 @@ installs use the named shadcn pieces in [issue-8-spaces.md](issue-8-spaces.md).
 
 ## Direction
 
-One Conservatory extension, not a new world and not a toy greenhouse. Spaces
-are named rooms in the same library. Capture stays the raised writing panel. A
-Space is optional. Few words. Membership lives in one menu. Accents are bright
-and specific.
+One Conservatory extension, not a new world. Spaces are named contexts in the
+same library. Capture stays the raised writing panel. A Space is optional. Few
+words. Membership lives in one menu. Accents are bright and specific; mosaics
+show real originals, not empty color blocks.
 
 Named later `@sprout/ui` additions: Button, Textarea, Dialog, AlertDialog,
 Command, Combobox, Popover, DropdownMenu, Sheet, Empty, Badge, Field, Input,

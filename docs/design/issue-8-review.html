@@ -14,9 +14,9 @@
         font-display: swap;
       }
       :root {
-        --cook: #1f8a4d;
-        --visit: #d4a017;
-        --notes: #2f7a9a;
+        --cook: #17a054;
+        --visit: #e3a014;
+        --notes: #1a88ad;
         --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
         --ease-move: cubic-bezier(0.77, 0, 0.175, 1);
       }
@@ -29,8 +29,8 @@
         max-width: 100%;
       }
       body {
-        background: #eef2ea;
-        color: #15241c;
+        background: #e8ece4;
+        color: #142018;
         font:
           15px/1.5 Inter,
           system-ui,
@@ -38,12 +38,13 @@
         font-feature-settings:
           'tnum' 1,
           'ss01' 1;
-        caret-color: #1f8a4d;
+        caret-color: #2c6a45;
       }
       body.alt-type h1,
       body.alt-type h2,
       body.alt-type .app-header h3,
-      body.alt-type .cover h1 {
+      body.alt-type .cover h1,
+      body.alt-type .alt-type h3 {
         font-family:
           'Iowan Old Style', 'Palatino Linotype', Palatino, 'Times New Roman',
           serif;
@@ -64,13 +65,13 @@
       h2,
       h3,
       h4 {
-        line-height: 1.08;
+        line-height: 1.06;
         letter-spacing: -0.03em;
         font-weight: 560;
       }
       h2 {
-        font-size: 34px;
-        margin-bottom: 10px;
+        font-size: 36px;
+        margin: 0 0 12px;
       }
       h3 {
         font-size: 26px;
@@ -82,8 +83,8 @@
         margin: 8px 0;
       }
       ::selection {
-        background: #c8e0c0;
-        color: #12301f;
+        background: #c5ddc0;
+        color: #102016;
       }
       .pen {
         display: inline-block;
@@ -99,8 +100,8 @@
         margin-right: 6px;
       }
       .cover {
-        background: #0c1410;
-        color: #edf3e8;
+        background: #1a2f24;
+        color: #eef4ea;
         padding: 28px max(24px, calc((100% - 1240px) / 2)) 40px;
         position: relative;
         overflow: hidden;
@@ -110,13 +111,13 @@
         position: absolute;
         inset: 0;
         background: linear-gradient(
-          105deg,
-          #1f8a4d33,
-          #d4a0171f 42%,
-          #2f7a9a29
+          108deg,
+          #17a0542e,
+          #e3a0141c 46%,
+          #1a88ad26
         );
         background-size: 220% 100%;
-        animation: header-shift 14s var(--ease-move) infinite;
+        animation: header-shift 16s var(--ease-move) infinite;
         pointer-events: none;
       }
       .cover-top,
@@ -132,21 +133,21 @@
       .cover-top,
       .cover-bottom {
         font-size: 13px;
-        color: #c5d4c4;
+        color: #c4d4c4;
       }
       .cover h1 {
         position: relative;
-        font-size: clamp(40px, 6vw, 72px);
+        font-size: clamp(42px, 6.2vw, 76px);
         font-weight: 520;
         margin: 28px 0 14px;
-        max-width: 980px;
+        max-width: 920px;
         letter-spacing: -0.038em;
       }
       .cover-description {
         position: relative;
-        max-width: 640px;
+        max-width: 560px;
         font-size: 18px;
-        color: #d5e3cf;
+        color: #d4e2ce;
       }
       .type-toggle {
         position: relative;
@@ -161,7 +162,7 @@
         color: #edf3e8;
       }
       .cover-bottom {
-        border-top: 1px solid #2a3b31;
+        border-top: 1px solid #2d4236;
         margin-top: 28px;
         padding-top: 14px;
       }
@@ -179,10 +180,10 @@
         gap: 28px;
       }
       .muted {
-        color: var(--sub, #5a6b60);
+        color: var(--sub, #526258);
       }
       .direction {
-        margin-top: 64px;
+        margin-top: 68px;
       }
       .specimen {
         margin: 20px 0;
@@ -192,29 +193,29 @@
         display: flex;
         gap: 8px;
         font-size: 12px;
-        color: #4e6255;
+        color: #4a5c50;
         margin: 0 0 8px;
       }
       .spec-caption > span:last-child {
         margin-left: auto;
       }
       .screen {
-        --bg: #f3f5f0;
-        --fg: #14241b;
-        --sub: #3d4f45;
-        --line: #d4ddd4;
-        --card: #fbfcf8;
-        --sage: #e7eee4;
-        --primary: #1f6b3e;
+        --bg: #f5f7f2;
+        --fg: #142018;
+        --sub: #3f5348;
+        --line: #cdd6cb;
+        --card: #fcfdf9;
+        --sage: #e7eee3;
+        --primary: #2c6a45;
         --on: #fff;
-        --rail: #eef2ea;
-        --header: #f7f8f4e6;
+        --rail: #eef1ea;
+        --header: #f6f8f3d9;
         --danger: #9b1c14;
         background: var(--bg);
         color: var(--fg);
-        border-radius: 16px;
+        border-radius: 14px;
         overflow: hidden;
-        box-shadow: 0 22px 48px -28px #10241873;
+        box-shadow: 0 24px 48px -28px #10241880;
         min-width: 0;
         position: relative;
       }
@@ -223,8 +224,8 @@
         position: absolute;
         inset: 0;
         pointer-events: none;
-        opacity: 0.035;
-        background-image: radial-gradient(#14241b 0.6px, transparent 0.6px);
+        opacity: 0.04;
+        background-image: radial-gradient(#142018 0.55px, transparent 0.55px);
         background-size: 3px 3px;
         z-index: 0;
       }
@@ -233,50 +234,41 @@
         z-index: 1;
       }
       .dark {
-        --bg: #0b100e;
-        --fg: #e7efe6;
-        --sub: #c5d4c6;
-        --line: #24332a;
-        --card: #131c17;
-        --sage: #18241d;
-        --primary: #3dbe74;
+        --bg: #080c0a;
+        --fg: #e6efe6;
+        --sub: #b7c9bb;
+        --line: #1c2a22;
+        --card: #101714;
+        --sage: #121a16;
+        --primary: #3dcc78;
         --on: #07110b;
-        --rail: #0e1612;
-        --header: #121a16e6;
+        --rail: #0b100e;
+        --header: #101714d9;
         --danger: #ff9b8c;
       }
       .desktop {
         display: flex;
-        min-height: 620px;
+        min-height: 640px;
       }
       .rail {
-        width: 220px;
+        width: 228px;
         flex: none;
-        padding: 22px 14px;
+        padding: 20px 12px;
         background: var(--rail);
         border-right: 1px solid var(--line);
         display: flex;
         flex-direction: column;
       }
       .wordmark {
-        display: flex;
-        align-items: center;
-        gap: 8px;
         font-size: 18px;
         font-weight: 650;
-        letter-spacing: -0.04em;
-      }
-      .mark {
-        width: 8px;
-        height: 8px;
-        border-radius: 99px;
-        background: var(--cook);
-        box-shadow: 0 0 0 4px #1f8a4d22;
+        letter-spacing: -0.045em;
+        padding: 0 10px;
       }
       .nav {
-        margin-top: 28px;
+        margin-top: 26px;
         display: grid;
-        gap: 4px;
+        gap: 2px;
       }
       .nav > p,
       .space-row {
@@ -291,7 +283,7 @@
       }
       .selected,
       .space-row.is-current {
-        background: color-mix(in srgb, var(--primary) 12%, transparent);
+        background: color-mix(in srgb, var(--primary) 11%, transparent);
         color: var(--fg);
         font-weight: 600;
       }
@@ -337,6 +329,7 @@
         gap: 8px;
         color: var(--sub);
         font-size: 12px;
+        padding: 0 10px;
       }
       kbd {
         font:
@@ -354,22 +347,27 @@
         flex-direction: column;
       }
       .app-header {
+        height: 64px;
         min-height: 64px;
         display: flex;
         align-items: center;
         gap: 16px;
-        padding: 8px 22px;
+        padding: 0 22px;
         border-bottom: 1px solid var(--line);
-        background: var(--header);
-        background-image: linear-gradient(
-          105deg,
-          color-mix(in srgb, var(--space, #1f8a4d) 22%, transparent),
-          transparent 42%,
-          color-mix(in srgb, var(--space, #2f7a9a) 14%, transparent)
+        background: color-mix(
+          in srgb,
+          var(--space, var(--cook)) 12%,
+          var(--header)
         );
-        background-size: 200% 100%;
-        backdrop-filter: blur(16px) saturate(1.2);
-        box-shadow: inset 0 1px 0 #ffffff66;
+        background-image: linear-gradient(
+          108deg,
+          color-mix(in srgb, var(--space, var(--cook)) 36%, transparent),
+          color-mix(in srgb, var(--space, var(--cook)) 8%, transparent) 48%,
+          transparent
+        );
+        background-size: 220% 100%;
+        backdrop-filter: blur(18px) saturate(1.3);
+        box-shadow: inset 0 1px 0 #ffffff80;
         animation: header-shift 16s var(--ease-move) infinite;
       }
       .dark .app-header {
@@ -389,12 +387,13 @@
         flex: 1;
       }
       .app-header h3 {
-        font-size: 22px;
+        font-size: 24px;
         letter-spacing: -0.032em;
       }
       .header-line {
         margin: 2px 0 0;
         font-size: 12px;
+        letter-spacing: 0.01em;
         color: var(--sub);
       }
       .header-ask {
@@ -406,7 +405,7 @@
         border: 1px solid var(--line);
         border-radius: 10px;
         color: var(--sub);
-        background: color-mix(in srgb, var(--card) 70%, transparent);
+        background: color-mix(in srgb, var(--card) 72%, transparent);
       }
       .content {
         padding: 22px;
@@ -444,52 +443,57 @@
       }
       .bento {
         display: grid;
-        grid-template-columns: 1.35fr 0.9fr;
+        grid-template-columns: 1.38fr 0.92fr;
         grid-template-rows: auto auto;
-        gap: 14px;
+        gap: 16px;
       }
       .space-card.cook {
         grid-row: span 2;
       }
       .space-card {
         background: var(--card);
-        border-radius: 16px;
+        border-radius: 14px;
         overflow: hidden;
-        box-shadow:
-          0 18px 36px -24px #10241880,
-          inset 0 1px 0 #ffffff8a;
         min-width: 0;
         transform-origin: center;
+        box-shadow:
+          0 20px 40px -26px #10241873,
+          inset 0 1px 0 #ffffff8c;
       }
       .space-card.cook {
         box-shadow:
-          0 18px 36px -22px color-mix(in srgb, var(--cook) 35%, #10241880),
-          inset 0 1px 0 #ffffff8a;
+          0 18px 32px -18px #10241873,
+          inset 0 1px 0 #ffffff8c;
       }
       .space-card.visit {
         box-shadow:
-          0 18px 36px -22px color-mix(in srgb, var(--visit) 35%, #10241880),
-          inset 0 1px 0 #ffffff8a;
+          0 18px 32px -18px #10241873,
+          inset 0 1px 0 #ffffff8c;
       }
       .space-card.notes {
         box-shadow:
-          0 18px 36px -22px color-mix(in srgb, var(--notes) 35%, #10241880),
-          inset 0 1px 0 #ffffff8a;
+          0 18px 32px -18px #10241873,
+          inset 0 1px 0 #ffffff8c;
+      }
+      .dark .space-card.cook,
+      .dark .space-card.visit,
+      .dark .space-card.notes {
+        box-shadow:
+          0 20px 36px -18px #000000a6,
+          inset 0 1px 0 #ffffff14;
       }
       .mosaic {
         display: grid;
         grid-template-columns: 1fr 1fr;
         grid-template-rows: 1fr 1fr;
-        gap: 2px;
-        min-height: 148px;
-        background: #d7e2d4;
-      }
-      .dark .mosaic {
-        background: #0f1813;
+        gap: 1px;
+        min-height: 168px;
+        background: color-mix(in srgb, var(--fg) 8%, transparent);
       }
       .mosaic.count-1 {
         grid-template-columns: 1fr;
         grid-template-rows: 1fr;
+        min-height: 132px;
       }
       .mosaic.count-2,
       .mosaic.count-3 {
@@ -499,49 +503,105 @@
         grid-row: span 2;
       }
       .space-card.cook .mosaic {
-        min-height: 292px;
+        min-height: 328px;
       }
       .tile {
         min-width: 0;
-        padding: 12px;
-        font-size: 15px;
-        line-height: 1.35;
-        letter-spacing: -0.02em;
         overflow: hidden;
         display: flex;
         align-items: end;
       }
       .tile.text {
-        background: #dce8d6;
-        color: #14241b;
+        background: #f1e6c8;
+        color: #12180f;
+        padding: 14px;
+        font-size: 17px;
+        line-height: 1.32;
+        letter-spacing: -0.022em;
+        font-weight: 540;
       }
       .dark .tile.text {
-        background: #1e2c24;
-        color: #e7efe6;
+        background: #1c261c;
+        color: #e8f0e4;
       }
       .tile.link {
-        background: #e7f2c9;
+        background: #dce8a8;
         flex-direction: column;
         justify-content: end;
         gap: 6px;
+        padding: 14px;
       }
       .dark .tile.link {
-        background: #24351f;
+        background: #2a3c20;
+        color: #e8f0e4;
       }
       .tile.link span {
-        font-size: 11px;
+        font-size: 10px;
         letter-spacing: 0.08em;
         text-transform: uppercase;
+        font-weight: 650;
         color: var(--sub);
       }
-      .tile.image {
-        background: linear-gradient(145deg, #f3c65a, #2f8a4d 70%, #154728);
+      .tile.link b {
+        font-size: 15px;
+        font-weight: 560;
+        letter-spacing: -0.02em;
       }
-      .tile.image.walk {
-        background: linear-gradient(160deg, #2d6f92, #7fb7a4 62%, #1d3f3a);
+      .tile.image {
+        position: relative;
+      }
+      .tile.image i {
+        position: absolute;
+        inset: 0;
+        opacity: 0.14;
+        background-image: radial-gradient(#1a1810 0.45px, transparent 0.55px);
+        background-size: 2px 2px;
       }
       .tile.image.citrus {
-        background: linear-gradient(200deg, #f0c14a, #3fa15c 55%, #1f6b3e);
+        background:
+          radial-gradient(
+            ellipse 70% 55% at 28% 18%,
+            #ffe7a0 0%,
+            #f0c14a 18%,
+            transparent 42%
+          ),
+          radial-gradient(
+            ellipse 36% 28% at 62% 30%,
+            #fff4c4aa 0%,
+            transparent 46%
+          ),
+          radial-gradient(
+            ellipse 80% 58% at 82% 92%,
+            #0a2214 0%,
+            transparent 52%
+          ),
+          linear-gradient(
+            158deg,
+            #c4922a 0%,
+            #4a8a32 34%,
+            #1c5a30 64%,
+            #0c2216 100%
+          );
+      }
+      .tile.image.walk {
+        background:
+          radial-gradient(
+            ellipse 70% 42% at 74% 12%,
+            #f6d08a 0%,
+            transparent 40%
+          ),
+          radial-gradient(
+            ellipse 50% 36% at 16% 78%,
+            #071e28 0%,
+            transparent 46%
+          ),
+          linear-gradient(
+            168deg,
+            #3f7a90 0%,
+            #256878 38%,
+            #163840 74%,
+            #08181c 100%
+          );
       }
       .space-meta {
         display: flex;
@@ -551,7 +611,7 @@
       }
       .space-meta h4 {
         font-size: 16px;
-        letter-spacing: -0.02em;
+        letter-spacing: -0.022em;
       }
       .space-meta .count,
       .saved-card time {
@@ -561,8 +621,8 @@
         color: var(--sub);
       }
       .space-icon {
-        width: 10px;
-        height: 10px;
+        width: 8px;
+        height: 8px;
         flex: none;
         background: var(--space, var(--cook));
       }
@@ -571,18 +631,18 @@
       }
       .space-icon.diamond {
         transform: rotate(45deg);
-        border-radius: 2px;
+        border-radius: 1px;
       }
       .space-icon.square {
-        border-radius: 2px;
+        border-radius: 1px;
       }
       .space-card.visit .space-icon,
       .chip.visit i {
-        background: var(--visit);
+        --space: var(--visit);
       }
       .space-card.notes .space-icon,
       .chip.notes i {
-        background: var(--notes);
+        --space: var(--notes);
       }
       .ghosts {
         display: grid;
@@ -591,29 +651,43 @@
         margin-bottom: 18px;
       }
       .ghost {
-        opacity: 0.7;
+        opacity: 0.62;
       }
       .ghost .mosaic {
-        min-height: 118px;
+        min-height: 124px;
       }
       .ghost .mosaic i {
         display: block;
-        min-height: 56px;
-        background: #d0d8ce;
+        min-height: 60px;
+        background: #d5ddd0;
+      }
+      .ghost .mosaic i:nth-child(2) {
+        background: #e3eadc;
+      }
+      .ghost .mosaic i:nth-child(3) {
+        background: #c8d4c2;
+      }
+      .ghost .mosaic i:nth-child(4) {
+        background: #dce4d4;
       }
       .dark .ghost .mosaic i {
-        background: #243026;
+        background: #1c2820;
       }
-      .ghost .space-meta b,
-      .ghost .space-meta em {
+      .dark .ghost .mosaic i:nth-child(2) {
+        background: #243228;
+      }
+      .dark .ghost .mosaic i:nth-child(3) {
+        background: #16201a;
+      }
+      .dark .ghost .mosaic i:nth-child(4) {
+        background: #1f2c22;
+      }
+      .ghost .space-meta b {
         display: block;
         height: 8px;
+        width: 46%;
         border-radius: 4px;
         background: var(--line);
-      }
-      .ghost .space-meta em {
-        width: 28%;
-        margin-top: 8px;
       }
       .empty-actions {
         display: flex;
@@ -645,10 +719,26 @@
         width: 8px;
         height: 8px;
         border-radius: 99px;
+        flex: none;
+      }
+      .chip.cook,
+      .starter.cook {
+        background: color-mix(in srgb, var(--cook) 10%, var(--card));
+        border-color: color-mix(in srgb, var(--cook) 28%, var(--line));
+      }
+      .chip.visit,
+      .starter.visit {
+        background: color-mix(in srgb, var(--visit) 12%, var(--card));
+        border-color: color-mix(in srgb, var(--visit) 30%, var(--line));
+      }
+      .chip.notes,
+      .starter.notes {
+        background: color-mix(in srgb, var(--notes) 10%, var(--card));
+        border-color: color-mix(in srgb, var(--notes) 28%, var(--line));
       }
       .chip.is-on {
-        border-color: color-mix(in srgb, var(--cook) 50%, var(--line));
-        background: color-mix(in srgb, var(--cook) 12%, var(--card));
+        border-color: color-mix(in srgb, var(--cook) 55%, var(--line));
+        background: color-mix(in srgb, var(--cook) 16%, var(--card));
       }
       .plus {
         width: 44px;
@@ -661,7 +751,7 @@
       }
       .saved-card {
         background: var(--card);
-        border-radius: 16px;
+        border-radius: 14px;
         padding: 16px 16px 18px;
         box-shadow:
           0 16px 32px -22px #10241873,
@@ -672,6 +762,7 @@
         display: flex;
         align-items: center;
         gap: 8px;
+        flex-wrap: wrap;
       }
       .chips {
         display: flex;
@@ -681,7 +772,7 @@
       .original-preview {
         font-size: 22px;
         margin: 16px 0 10px;
-        letter-spacing: -0.02em;
+        letter-spacing: -0.022em;
       }
       .more {
         width: 44px;
@@ -708,7 +799,7 @@
       .sheet,
       .glass {
         background: color-mix(in srgb, var(--card) 78%, transparent);
-        backdrop-filter: blur(18px) saturate(1.2);
+        backdrop-filter: blur(18px) saturate(1.25);
         box-shadow:
           0 22px 50px -24px #10241880,
           inset 0 1px 0 #ffffff8c;
@@ -719,7 +810,7 @@
         top: 46px;
         width: 220px;
         padding: 6px;
-        border-radius: 14px;
+        border-radius: 12px;
         display: grid;
       }
       .menu button {
@@ -739,7 +830,7 @@
       }
       .command {
         margin-top: 16px;
-        border-radius: 16px;
+        border-radius: 14px;
         padding: 8px;
         max-width: 420px;
       }
@@ -765,7 +856,7 @@
       }
       .composer {
         background: var(--card);
-        border-radius: 16px;
+        border-radius: 14px;
         padding: 22px;
         box-shadow:
           0 22px 50px -24px #10241873,
@@ -773,15 +864,16 @@
       }
       .composer.tint-cook {
         box-shadow:
-          inset 4px 0 0 var(--cook),
-          0 0 0 1px color-mix(in srgb, var(--cook) 28%, var(--line)),
+          inset 3px 0 0 var(--cook),
+          0 0 0 1px color-mix(in srgb, var(--cook) 30%, var(--line)),
           0 22px 50px -24px #10241873,
           inset 0 1px 0 #ffffff8a;
       }
       .composer label {
         display: block;
         font-size: 12px;
-        font-weight: 600;
+        font-weight: 650;
+        letter-spacing: 0.02em;
         margin: 12px 0;
         color: var(--sub);
       }
@@ -802,7 +894,8 @@
       }
       .picker > span {
         font-size: 12px;
-        font-weight: 600;
+        font-weight: 650;
+        letter-spacing: 0.02em;
         color: var(--sub);
       }
       .recent {
@@ -834,7 +927,7 @@
       }
       .dialog,
       .sheet {
-        border-radius: 16px;
+        border-radius: 14px;
         padding: 22px;
         max-width: 460px;
       }
@@ -844,18 +937,24 @@
         gap: 8px;
       }
       .sheet-item {
-        padding: 12px 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 0;
         border-bottom: 1px solid var(--line);
         min-height: 44px;
       }
       .keep-tiles {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 6px;
+        gap: 1px;
         margin: 14px 0;
-        min-height: 120px;
+        min-height: 148px;
         border-radius: 12px;
         overflow: hidden;
+      }
+      .keep-tiles .tile {
+        min-height: 72px;
       }
       .phones {
         display: grid;
@@ -865,9 +964,9 @@
       .phone {
         width: 100%;
         max-width: 420px;
-        min-height: 680px;
-        border-radius: 22px;
-        border: 5px solid var(--line);
+        min-height: 700px;
+        border-radius: 20px;
+        border: 5px solid color-mix(in srgb, var(--fg) 16%, var(--line));
         justify-self: center;
       }
       .phone .rail {
@@ -878,7 +977,7 @@
       }
       .phone .app-header {
         flex-wrap: nowrap;
-        padding: 10px 16px;
+        padding: 0 16px;
       }
       .phone .app-header h3 {
         font-size: 20px;
@@ -890,14 +989,10 @@
         grid-row: auto;
       }
       .phone .space-card.cook .mosaic {
-        min-height: 168px;
+        min-height: 188px;
       }
       .phone .ghosts {
         grid-template-columns: 1fr;
-      }
-      .phone .chips {
-        flex-direction: column;
-        align-items: flex-start;
       }
       .mobile-top {
         display: flex;
@@ -931,7 +1026,7 @@
         margin-top: 16px;
       }
       .motion-demo {
-        background: #e7eee4;
+        background: #e4ece0;
         padding: 16px;
         border-radius: 14px;
       }
@@ -950,8 +1045,8 @@
       }
       .motion-scene {
         margin-top: 12px;
-        min-height: 220px;
-        background: #fbfcf8;
+        min-height: 240px;
+        background: #f5f7f2;
         border-radius: 12px;
         padding: 12px;
         position: relative;
@@ -960,20 +1055,23 @@
       .grow-card {
         width: min(260px, 100%);
       }
+      .grow-card .mosaic {
+        min-height: 148px;
+      }
       .grow-page {
         position: absolute;
         inset: 12px;
         opacity: 0;
-        transform: scale(0.96);
+        transform: scale(0.94);
         pointer-events: none;
-        background: #f3f5f0;
+        background: #f5f7f2;
         border-radius: 12px;
       }
       #grow-scene.is-playing .grow-card {
-        animation: grow-away 0.48s var(--ease-out) forwards;
+        animation: grow-away 0.46s var(--ease-out) forwards;
       }
       #grow-scene.is-playing .grow-page {
-        animation: grow-in 0.48s var(--ease-out) forwards;
+        animation: grow-in 0.46s var(--ease-out) 0.06s forwards;
       }
       .fly-scene {
         display: grid;
@@ -992,11 +1090,11 @@
         position: relative;
       }
       #fly-scene.is-playing .chip.is-flying {
-        animation: chip-fly 0.52s var(--ease-move) forwards;
+        animation: chip-fly 0.48s var(--ease-move) forwards;
       }
       .alt-card {
-        background: #fbfcf8;
-        border-radius: 16px;
+        background: #fcfdf9;
+        border-radius: 14px;
         padding: 28px;
         box-shadow: 0 16px 32px -22px #10241873;
       }
@@ -1024,7 +1122,7 @@
       }
       @keyframes breathe {
         50% {
-          opacity: 0.72;
+          opacity: 0.42;
         }
       }
       @keyframes stagger-in {
@@ -1040,7 +1138,7 @@
       @keyframes grow-away {
         to {
           opacity: 0;
-          transform: scale(1.08);
+          transform: scale(1.12);
         }
       }
       @keyframes grow-in {
@@ -1054,9 +1152,12 @@
         }
       }
       @keyframes chip-fly {
+        40% {
+          transform: translate(-90px, -36px) scale(0.9);
+        }
         to {
-          transform: translate(-220px, -8px) scale(0.7);
-          opacity: 0.2;
+          transform: translate(-210px, -10px) scale(0.68);
+          opacity: 0.15;
         }
       }
       @media (prefers-reduced-motion: no-preference) {
@@ -1083,7 +1184,14 @@
         .space-card {
           transition:
             transform 180ms var(--ease-out),
-            box-shadow 180ms;
+            box-shadow 180ms,
+            opacity 180ms;
+        }
+        .bento:hover .space-card {
+          opacity: 0.58;
+        }
+        .bento .space-card:hover {
+          opacity: 1;
         }
       }
       @media (max-width: 850px) {
@@ -1139,13 +1247,10 @@
           2026
         </p>
       </div>
-      <h1>
-        <span class="pen" id="I03">I03</span>Spaces.<br />Never a second
-        original.
-      </h1>
+      <h1><span class="pen" id="I03">I03</span>Spaces.<br />Same originals.</h1>
       <p class="cover-description">
-        <span class="pen" id="I04">I04</span>Mature greenhouse. Bright, minimal,
-        no beds or cartoon leaves.
+        <span class="pen" id="I04">I04</span>Bright greenhouse accents on paper.
+        Markup the IDs.
       </p>
       <div class="type-toggle">
         <p class="">
@@ -1194,8 +1299,7 @@
         <div class="screen light desktop">
           <aside class="rail">
             <div class="wordmark">
-              <span class="pen" id="L01">L01</span
-              ><span class="mark" aria-hidden="true"></span>sprout
+              <span class="pen" id="L01">L01</span>sprout
             </div>
             <nav class="nav">
               <p class=""><span class="pen" id="L02">L02</span>Library</p>
@@ -1209,7 +1313,7 @@
             </nav>
             <div class="rail-foot">
               <kbd>⌘K</kbd>
-              <p class=""><span class="pen" id="L06">L06</span>Ask or jump</p>
+              <p class=""><span class="pen" id="L06">L06</span>Ask</p>
             </div>
           </aside>
           <div class="workspace">
@@ -1217,8 +1321,7 @@
               <div class="header-copy">
                 <h3><span class="pen" id="L07">L07</span>Spaces</h3>
                 <p class="header-line">
-                  <span class="pen" id="L08">L08</span>Named rooms. Same
-                  originals.
+                  <span class="pen" id="L08">L08</span>Start when you need one.
                 </p>
               </div>
               <div class="header-ask">
@@ -1235,21 +1338,21 @@
                   <div class="mosaic count-4"><i></i><i></i><i></i><i></i></div>
                   <div class="space-meta">
                     <span class="space-icon circle"></span>
-                    <div><b></b><em></em></div>
+                    <div><b></b></div>
                   </div>
                 </article>
                 <article class="space-card ghost" aria-hidden="true">
                   <div class="mosaic count-4"><i></i><i></i><i></i><i></i></div>
                   <div class="space-meta">
                     <span class="space-icon circle"></span>
-                    <div><b></b><em></em></div>
+                    <div><b></b></div>
                   </div>
                 </article>
                 <article class="space-card ghost" aria-hidden="true">
                   <div class="mosaic count-4"><i></i><i></i><i></i><i></i></div>
                   <div class="space-meta">
                     <span class="space-icon circle"></span>
-                    <div><b></b><em></em></div>
+                    <div><b></b></div>
                   </div>
                 </article>
               </div>
@@ -1281,8 +1384,7 @@
         <div class="screen dark desktop">
           <aside class="rail">
             <div class="wordmark">
-              <span class="pen" id="L15">L15</span
-              ><span class="mark" aria-hidden="true"></span>sprout
+              <span class="pen" id="L15">L15</span>sprout
             </div>
             <nav class="nav">
               <p class=""><span class="pen" id="L16">L16</span>Library</p>
@@ -1296,7 +1398,7 @@
             </nav>
             <div class="rail-foot">
               <kbd>⌘K</kbd>
-              <p class=""><span class="pen" id="L20">L20</span>Ask or jump</p>
+              <p class=""><span class="pen" id="L20">L20</span>Ask</p>
             </div>
           </aside>
           <div class="workspace">
@@ -1304,8 +1406,7 @@
               <div class="header-copy">
                 <h3><span class="pen" id="L21">L21</span>Spaces</h3>
                 <p class="header-line">
-                  <span class="pen" id="L22">L22</span>Named rooms. Same
-                  originals.
+                  <span class="pen" id="L22">L22</span>Start when you need one.
                 </p>
               </div>
               <div class="header-ask">
@@ -1322,21 +1423,21 @@
                   <div class="mosaic count-4"><i></i><i></i><i></i><i></i></div>
                   <div class="space-meta">
                     <span class="space-icon circle"></span>
-                    <div><b></b><em></em></div>
+                    <div><b></b></div>
                   </div>
                 </article>
                 <article class="space-card ghost" aria-hidden="true">
                   <div class="mosaic count-4"><i></i><i></i><i></i><i></i></div>
                   <div class="space-meta">
                     <span class="space-icon circle"></span>
-                    <div><b></b><em></em></div>
+                    <div><b></b></div>
                   </div>
                 </article>
                 <article class="space-card ghost" aria-hidden="true">
                   <div class="mosaic count-4"><i></i><i></i><i></i><i></i></div>
                   <div class="space-meta">
                     <span class="space-icon circle"></span>
-                    <div><b></b><em></em></div>
+                    <div><b></b></div>
                   </div>
                 </article>
               </div>
@@ -1367,17 +1468,13 @@
           </div>
           <div class="screen light phone">
             <div class="mobile-top">
-              <span class="pen" id="L29">L29</span
-              ><span class="mark" aria-hidden="true"></span>sprout<span
-                >Spaces</span
-              >
+              <span class="pen" id="L29">L29</span>sprout<span>Spaces</span>
             </div>
             <header class="app-header">
               <div class="header-copy">
                 <h3><span class="pen" id="L30">L30</span>Spaces</h3>
                 <p class="header-line">
-                  <span class="pen" id="L31">L31</span>Start one when you need
-                  it.
+                  <span class="pen" id="L31">L31</span>Start when you need one.
                 </p>
               </div>
               <div class="header-ask">
@@ -1394,21 +1491,21 @@
                   <div class="mosaic count-4"><i></i><i></i><i></i><i></i></div>
                   <div class="space-meta">
                     <span class="space-icon circle"></span>
-                    <div><b></b><em></em></div>
+                    <div><b></b></div>
                   </div>
                 </article>
                 <article class="space-card ghost" aria-hidden="true">
                   <div class="mosaic count-4"><i></i><i></i><i></i><i></i></div>
                   <div class="space-meta">
                     <span class="space-icon circle"></span>
-                    <div><b></b><em></em></div>
+                    <div><b></b></div>
                   </div>
                 </article>
                 <article class="space-card ghost" aria-hidden="true">
                   <div class="mosaic count-4"><i></i><i></i><i></i><i></i></div>
                   <div class="space-meta">
                     <span class="space-icon circle"></span>
-                    <div><b></b><em></em></div>
+                    <div><b></b></div>
                   </div>
                 </article>
               </div>
@@ -1435,17 +1532,13 @@
           </div>
           <div class="screen dark phone">
             <div class="mobile-top">
-              <span class="pen" id="L38">L38</span
-              ><span class="mark" aria-hidden="true"></span>sprout<span
-                >Spaces</span
-              >
+              <span class="pen" id="L38">L38</span>sprout<span>Spaces</span>
             </div>
             <header class="app-header">
               <div class="header-copy">
                 <h3><span class="pen" id="L39">L39</span>Spaces</h3>
                 <p class="header-line">
-                  <span class="pen" id="L40">L40</span>Start one when you need
-                  it.
+                  <span class="pen" id="L40">L40</span>Start when you need one.
                 </p>
               </div>
               <div class="header-ask">
@@ -1462,21 +1555,21 @@
                   <div class="mosaic count-4"><i></i><i></i><i></i><i></i></div>
                   <div class="space-meta">
                     <span class="space-icon circle"></span>
-                    <div><b></b><em></em></div>
+                    <div><b></b></div>
                   </div>
                 </article>
                 <article class="space-card ghost" aria-hidden="true">
                   <div class="mosaic count-4"><i></i><i></i><i></i><i></i></div>
                   <div class="space-meta">
                     <span class="space-icon circle"></span>
-                    <div><b></b><em></em></div>
+                    <div><b></b></div>
                   </div>
                 </article>
                 <article class="space-card ghost" aria-hidden="true">
                   <div class="mosaic count-4"><i></i><i></i><i></i><i></i></div>
                   <div class="space-meta">
                     <span class="space-icon circle"></span>
-                    <div><b></b><em></em></div>
+                    <div><b></b></div>
                   </div>
                 </article>
               </div>
@@ -1504,8 +1597,7 @@
         <div class="screen light desktop">
           <aside class="rail">
             <div class="wordmark">
-              <span class="pen" id="L50">L50</span
-              ><span class="mark" aria-hidden="true"></span>sprout
+              <span class="pen" id="L50">L50</span>sprout
             </div>
             <nav class="nav">
               <p class=""><span class="pen" id="L51">L51</span>Library</p>
@@ -1534,7 +1626,7 @@
             </nav>
             <div class="rail-foot">
               <kbd>⌘K</kbd>
-              <p class=""><span class="pen" id="L55">L55</span>Ask or jump</p>
+              <p class=""><span class="pen" id="L55">L55</span>Ask</p>
             </div>
           </aside>
           <div class="workspace">
@@ -1542,8 +1634,7 @@
               <div class="header-copy">
                 <h3><span class="pen" id="L56">L56</span>Spaces</h3>
                 <p class="header-line">
-                  <span class="pen" id="L57">L57</span>Same originals. Different
-                  rooms.
+                  <span class="pen" id="L57">L57</span>12 items
                 </p>
               </div>
               <div class="header-ask">
@@ -1565,7 +1656,9 @@
                     <div class="tile text original-field" dir="auto">
                       קפה קטן בגינה 🍋
                     </div>
-                    <div class="tile image citrus" aria-hidden="true"></div>
+                    <div class="tile image citrus" aria-hidden="true">
+                      <i></i>
+                    </div>
                     <div class="tile text" dir="auto">
                       Citrus tahini on warm bread.
                     </div>
@@ -1591,7 +1684,9 @@
                   style="--space: var(--visit)"
                 >
                   <div class="mosaic count-3">
-                    <div class="tile image walk" aria-hidden="true"></div>
+                    <div class="tile image walk" aria-hidden="true">
+                      <i></i>
+                    </div>
                     <div class="tile text original-field" dir="auto">
                       קפה קטן בגינה 🍋
                     </div>
@@ -1645,8 +1740,7 @@
         <div class="screen dark desktop">
           <aside class="rail">
             <div class="wordmark">
-              <span class="pen" id="L69">L69</span
-              ><span class="mark" aria-hidden="true"></span>sprout
+              <span class="pen" id="L69">L69</span>sprout
             </div>
             <nav class="nav">
               <p class=""><span class="pen" id="L70">L70</span>Library</p>
@@ -1675,7 +1769,7 @@
             </nav>
             <div class="rail-foot">
               <kbd>⌘K</kbd>
-              <p class=""><span class="pen" id="L74">L74</span>Ask or jump</p>
+              <p class=""><span class="pen" id="L74">L74</span>Ask</p>
             </div>
           </aside>
           <div class="workspace">
@@ -1683,8 +1777,7 @@
               <div class="header-copy">
                 <h3><span class="pen" id="L75">L75</span>Spaces</h3>
                 <p class="header-line">
-                  <span class="pen" id="L76">L76</span>Same originals. Different
-                  rooms.
+                  <span class="pen" id="L76">L76</span>12 items
                 </p>
               </div>
               <div class="header-ask">
@@ -1706,7 +1799,9 @@
                     <div class="tile text original-field" dir="auto">
                       קפה קטן בגינה 🍋
                     </div>
-                    <div class="tile image citrus" aria-hidden="true"></div>
+                    <div class="tile image citrus" aria-hidden="true">
+                      <i></i>
+                    </div>
                     <div class="tile text" dir="auto">
                       Citrus tahini on warm bread.
                     </div>
@@ -1732,7 +1827,9 @@
                   style="--space: var(--visit)"
                 >
                   <div class="mosaic count-3">
-                    <div class="tile image walk" aria-hidden="true"></div>
+                    <div class="tile image walk" aria-hidden="true">
+                      <i></i>
+                    </div>
                     <div class="tile text original-field" dir="auto">
                       קפה קטן בגינה 🍋
                     </div>
@@ -1786,16 +1883,13 @@
           </div>
           <div class="screen light phone">
             <div class="mobile-top">
-              <span class="pen" id="L85">L85</span
-              ><span class="mark" aria-hidden="true"></span>sprout<span
-                >Spaces</span
-              >
+              <span class="pen" id="L85">L85</span>sprout<span>Spaces</span>
             </div>
             <header class="app-header">
               <div class="header-copy">
                 <h3><span class="pen" id="L86">L86</span>Spaces</h3>
                 <p class="header-line">
-                  <span class="pen" id="L87">L87</span>Open one.
+                  <span class="pen" id="L87">L87</span>12 items
                 </p>
               </div>
               <div class="header-ask">
@@ -1813,7 +1907,9 @@
                     <div class="tile text original-field" dir="auto">
                       קפה קטן בגינה 🍋
                     </div>
-                    <div class="tile image citrus" aria-hidden="true"></div>
+                    <div class="tile image citrus" aria-hidden="true">
+                      <i></i>
+                    </div>
                     <div class="tile text" dir="auto">
                       Citrus tahini on warm bread.
                     </div>
@@ -1835,7 +1931,9 @@
                 </article>
                 <article class="space-card visit" style="--space: var(--visit)">
                   <div class="mosaic count-3">
-                    <div class="tile image walk" aria-hidden="true"></div>
+                    <div class="tile image walk" aria-hidden="true">
+                      <i></i>
+                    </div>
                     <div class="tile text original-field" dir="auto">
                       קפה קטן בגינה 🍋
                     </div>
@@ -1885,16 +1983,13 @@
           </div>
           <div class="screen dark phone">
             <div class="mobile-top">
-              <span class="pen" id="L97">L97</span
-              ><span class="mark" aria-hidden="true"></span>sprout<span
-                >Spaces</span
-              >
+              <span class="pen" id="L97">L97</span>sprout<span>Spaces</span>
             </div>
             <header class="app-header">
               <div class="header-copy">
                 <h3><span class="pen" id="L98">L98</span>Spaces</h3>
                 <p class="header-line">
-                  <span class="pen" id="L99">L99</span>Open one.
+                  <span class="pen" id="L99">L99</span>12 items
                 </p>
               </div>
               <div class="header-ask">
@@ -1912,7 +2007,9 @@
                     <div class="tile text original-field" dir="auto">
                       קפה קטן בגינה 🍋
                     </div>
-                    <div class="tile image citrus" aria-hidden="true"></div>
+                    <div class="tile image citrus" aria-hidden="true">
+                      <i></i>
+                    </div>
                     <div class="tile text" dir="auto">
                       Citrus tahini on warm bread.
                     </div>
@@ -1934,7 +2031,9 @@
                 </article>
                 <article class="space-card visit" style="--space: var(--visit)">
                   <div class="mosaic count-3">
-                    <div class="tile image walk" aria-hidden="true"></div>
+                    <div class="tile image walk" aria-hidden="true">
+                      <i></i>
+                    </div>
                     <div class="tile text original-field" dir="auto">
                       קפה קטן בגינה 🍋
                     </div>
@@ -1996,8 +2095,7 @@
         <div class="screen light desktop">
           <aside class="rail">
             <div class="wordmark">
-              <span class="pen" id="V04">V04</span
-              ><span class="mark" aria-hidden="true"></span>sprout
+              <span class="pen" id="V04">V04</span>sprout
             </div>
             <nav class="nav">
               <p class=""><span class="pen" id="V05">V05</span>Library</p>
@@ -2026,7 +2124,7 @@
             </nav>
             <div class="rail-foot">
               <kbd>⌘K</kbd>
-              <p class=""><span class="pen" id="V09">V09</span>Ask or jump</p>
+              <p class=""><span class="pen" id="V09">V09</span>Ask</p>
             </div>
           </aside>
           <div class="workspace">
@@ -2034,7 +2132,7 @@
               <div class="header-copy">
                 <h3><span class="pen" id="V10">V10</span>Things to cook</h3>
                 <p class="header-line">
-                  <span class="pen" id="V11">V11</span>4 items · one original.
+                  <span class="pen" id="V11">V11</span>4 items
                 </p>
               </div>
               <div class="header-ask">
@@ -2063,9 +2161,9 @@
                       <button disabled class="more" aria-label="Item actions">
                         <span class="pen" id="V16">V16</span
                         ><svg viewBox="0 0 24 24" aria-hidden="true">
-                          <circle cx="6" cy="12" r="1.6" />
-                          <circle cx="12" cy="12" r="1.6" />
-                          <circle cx="18" cy="12" r="1.6" />
+                          <circle cx="6" cy="12" r="1.5" />
+                          <circle cx="12" cy="12" r="1.5" />
+                          <circle cx="18" cy="12" r="1.5" />
                         </svg>
                       </button>
                       <div class="menu glass">
@@ -2106,9 +2204,9 @@
                       <button disabled class="more" aria-label="Item actions">
                         <span class="pen" id="V23">V23</span
                         ><svg viewBox="0 0 24 24" aria-hidden="true">
-                          <circle cx="6" cy="12" r="1.6" />
-                          <circle cx="12" cy="12" r="1.6" />
-                          <circle cx="18" cy="12" r="1.6" />
+                          <circle cx="6" cy="12" r="1.5" />
+                          <circle cx="12" cy="12" r="1.5" />
+                          <circle cx="18" cy="12" r="1.5" />
                         </svg>
                       </button>
                     </div>
@@ -2136,8 +2234,7 @@
         <div class="screen dark desktop">
           <aside class="rail">
             <div class="wordmark">
-              <span class="pen" id="V29">V29</span
-              ><span class="mark" aria-hidden="true"></span>sprout
+              <span class="pen" id="V29">V29</span>sprout
             </div>
             <nav class="nav">
               <p class=""><span class="pen" id="V30">V30</span>Library</p>
@@ -2166,7 +2263,7 @@
             </nav>
             <div class="rail-foot">
               <kbd>⌘K</kbd>
-              <p class=""><span class="pen" id="V34">V34</span>Ask or jump</p>
+              <p class=""><span class="pen" id="V34">V34</span>Ask</p>
             </div>
           </aside>
           <div class="workspace">
@@ -2174,7 +2271,7 @@
               <div class="header-copy">
                 <h3><span class="pen" id="V35">V35</span>Things to cook</h3>
                 <p class="header-line">
-                  <span class="pen" id="V36">V36</span>4 items · one original.
+                  <span class="pen" id="V36">V36</span>4 items
                 </p>
               </div>
               <div class="header-ask">
@@ -2203,9 +2300,9 @@
                       <button disabled class="more" aria-label="Item actions">
                         <span class="pen" id="V41">V41</span
                         ><svg viewBox="0 0 24 24" aria-hidden="true">
-                          <circle cx="6" cy="12" r="1.6" />
-                          <circle cx="12" cy="12" r="1.6" />
-                          <circle cx="18" cy="12" r="1.6" />
+                          <circle cx="6" cy="12" r="1.5" />
+                          <circle cx="12" cy="12" r="1.5" />
+                          <circle cx="18" cy="12" r="1.5" />
                         </svg>
                       </button>
                       <div class="menu glass">
@@ -2246,9 +2343,9 @@
                       <button disabled class="more" aria-label="Item actions">
                         <span class="pen" id="V48">V48</span
                         ><svg viewBox="0 0 24 24" aria-hidden="true">
-                          <circle cx="6" cy="12" r="1.6" />
-                          <circle cx="12" cy="12" r="1.6" />
-                          <circle cx="18" cy="12" r="1.6" />
+                          <circle cx="6" cy="12" r="1.5" />
+                          <circle cx="12" cy="12" r="1.5" />
+                          <circle cx="18" cy="12" r="1.5" />
                         </svg>
                       </button>
                     </div>
@@ -2276,16 +2373,13 @@
           </div>
           <div class="screen light phone">
             <div class="mobile-top">
-              <span class="pen" id="V51">V51</span
-              ><span class="mark" aria-hidden="true"></span>sprout<span
-                >Space</span
-              >
+              <span class="pen" id="V51">V51</span>sprout<span>Space</span>
             </div>
             <header class="app-header space-cook">
               <div class="header-copy">
                 <h3><span class="pen" id="V52">V52</span>Things to cook</h3>
                 <p class="header-line">
-                  <span class="pen" id="V53">V53</span>One original.
+                  <span class="pen" id="V53">V53</span>4 items
                 </p>
               </div>
               <div class="header-ask">
@@ -2312,9 +2406,9 @@
                   ><button disabled class="more" aria-label="Open actions">
                     <span class="pen" id="V58">V58</span
                     ><svg viewBox="0 0 24 24" aria-hidden="true">
-                      <circle cx="6" cy="12" r="1.6" />
-                      <circle cx="12" cy="12" r="1.6" />
-                      <circle cx="18" cy="12" r="1.6" />
+                      <circle cx="6" cy="12" r="1.5" />
+                      <circle cx="12" cy="12" r="1.5" />
+                      <circle cx="18" cy="12" r="1.5" />
                     </svg>
                   </button>
                 </div>
@@ -2339,16 +2433,13 @@
           </div>
           <div class="screen dark phone">
             <div class="mobile-top">
-              <span class="pen" id="V62">V62</span
-              ><span class="mark" aria-hidden="true"></span>sprout<span
-                >Space</span
-              >
+              <span class="pen" id="V62">V62</span>sprout<span>Space</span>
             </div>
             <header class="app-header space-cook">
               <div class="header-copy">
                 <h3><span class="pen" id="V63">V63</span>Things to cook</h3>
                 <p class="header-line">
-                  <span class="pen" id="V64">V64</span>One original.
+                  <span class="pen" id="V64">V64</span>4 items
                 </p>
               </div>
               <div class="header-ask">
@@ -2375,9 +2466,9 @@
                   ><button disabled class="more" aria-label="Open actions">
                     <span class="pen" id="V69">V69</span
                     ><svg viewBox="0 0 24 24" aria-hidden="true">
-                      <circle cx="6" cy="12" r="1.6" />
-                      <circle cx="12" cy="12" r="1.6" />
-                      <circle cx="18" cy="12" r="1.6" />
+                      <circle cx="6" cy="12" r="1.5" />
+                      <circle cx="12" cy="12" r="1.5" />
+                      <circle cx="18" cy="12" r="1.5" />
                     </svg>
                   </button>
                 </div>
@@ -2411,8 +2502,7 @@
         <div class="screen light desktop">
           <aside class="rail">
             <div class="wordmark">
-              <span class="pen" id="C04">C04</span
-              ><span class="mark" aria-hidden="true"></span>sprout
+              <span class="pen" id="C04">C04</span>sprout
             </div>
             <nav class="nav">
               <p class="selected">
@@ -2441,7 +2531,7 @@
             </nav>
             <div class="rail-foot">
               <kbd>⌘K</kbd>
-              <p class=""><span class="pen" id="C09">C09</span>Ask or jump</p>
+              <p class=""><span class="pen" id="C09">C09</span>Ask</p>
             </div>
           </aside>
           <div class="workspace">
@@ -2449,7 +2539,7 @@
               <div class="header-copy">
                 <h3><span class="pen" id="C10">C10</span>New card</h3>
                 <p class="header-line">
-                  <span class="pen" id="C11">C11</span>Save without a Space.
+                  <span class="pen" id="C11">C11</span>Space is optional.
                 </p>
               </div>
               <div class="header-ask">
@@ -2457,7 +2547,7 @@
                 ><kbd>⌘K</kbd>
               </div>
               <button disabled class="button primary">
-                <span class="pen" id="C13">C13</span>Save original
+                <span class="pen" id="C13">C13</span>New space
               </button>
             </header>
             <div class="content">
@@ -2498,7 +2588,7 @@ Keep for a quiet Friday.</textarea>
                           d="M12 6v12M6 12h12"
                           fill="none"
                           stroke="currentColor"
-                          stroke-width="1.8"
+                          stroke-width="1.7"
                           stroke-linecap="round"
                         />
                       </svg>
@@ -2524,8 +2614,7 @@ Keep for a quiet Friday.</textarea>
         <div class="screen dark desktop">
           <aside class="rail">
             <div class="wordmark">
-              <span class="pen" id="C25">C25</span
-              ><span class="mark" aria-hidden="true"></span>sprout
+              <span class="pen" id="C25">C25</span>sprout
             </div>
             <nav class="nav">
               <p class="selected">
@@ -2554,7 +2643,7 @@ Keep for a quiet Friday.</textarea>
             </nav>
             <div class="rail-foot">
               <kbd>⌘K</kbd>
-              <p class=""><span class="pen" id="C30">C30</span>Ask or jump</p>
+              <p class=""><span class="pen" id="C30">C30</span>Ask</p>
             </div>
           </aside>
           <div class="workspace">
@@ -2562,7 +2651,7 @@ Keep for a quiet Friday.</textarea>
               <div class="header-copy">
                 <h3><span class="pen" id="C31">C31</span>New card</h3>
                 <p class="header-line">
-                  <span class="pen" id="C32">C32</span>Save without a Space.
+                  <span class="pen" id="C32">C32</span>Space is optional.
                 </p>
               </div>
               <div class="header-ask">
@@ -2570,7 +2659,7 @@ Keep for a quiet Friday.</textarea>
                 ><kbd>⌘K</kbd>
               </div>
               <button disabled class="button primary">
-                <span class="pen" id="C34">C34</span>Save original
+                <span class="pen" id="C34">C34</span>New space
               </button>
             </header>
             <div class="content">
@@ -2611,7 +2700,7 @@ Keep for a quiet Friday.</textarea>
                           d="M12 6v12M6 12h12"
                           fill="none"
                           stroke="currentColor"
-                          stroke-width="1.8"
+                          stroke-width="1.7"
                           stroke-linecap="round"
                         />
                       </svg>
@@ -2637,10 +2726,7 @@ Keep for a quiet Friday.</textarea>
           </div>
           <div class="screen light phone">
             <div class="mobile-top">
-              <span class="pen" id="C43">C43</span
-              ><span class="mark" aria-hidden="true"></span>sprout<span
-                >New card</span
-              >
+              <span class="pen" id="C43">C43</span>sprout<span>New card</span>
             </div>
             <div class="content">
               <section class="composer">
@@ -2653,7 +2739,13 @@ Keep for a quiet Friday.</textarea>
                     value="קפה קטן בגינה 🍋 שלום é"
                 /></label>
                 <div class="recent">
-                  <button disabled class="button plus">
+                  <button disabled class="chip cook">
+                    <i></i>Things to cook</button
+                  ><button disabled class="chip visit">
+                    <i></i>Places to visit</button
+                  ><button disabled class="chip notes">
+                    <i></i>Friday notes</button
+                  ><button disabled class="button plus">
                     <span class="pen" id="C46">C46</span>+
                   </button>
                 </div>
@@ -2672,10 +2764,7 @@ Keep for a quiet Friday.</textarea>
           </div>
           <div class="screen dark phone">
             <div class="mobile-top">
-              <span class="pen" id="C48">C48</span
-              ><span class="mark" aria-hidden="true"></span>sprout<span
-                >New card</span
-              >
+              <span class="pen" id="C48">C48</span>sprout<span>New card</span>
             </div>
             <div class="content">
               <section class="composer">
@@ -2688,7 +2777,13 @@ Keep for a quiet Friday.</textarea>
                     value="קפה קטן בגינה 🍋 שלום é"
                 /></label>
                 <div class="recent">
-                  <button disabled class="button plus">
+                  <button disabled class="chip cook">
+                    <i></i>Things to cook</button
+                  ><button disabled class="chip visit">
+                    <i></i>Places to visit</button
+                  ><button disabled class="chip notes">
+                    <i></i>Friday notes</button
+                  ><button disabled class="button plus">
                     <span class="pen" id="C51">C51</span>+
                   </button>
                 </div>
@@ -2709,8 +2804,7 @@ Keep for a quiet Friday.</textarea>
         <div class="screen light desktop">
           <aside class="rail">
             <div class="wordmark">
-              <span class="pen" id="C56">C56</span
-              ><span class="mark" aria-hidden="true"></span>sprout
+              <span class="pen" id="C56">C56</span>sprout
             </div>
             <nav class="nav">
               <p class="selected">
@@ -2739,7 +2833,7 @@ Keep for a quiet Friday.</textarea>
             </nav>
             <div class="rail-foot">
               <kbd>⌘K</kbd>
-              <p class=""><span class="pen" id="C61">C61</span>Ask or jump</p>
+              <p class=""><span class="pen" id="C61">C61</span>Ask</p>
             </div>
           </aside>
           <div class="workspace">
@@ -2786,7 +2880,7 @@ Keep for a quiet Friday.</textarea>
                           d="M12 6v12M6 12h12"
                           fill="none"
                           stroke="currentColor"
-                          stroke-width="1.8"
+                          stroke-width="1.7"
                           stroke-linecap="round"
                         />
                       </svg>
@@ -2812,8 +2906,7 @@ Keep for a quiet Friday.</textarea>
         <div class="screen dark desktop">
           <aside class="rail">
             <div class="wordmark">
-              <span class="pen" id="C74">C74</span
-              ><span class="mark" aria-hidden="true"></span>sprout
+              <span class="pen" id="C74">C74</span>sprout
             </div>
             <nav class="nav">
               <p class="selected">
@@ -2842,7 +2935,7 @@ Keep for a quiet Friday.</textarea>
             </nav>
             <div class="rail-foot">
               <kbd>⌘K</kbd>
-              <p class=""><span class="pen" id="C79">C79</span>Ask or jump</p>
+              <p class=""><span class="pen" id="C79">C79</span>Ask</p>
             </div>
           </aside>
           <div class="workspace">
@@ -2889,7 +2982,7 @@ Keep for a quiet Friday.</textarea>
                           d="M12 6v12M6 12h12"
                           fill="none"
                           stroke="currentColor"
-                          stroke-width="1.8"
+                          stroke-width="1.7"
                           stroke-linecap="round"
                         />
                       </svg>
@@ -2914,14 +3007,11 @@ Keep for a quiet Friday.</textarea>
           </div>
           <div class="screen light phone">
             <div class="mobile-top">
-              <span class="pen" id="C89">C89</span
-              ><span class="mark" aria-hidden="true"></span>sprout<span
-                >New card</span
-              >
+              <span class="pen" id="C89">C89</span>sprout<span>New card</span>
             </div>
             <div class="content">
               <section class="composer tint-cook">
-                <h4><span class="pen" id="C90">C90</span>Chosen Space</h4>
+                <h4><span class="pen" id="C90">C90</span>New card</h4>
                 <div class="recent">
                   <span class="chip cook is-on"
                     ><i></i><span class="pen" id="C91">C91</span>Things to
@@ -2945,14 +3035,11 @@ Keep for a quiet Friday.</textarea>
           </div>
           <div class="screen dark phone">
             <div class="mobile-top">
-              <span class="pen" id="C94">C94</span
-              ><span class="mark" aria-hidden="true"></span>sprout<span
-                >New card</span
-              >
+              <span class="pen" id="C94">C94</span>sprout<span>New card</span>
             </div>
             <div class="content">
               <section class="composer tint-cook">
-                <h4><span class="pen" id="C95">C95</span>Chosen Space</h4>
+                <h4><span class="pen" id="C95">C95</span>New card</h4>
                 <div class="recent">
                   <span class="chip cook is-on"
                     ><i></i><span class="pen" id="C96">C96</span>Things to
@@ -2977,8 +3064,7 @@ Keep for a quiet Friday.</textarea>
         <div class="screen light desktop">
           <aside class="rail">
             <div class="wordmark">
-              <span class="pen" id="C102">C102</span
-              ><span class="mark" aria-hidden="true"></span>sprout
+              <span class="pen" id="C102">C102</span>sprout
             </div>
             <nav class="nav">
               <p class="selected">
@@ -3009,7 +3095,7 @@ Keep for a quiet Friday.</textarea>
             </nav>
             <div class="rail-foot">
               <kbd>⌘K</kbd>
-              <p class=""><span class="pen" id="C107">C107</span>Ask or jump</p>
+              <p class=""><span class="pen" id="C107">C107</span>Ask</p>
             </div>
           </aside>
           <div class="workspace">
@@ -3020,7 +3106,7 @@ Keep for a quiet Friday.</textarea>
                   yet.
                 </h3>
                 <p class="header-line">
-                  <span class="pen" id="C109">C109</span>The original is safe in
+                  <span class="pen" id="C109">C109</span>The original is in
                   Library.
                 </p>
               </div>
@@ -3064,8 +3150,7 @@ Keep for a quiet Friday.</textarea>
         <div class="screen dark desktop">
           <aside class="rail">
             <div class="wordmark">
-              <span class="pen" id="C119">C119</span
-              ><span class="mark" aria-hidden="true"></span>sprout
+              <span class="pen" id="C119">C119</span>sprout
             </div>
             <nav class="nav">
               <p class="selected">
@@ -3096,7 +3181,7 @@ Keep for a quiet Friday.</textarea>
             </nav>
             <div class="rail-foot">
               <kbd>⌘K</kbd>
-              <p class=""><span class="pen" id="C124">C124</span>Ask or jump</p>
+              <p class=""><span class="pen" id="C124">C124</span>Ask</p>
             </div>
           </aside>
           <div class="workspace">
@@ -3107,7 +3192,7 @@ Keep for a quiet Friday.</textarea>
                   yet.
                 </h3>
                 <p class="header-line">
-                  <span class="pen" id="C126">C126</span>The original is safe in
+                  <span class="pen" id="C126">C126</span>The original is in
                   Library.
                 </p>
               </div>
@@ -3151,10 +3236,7 @@ Keep for a quiet Friday.</textarea>
           </div>
           <div class="screen light phone">
             <div class="mobile-top">
-              <span class="pen" id="C133">C133</span
-              ><span class="mark" aria-hidden="true"></span>sprout<span
-                >New card</span
-              >
+              <span class="pen" id="C133">C133</span>sprout<span>New card</span>
             </div>
             <div class="content">
               <section class="composer">
@@ -3180,10 +3262,7 @@ Keep for a quiet Friday.</textarea>
           </div>
           <div class="screen dark phone">
             <div class="mobile-top">
-              <span class="pen" id="C137">C137</span
-              ><span class="mark" aria-hidden="true"></span>sprout<span
-                >New card</span
-              >
+              <span class="pen" id="C137">C137</span>sprout<span>New card</span>
             </div>
             <div class="content">
               <section class="composer">
@@ -3219,8 +3298,7 @@ Keep for a quiet Friday.</textarea>
         <div class="screen light desktop">
           <aside class="rail">
             <div class="wordmark">
-              <span class="pen" id="K04">K04</span
-              ><span class="mark" aria-hidden="true"></span>sprout
+              <span class="pen" id="K04">K04</span>sprout
             </div>
             <nav class="nav">
               <p class=""><span class="pen" id="K05">K05</span>Library</p>
@@ -3249,18 +3327,15 @@ Keep for a quiet Friday.</textarea>
             </nav>
             <div class="rail-foot">
               <kbd>⌘K</kbd>
-              <p class=""><span class="pen" id="K09">K09</span>Ask or jump</p>
+              <p class=""><span class="pen" id="K09">K09</span>Ask</p>
             </div>
           </aside>
           <div class="workspace">
             <header class="app-header space-cook">
               <div class="header-copy">
-                <h3>
-                  <span class="pen" id="K10">K10</span>Move with the keyboard
-                </h3>
+                <h3><span class="pen" id="K10">K10</span>Things to cook</h3>
                 <p class="header-line">
-                  <span class="pen" id="K11">K11</span>One menu. Visible
-                  shortcuts.
+                  <span class="pen" id="K11">K11</span>4 items
                 </p>
               </div>
               <div class="header-ask">
@@ -3288,9 +3363,9 @@ Keep for a quiet Friday.</textarea>
                     <button disabled class="more" aria-label="Item actions">
                       <span class="pen" id="K16">K16</span
                       ><svg viewBox="0 0 24 24" aria-hidden="true">
-                        <circle cx="6" cy="12" r="1.6" />
-                        <circle cx="12" cy="12" r="1.6" />
-                        <circle cx="18" cy="12" r="1.6" />
+                        <circle cx="6" cy="12" r="1.5" />
+                        <circle cx="12" cy="12" r="1.5" />
+                        <circle cx="18" cy="12" r="1.5" />
                       </svg>
                     </button>
                     <div class="menu glass">
@@ -3352,8 +3427,7 @@ Keep for a quiet Friday.</textarea>
         <div class="screen dark desktop">
           <aside class="rail">
             <div class="wordmark">
-              <span class="pen" id="K29">K29</span
-              ><span class="mark" aria-hidden="true"></span>sprout
+              <span class="pen" id="K29">K29</span>sprout
             </div>
             <nav class="nav">
               <p class=""><span class="pen" id="K30">K30</span>Library</p>
@@ -3382,18 +3456,15 @@ Keep for a quiet Friday.</textarea>
             </nav>
             <div class="rail-foot">
               <kbd>⌘K</kbd>
-              <p class=""><span class="pen" id="K34">K34</span>Ask or jump</p>
+              <p class=""><span class="pen" id="K34">K34</span>Ask</p>
             </div>
           </aside>
           <div class="workspace">
             <header class="app-header space-cook">
               <div class="header-copy">
-                <h3>
-                  <span class="pen" id="K35">K35</span>Move with the keyboard
-                </h3>
+                <h3><span class="pen" id="K35">K35</span>Things to cook</h3>
                 <p class="header-line">
-                  <span class="pen" id="K36">K36</span>One menu. Visible
-                  shortcuts.
+                  <span class="pen" id="K36">K36</span>4 items
                 </p>
               </div>
               <div class="header-ask">
@@ -3421,9 +3492,9 @@ Keep for a quiet Friday.</textarea>
                     <button disabled class="more" aria-label="Item actions">
                       <span class="pen" id="K41">K41</span
                       ><svg viewBox="0 0 24 24" aria-hidden="true">
-                        <circle cx="6" cy="12" r="1.6" />
-                        <circle cx="12" cy="12" r="1.6" />
-                        <circle cx="18" cy="12" r="1.6" />
+                        <circle cx="6" cy="12" r="1.5" />
+                        <circle cx="12" cy="12" r="1.5" />
+                        <circle cx="18" cy="12" r="1.5" />
                       </svg>
                     </button>
                     <div class="menu glass">
@@ -3485,20 +3556,23 @@ Keep for a quiet Friday.</textarea>
           </div>
           <div class="screen light phone">
             <div class="mobile-top">
-              <span class="pen" id="K51">K51</span
-              ><span class="mark" aria-hidden="true"></span>sprout<span
-                >Move</span
-              >
+              <span class="pen" id="K51">K51</span>sprout<span>Move</span>
             </div>
             <div class="content">
               <div class="sheet glass">
                 <h4><span class="pen" id="K52">K52</span>Move to</h4>
-                <p class="sheet-item">
-                  <span class="pen" id="K53">K53</span>Places to visit
-                </p>
-                <p class="sheet-item">
-                  <span class="pen" id="K54">K54</span>Friday notes
-                </p>
+                <div class="sheet-item">
+                  <span class="dot visit"></span>
+                  <p class="">
+                    <span class="pen" id="K53">K53</span>Places to visit
+                  </p>
+                </div>
+                <div class="sheet-item">
+                  <span class="dot notes"></span>
+                  <p class="">
+                    <span class="pen" id="K54">K54</span>Friday notes
+                  </p>
+                </div>
                 <button disabled class="button">
                   <span class="pen" id="K55">K55</span>Cancel
                 </button>
@@ -3514,20 +3588,23 @@ Keep for a quiet Friday.</textarea>
           </div>
           <div class="screen dark phone">
             <div class="mobile-top">
-              <span class="pen" id="K56">K56</span
-              ><span class="mark" aria-hidden="true"></span>sprout<span
-                >Move</span
-              >
+              <span class="pen" id="K56">K56</span>sprout<span>Move</span>
             </div>
             <div class="content">
               <div class="sheet glass">
                 <h4><span class="pen" id="K57">K57</span>Move to</h4>
-                <p class="sheet-item">
-                  <span class="pen" id="K58">K58</span>Places to visit
-                </p>
-                <p class="sheet-item">
-                  <span class="pen" id="K59">K59</span>Friday notes
-                </p>
+                <div class="sheet-item">
+                  <span class="dot visit"></span>
+                  <p class="">
+                    <span class="pen" id="K58">K58</span>Places to visit
+                  </p>
+                </div>
+                <div class="sheet-item">
+                  <span class="dot notes"></span>
+                  <p class="">
+                    <span class="pen" id="K59">K59</span>Friday notes
+                  </p>
+                </div>
                 <button disabled class="button">
                   <span class="pen" id="K60">K60</span>Cancel
                 </button>
@@ -3552,8 +3629,7 @@ Keep for a quiet Friday.</textarea>
         <div class="screen light desktop">
           <aside class="rail">
             <div class="wordmark">
-              <span class="pen" id="E04">E04</span
-              ><span class="mark" aria-hidden="true"></span>sprout
+              <span class="pen" id="E04">E04</span>sprout
             </div>
             <nav class="nav">
               <p class=""><span class="pen" id="E05">E05</span>Library</p>
@@ -3582,7 +3658,7 @@ Keep for a quiet Friday.</textarea>
             </nav>
             <div class="rail-foot">
               <kbd>⌘K</kbd>
-              <p class=""><span class="pen" id="E09">E09</span>Ask or jump</p>
+              <p class=""><span class="pen" id="E09">E09</span>Ask</p>
             </div>
           </aside>
           <div class="workspace">
@@ -3607,21 +3683,21 @@ Keep for a quiet Friday.</textarea>
                   <div class="mosaic count-4"><i></i><i></i><i></i><i></i></div>
                   <div class="space-meta">
                     <span class="space-icon circle"></span>
-                    <div><b></b><em></em></div>
+                    <div><b></b></div>
                   </div>
                 </article>
                 <article class="space-card ghost" aria-hidden="true">
                   <div class="mosaic count-4"><i></i><i></i><i></i><i></i></div>
                   <div class="space-meta">
                     <span class="space-icon circle"></span>
-                    <div><b></b><em></em></div>
+                    <div><b></b></div>
                   </div>
                 </article>
                 <article class="space-card ghost" aria-hidden="true">
                   <div class="mosaic count-4"><i></i><i></i><i></i><i></i></div>
                   <div class="space-meta">
                     <span class="space-icon circle"></span>
-                    <div><b></b><em></em></div>
+                    <div><b></b></div>
                   </div>
                 </article>
               </div>
@@ -3642,8 +3718,7 @@ Keep for a quiet Friday.</textarea>
         <div class="screen dark desktop">
           <aside class="rail">
             <div class="wordmark">
-              <span class="pen" id="E18">E18</span
-              ><span class="mark" aria-hidden="true"></span>sprout
+              <span class="pen" id="E18">E18</span>sprout
             </div>
             <nav class="nav">
               <p class=""><span class="pen" id="E19">E19</span>Library</p>
@@ -3672,7 +3747,7 @@ Keep for a quiet Friday.</textarea>
             </nav>
             <div class="rail-foot">
               <kbd>⌘K</kbd>
-              <p class=""><span class="pen" id="E23">E23</span>Ask or jump</p>
+              <p class=""><span class="pen" id="E23">E23</span>Ask</p>
             </div>
           </aside>
           <div class="workspace">
@@ -3697,21 +3772,21 @@ Keep for a quiet Friday.</textarea>
                   <div class="mosaic count-4"><i></i><i></i><i></i><i></i></div>
                   <div class="space-meta">
                     <span class="space-icon circle"></span>
-                    <div><b></b><em></em></div>
+                    <div><b></b></div>
                   </div>
                 </article>
                 <article class="space-card ghost" aria-hidden="true">
                   <div class="mosaic count-4"><i></i><i></i><i></i><i></i></div>
                   <div class="space-meta">
                     <span class="space-icon circle"></span>
-                    <div><b></b><em></em></div>
+                    <div><b></b></div>
                   </div>
                 </article>
                 <article class="space-card ghost" aria-hidden="true">
                   <div class="mosaic count-4"><i></i><i></i><i></i><i></i></div>
                   <div class="space-meta">
                     <span class="space-icon circle"></span>
-                    <div><b></b><em></em></div>
+                    <div><b></b></div>
                   </div>
                 </article>
               </div>
@@ -3732,10 +3807,7 @@ Keep for a quiet Friday.</textarea>
           </div>
           <div class="screen light phone">
             <div class="mobile-top">
-              <span class="pen" id="E29">E29</span
-              ><span class="mark" aria-hidden="true"></span>sprout<span
-                >Space</span
-              >
+              <span class="pen" id="E29">E29</span>sprout<span>Space</span>
             </div>
             <header class="app-header space-visit">
               <div class="header-copy">
@@ -3758,14 +3830,14 @@ Keep for a quiet Friday.</textarea>
                   <div class="mosaic count-4"><i></i><i></i><i></i><i></i></div>
                   <div class="space-meta">
                     <span class="space-icon circle"></span>
-                    <div><b></b><em></em></div>
+                    <div><b></b></div>
                   </div>
                 </article>
                 <article class="space-card ghost" aria-hidden="true">
                   <div class="mosaic count-4"><i></i><i></i><i></i><i></i></div>
                   <div class="space-meta">
                     <span class="space-icon circle"></span>
-                    <div><b></b><em></em></div>
+                    <div><b></b></div>
                   </div>
                 </article>
               </div>
@@ -3784,10 +3856,7 @@ Keep for a quiet Friday.</textarea>
           </div>
           <div class="screen dark phone">
             <div class="mobile-top">
-              <span class="pen" id="E35">E35</span
-              ><span class="mark" aria-hidden="true"></span>sprout<span
-                >Space</span
-              >
+              <span class="pen" id="E35">E35</span>sprout<span>Space</span>
             </div>
             <header class="app-header space-visit">
               <div class="header-copy">
@@ -3810,14 +3879,14 @@ Keep for a quiet Friday.</textarea>
                   <div class="mosaic count-4"><i></i><i></i><i></i><i></i></div>
                   <div class="space-meta">
                     <span class="space-icon circle"></span>
-                    <div><b></b><em></em></div>
+                    <div><b></b></div>
                   </div>
                 </article>
                 <article class="space-card ghost" aria-hidden="true">
                   <div class="mosaic count-4"><i></i><i></i><i></i><i></i></div>
                   <div class="space-meta">
                     <span class="space-icon circle"></span>
-                    <div><b></b><em></em></div>
+                    <div><b></b></div>
                   </div>
                 </article>
               </div>
@@ -3838,8 +3907,7 @@ Keep for a quiet Friday.</textarea>
         <div class="screen light desktop">
           <aside class="rail">
             <div class="wordmark">
-              <span class="pen" id="D04">D04</span
-              ><span class="mark" aria-hidden="true"></span>sprout
+              <span class="pen" id="D04">D04</span>sprout
             </div>
             <nav class="nav">
               <p class=""><span class="pen" id="D05">D05</span>Library</p>
@@ -3868,7 +3936,7 @@ Keep for a quiet Friday.</textarea>
             </nav>
             <div class="rail-foot">
               <kbd>⌘K</kbd>
-              <p class=""><span class="pen" id="D09">D09</span>Ask or jump</p>
+              <p class=""><span class="pen" id="D09">D09</span>Ask</p>
             </div>
           </aside>
           <div class="workspace">
@@ -3883,8 +3951,10 @@ Keep for a quiet Friday.</textarea>
                   <div class="tile text original-field" dir="auto">
                     קפה קטן בגינה 🍋
                   </div>
-                  <div class="tile image citrus" aria-hidden="true"></div>
-                  <div class="tile image walk" aria-hidden="true"></div>
+                  <div class="tile image citrus" aria-hidden="true">
+                    <i></i>
+                  </div>
+                  <div class="tile image walk" aria-hidden="true"><i></i></div>
                   <div class="tile text original-field" dir="auto">
                     "Remind me Friday"
                   </div>
@@ -3911,8 +3981,7 @@ Keep for a quiet Friday.</textarea>
         <div class="screen dark desktop">
           <aside class="rail">
             <div class="wordmark">
-              <span class="pen" id="D17">D17</span
-              ><span class="mark" aria-hidden="true"></span>sprout
+              <span class="pen" id="D17">D17</span>sprout
             </div>
             <nav class="nav">
               <p class=""><span class="pen" id="D18">D18</span>Library</p>
@@ -3941,7 +4010,7 @@ Keep for a quiet Friday.</textarea>
             </nav>
             <div class="rail-foot">
               <kbd>⌘K</kbd>
-              <p class=""><span class="pen" id="D22">D22</span>Ask or jump</p>
+              <p class=""><span class="pen" id="D22">D22</span>Ask</p>
             </div>
           </aside>
           <div class="workspace">
@@ -3956,8 +4025,10 @@ Keep for a quiet Friday.</textarea>
                   <div class="tile text original-field" dir="auto">
                     קפה קטן בגינה 🍋
                   </div>
-                  <div class="tile image citrus" aria-hidden="true"></div>
-                  <div class="tile image walk" aria-hidden="true"></div>
+                  <div class="tile image citrus" aria-hidden="true">
+                    <i></i>
+                  </div>
+                  <div class="tile image walk" aria-hidden="true"><i></i></div>
                   <div class="tile text original-field" dir="auto">
                     "Remind me Friday"
                   </div>
@@ -3984,23 +4055,23 @@ Keep for a quiet Friday.</textarea>
           </div>
           <div class="screen light phone">
             <div class="mobile-top">
-              <span class="pen" id="D27">D27</span
-              ><span class="mark" aria-hidden="true"></span>sprout<span
-                >Delete</span
-              >
+              <span class="pen" id="D27">D27</span>sprout<span>Delete</span>
             </div>
             <div class="content">
               <div class="dialog glass">
                 <h4><span class="pen" id="D28">D28</span>Delete this Space?</h4>
                 <p class="muted">
-                  <span class="pen" id="D29">D29</span>Items stay.
+                  <span class="pen" id="D29">D29</span>Items stay in the
+                  library.
                 </p>
                 <div class="keep-tiles">
                   <div class="tile text original-field" dir="auto">
                     קפה קטן בגינה 🍋
                   </div>
-                  <div class="tile image citrus" aria-hidden="true"></div>
-                  <div class="tile image walk" aria-hidden="true"></div>
+                  <div class="tile image citrus" aria-hidden="true">
+                    <i></i>
+                  </div>
+                  <div class="tile image walk" aria-hidden="true"><i></i></div>
                   <div class="tile text original-field" dir="auto">
                     "Remind me Friday"
                   </div>
@@ -4022,23 +4093,23 @@ Keep for a quiet Friday.</textarea>
           </div>
           <div class="screen dark phone">
             <div class="mobile-top">
-              <span class="pen" id="D32">D32</span
-              ><span class="mark" aria-hidden="true"></span>sprout<span
-                >Delete</span
-              >
+              <span class="pen" id="D32">D32</span>sprout<span>Delete</span>
             </div>
             <div class="content">
               <div class="dialog glass">
                 <h4><span class="pen" id="D33">D33</span>Delete this Space?</h4>
                 <p class="muted">
-                  <span class="pen" id="D34">D34</span>Items stay.
+                  <span class="pen" id="D34">D34</span>Items stay in the
+                  library.
                 </p>
                 <div class="keep-tiles">
                   <div class="tile text original-field" dir="auto">
                     קפה קטן בגינה 🍋
                   </div>
-                  <div class="tile image citrus" aria-hidden="true"></div>
-                  <div class="tile image walk" aria-hidden="true"></div>
+                  <div class="tile image citrus" aria-hidden="true">
+                    <i></i>
+                  </div>
+                  <div class="tile image walk" aria-hidden="true"><i></i></div>
                   <div class="tile text original-field" dir="auto">
                     "Remind me Friday"
                   </div>
@@ -4098,7 +4169,7 @@ Keep for a quiet Friday.</textarea>
                 <div class="tile text original-field" dir="auto">
                   קפה קטן בגינה 🍋
                 </div>
-                <div class="tile image citrus" aria-hidden="true"></div>
+                <div class="tile image citrus" aria-hidden="true"><i></i></div>
                 <div class="tile text" dir="auto">
                   Citrus tahini on warm bread.
                 </div>
@@ -4119,7 +4190,7 @@ Keep for a quiet Friday.</textarea>
                 <div class="header-copy">
                   <h3><span class="pen" id="M04">M04</span>Things to cook</h3>
                   <p class="header-line">
-                    <span class="pen" id="M05">M05</span>4 items · one original.
+                    <span class="pen" id="M05">M05</span>4 items
                   </p>
                 </div>
                 <div class="header-ask">
@@ -4205,9 +4276,9 @@ Keep for a quiet Friday.</textarea>
               const y = (event.clientY - box.top) / box.height - 0.5;
               card.style.transform =
                 'perspective(900px) rotateX(' +
-                (-y * 4).toFixed(2) +
+                (-y * 3.4).toFixed(2) +
                 'deg) rotateY(' +
-                (x * 5).toFixed(2) +
+                (x * 4.2).toFixed(2) +
                 'deg)';
             });
             card.addEventListener('pointerleave', () => {

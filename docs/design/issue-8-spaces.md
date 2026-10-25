@@ -3,10 +3,10 @@
 Proposed for [issue #8](https://github.com/Finz24/Sprout/issues/8), October 25, 2026.
 **Design review only. Implementation waits for Ohad's markup.** This PR does not
 close #8. Round 2 of the [numbered red-pen sheet](issue-8-review.html) keeps the
-Conservatory greenhouse palette from [PR #42](https://github.com/Finz24/Sprout/pull/42)
-and [PR #43](https://github.com/Finz24/Sprout/pull/43), and drops the childish
-bed/leaf/canopy treatment Ohad rejected. All screen content is synthetic. Visual
-research is in [issue-8-research.md](issue-8-research.md).
+Conservatory tokens from [PR #42](https://github.com/Finz24/Sprout/pull/42) and
+[PR #43](https://github.com/Finz24/Sprout/pull/43). Accents stay bright; the
+surface stays paper and ink. No bed, canopy, or cartoon leaf. All screen content
+is synthetic. Visual research is in [issue-8-research.md](issue-8-research.md).
 
 ## Problem
 
@@ -195,27 +195,29 @@ There is no default Space. Name uniqueness is exact and owner-scoped after trim.
 
 ## Visual contract
 
-One mature Conservatory extension: bright greenhouse color, few words, no toy
-hero. Default face is Inter. An optional Iowan/Palatino display pairing is shown
-on the sheet for Ohad to accept or reject; it is not a product font until he
-picks it. Named later `@sprout/ui` pieces: Button, Textarea, Field, Input, Label,
+One Conservatory extension: paper and ink from the shipped library, bright
+greenhouse accents used as jewelry. Few words. No toy hero and no mint wash.
+Default face is Inter. An optional Iowan/Palatino display pairing is shown on
+the sheet for Ohad to accept or reject; it is not a product font until he picks
+it. Named later `@sprout/ui` pieces: Button, Textarea, Field, Input, Label,
 Dialog, AlertDialog, Command, Combobox, Popover, DropdownMenu, Sheet, Empty,
-Badge. Touch targets stay 44px. Keyboard reaches every membership action.
-Hover-only remove is rejected.
+Badge. Context7 confirms those names on the official shadcn docs. Touch targets
+stay 44px. Keyboard reaches every membership action. Hover-only remove is
+rejected.
 
-Copy is plain: **Spaces**, **New space**, **12**. Never bed, canopy, seed, or
-cartoon leaf. Search is **Ask**.
+Copy is plain: **Spaces**, **New space**, **12 items**. Never bed, canopy, seed,
+room, or cartoon leaf. Search is **Ask**, never Find and ask.
 
-| Surface        | Composition                                                                                                                                                                                           |
-| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Chrome         | Slim ~64px glass header. Subtle animated gradient, light-tinted by the open Space. Sidebar lists live Spaces with accent dots and tabular counts. Cmd-K is Command.                                   |
-| Spaces list    | Deliberate bento sized by count and recency. Each card is a mosaic of the latest 3–4 originals. One small count. No random tilt. Empty: three ghost cards that breathe, **New space**, starter chips. |
-| Space view     | Reuses `SavedCard`. Colored Space chips on the card. Item actions live in one **…** DropdownMenu with shortcuts. Phone: one 44px icon opens Sheet.                                                    |
-| Capture picker | Recent-Space chips plus a **+** Combobox. Composer edges tint to the chosen Space. Empty value is valid.                                                                                              |
-| Delete Space   | Glass AlertDialog. Copy and tiles show the items staying in the library.                                                                                                                              |
+| Surface        | Composition                                                                                                                                                                                                                       |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Chrome         | Slim 64px glass header. Subtle animated gradient, light-tinted by the open Space. Sidebar lists live Spaces with accent dots and tabular counts. Cmd-K is Command.                                                                |
+| Spaces list    | Deliberate bento sized by count and recency. Each card is a mosaic of the latest 3–4 real originals, Are.na / mymind style. One small count. No random tilt. Empty: three ghost cards that breathe, **New space**, starter chips. |
+| Space view     | Reuses `SavedCard`. Colored Space chips on the card. Item actions live in one **…** DropdownMenu with shortcuts. Phone: one 44px icon opens Sheet.                                                                                |
+| Capture picker | Recent-Space chips plus a **+** Combobox. Composer edges tint to the chosen Space. Empty value is valid.                                                                                                                          |
+| Delete Space   | Glass AlertDialog. Copy and tiles show the items staying in the library.                                                                                                                                                          |
 
-Per-Space accent (bright greenhouse) tints the card glow, optional geometric
-icon, sidebar dot, and header. Motion: card grows into the Space page
+Per-Space accent (bright leaf, citrus, water) tints the card glow, optional
+geometric icon, sidebar dot, and header. Motion: card grows into the Space page
 (`layoutId`), spring stagger on the bento, chip flies to the sidebar on move,
 hover tilt on pointer. Reduced motion removes travel. Status never depends on
 color or motion. Depth is light grain, glass dialogs, an inner highlight, and a
