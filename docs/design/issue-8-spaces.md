@@ -28,6 +28,7 @@ The ticket's Next.js wording is stale. Follow [ADR 0004](../adr/0004-effect-api-
 | Capture       | `TextSubmission` is `submissionId`, `originalText`, and `savingIntent`. Do not add a Space field to that contract.        |
 | Routes        | `/spaces` and `/spaces/$spaceId` already exist as honest placeholders in `apps/web/src/main.tsx`.                         |
 | UI kit        | `@sprout/ui` exports `Button` and `Textarea` only. Later slices add named shadcn pieces into that package.                |
+| Cards         | `SavedCard` is module-private in `collection.tsx`. Export it for Space view. Do not fork a second card.                   |
 | Visual        | Conservatory tokens and Inter live in `apps/web/src/styles.css` and `library.css`. Extend them. Do not start a new world. |
 
 Also read [architecture](../architecture.md), [CONTEXT.md](../../CONTEXT.md),
@@ -209,17 +210,20 @@ Reduced motion removes travel. Status never depends on color or motion.
 
 ## Slice plan
 
-Every later implementation slice stays under 300 lines.
+Every later implementation slice stays under 300 changed lines, including tests.
+Count the slice before delivery. Split it rather than exceed 299.
 
-1. Additive migration, grants, forced RLS, and startup audit for the two tables.
-2. Contracts plus `organizationOperations` next to `libraryOperations`.
-3. Identity allowlist and HTTP handlers for Space and membership.
-4. Spaces list, create Dialog, rename Field, empty and unavailable states.
-5. Space view that lists memberships through existing cards, plus add, move, and
-   remove with keyboard and 44px touch controls.
+1. Additive migration, grants, forced RLS, and startup audit. Budget 240.
+2. Contracts plus `organizationOperations` next to `libraryOperations`. Budget 260.
+3. Identity allowlist and HTTP handlers for Space and membership. Budget 260.
+4. Spaces list, create Dialog, rename Field, empty and unavailable states. Budget 280.
+5. Export `SavedCard`, list memberships, and add, move, and remove with keyboard
+   and 44px touch controls. Budget 280.
 6. Capture Combobox and post-receipt `add`, including retry of a failed attach.
+   Budget 280.
 7. Delete AlertDialog and the red Playwright journey: one item in two Spaces,
    remove one membership, reload, the other membership and original remain.
+   Budget 280.
 
 Do not add tests or product code in this PR. The red journey belongs to the
 first implementation slice after approval.
