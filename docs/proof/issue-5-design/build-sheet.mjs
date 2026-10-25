@@ -63,15 +63,15 @@ const readyBody = (prefix, phone) =>
 const failedBody = (prefix) =>
   `<div class="canopy failed-canopy">${greenhouse}<div class="canopy-copy"><h3>${number(prefix)}Original is safe.</h3>${p(prefix, 'Understanding did not finish.', 'canopy-description')}</div></div>
   <section class="paper" data-component="Card">
-    <div class="alert" data-component="Alert" role="status">${number(prefix)}Compose failed. Original unchanged.</div>
+    <div class="alert" data-component="Alert" role="status">${number(prefix)}Understanding failed. Originals stay.</div>
     <div class="paper-top">
       <h4>${number(prefix)}Lemon cake</h4>
       <span class="badge quiet" data-component="Badge">${number(prefix)}Failed</span>
     </div>
     <pre class="original-safe" dir="auto">${original}</pre>
     ${p(prefix, 'Original kept exactly.', 'muted')}
-    ${p(prefix, 'Retry compose. This does not save again.', 'muted')}
-    ${button(prefix, 'Retry compose', 'primary')}
+    ${p(prefix, 'Repair this attempt. This does not save again.', 'muted')}
+    ${button(prefix, 'Repair', 'primary')}
     ${p(prefix, 'New · Failed · Not scheduled', 'status-line')}
   </section>`;
 const specimen = (prefix, theme, phone, kind) => {
@@ -95,7 +95,7 @@ ${specimen('R', 'light', false, 'ready')}${specimen('R', 'dark', false, 'ready')
 <div class="phones">${specimen('R', 'light', true, 'ready')}${specimen('R', 'dark', true, 'ready')}</div></section>`;
 
 const failed = `<section class="direction" id="failed"><h2>${number('F')}Failed. Repair the stage.</h2>
-${p('F', 'Originals stay. Retry compose does not create a second save.')}
+${p('F', 'Originals stay. Repair does not create a second save.')}
 ${specimen('F', 'light', false, 'failed')}${specimen('F', 'dark', false, 'failed')}
 <div class="phones">${specimen('F', 'light', true, 'failed')}${specimen('F', 'dark', true, 'failed')}</div></section>`;
 
@@ -125,7 +125,7 @@ const css = `
 .direction-heading{display:flex;justify-content:space-between;gap:28px;align-items:start}
 .recommend{background:#dae7d4;color:#244a32;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;white-space:nowrap}
 .specimen{margin:22px 0}.spec-caption{display:flex;gap:8px;font-size:12px;color:#4e6255;margin:0 0 8px}.spec-caption>span:last-child{margin-left:auto;color:#647368}
-.screen{--bg:#f5f7f2;--fg:#1e3026;--sub:#526258;--line:#c8d4c8;--card:#fbfcf9;--sage:#e4ece2;--tile:#dfe9dc;--primary:#315b42;--on:#fff;background:var(--bg);color:var(--fg);color-scheme:light;border-radius:18px;overflow:hidden;box-shadow:0 18px 45px -24px #17351e5c}
+.screen{--bg:#f5f7f2;--fg:#1e3026;--sub:#526258;--line:#c8d4c8;--card:#fbfcf9;--sage:#e4ece2;--tile:#dfe9dc;--primary:#315b42;--on:#fff;background:var(--bg);color:var(--fg);color-scheme:light;border-radius:18px;overflow:hidden;box-shadow:0 16px 40px -22px #0b1a124d}
 .dark{--bg:#111b15;--fg:#e4ede6;--sub:#b0c0b5;--line:#33453a;--card:#17251c;--sage:#1a2920;--tile:#24372b;--primary:#9bc7a5;--on:#112016;color-scheme:dark;box-shadow:0 18px 36px -22px #0008}
 .desktop{display:flex;min-height:760px}
 .rail{width:188px;flex-shrink:0;padding:26px 16px;background:#e9eee5;color:#1e3026;display:flex;flex-direction:column;border-right:1px solid var(--line)}
@@ -139,7 +139,12 @@ const css = `
 .toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid var(--line);padding:10px 26px;font-size:12px;background:var(--bg)}
 .search-sample{min-width:50%;color:var(--sub)}
 .canopy{position:relative;isolation:isolate;min-height:198px;background:#2c5039;color:#f1f6e9;overflow:hidden}
+.dark .canopy{background:#163326}
 .failed-canopy{background:#4a3428}
+.dark .failed-canopy{background:#3a261c}
+.dark .arch{border-color:#d5e8b888;background:linear-gradient(125deg,#d4e8b855,#2a553800)}
+.dark .leaf-plane.one{background:#b6d68a66}
+.dark .leaf-plane.two{background:#e6f3c260}
 .canopy-copy{position:relative;z-index:1;padding:28px 32px 64px;max-width:560px}
 .canopy h3{white-space:pre-line}
 .canopy-description{color:#d8e7cf;font-size:14px}
@@ -181,7 +186,7 @@ const css = `
 .kind-failed .alert{animation:alert-shake 180ms cubic-bezier(.36,.07,.19,.97) both}
 .original-safe{margin:14px 0;padding:14px 16px;border-radius:12px;background:var(--sage);line-height:1.55}
 .button{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;padding:9px 16px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--fg);font-weight:600}
-.button.primary{background:var(--primary);color:var(--on);border-color:transparent;box-shadow:0 8px 14px -10px #17351e99}
+.button.primary{background:var(--primary);color:var(--on);border-color:transparent;box-shadow:0 8px 16px -12px #0b1a1266}
 .dark .button.primary{box-shadow:none}
 .button:focus-visible,summary:focus-visible{outline:2px solid var(--primary);outline-offset:3px}
 .phones{display:grid;grid-template-columns:1fr 1fr;gap:28px}

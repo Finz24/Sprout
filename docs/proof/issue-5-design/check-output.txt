@@ -1,3 +1,4 @@
+﻿
 > sprout@0.0.0 check C:\Users\ohadf\.t3\worktrees\sprout\docs-issue-5-design
 > corepack pnpm check:environment && corepack pnpm format:check && corepack pnpm lint && corepack pnpm run doctor && corepack pnpm typecheck && corepack pnpm test && corepack pnpm build && corepack pnpm check:docs
 
@@ -58,33 +59,103 @@ All matched files use Prettier code style!
 > sprout@0.0.0 doctor C:\Users\ohadf\.t3\worktrees\sprout\docs-issue-5-design
 > react-doctor . --yes --scope full --verbose --blocking warning --no-telemetry --no-supply-chain --no-parallel
 
-Select projects @sprout/web, @sprout/ui
-Scanned 20 files.
+âœ” Select projects â€º @sprout/web, @sprout/ui
+âœ” Scanned 20 files in 3.2s
 
-React Doctor - docs-issue-5-design
+React Doctor â€” docs-issue-5-design
 Score unavailable.
 
-No issues found!
+âœ” No issues found!
+  Full diagnostics written to C:\Users\ohadf\AppData\Local\Temp\react-doctor-a25d0fc4-0889-4170-9279-ffa7a322de8d
 
 > sprout@0.0.0 typecheck C:\Users\ohadf\.t3\worktrees\sprout\docs-issue-5-design
 > nx run-many -t typecheck --parallel=3 && tsc -p tsconfig.tools.json
 
-NX Successfully ran target typecheck for 7 projects and 4 tasks they depend on.
-Cache: 11/11 hit.
+
+ NX   Running target typecheck for 7 projects and 4 tasks they depend on:
+
+- contracts
+- database
+- runtime
+- ui
+- worker
+- api
+- web
+
+
+âˆš  nx run contracts:build  [existing outputs match the cache, left as is]
+âˆš  nx run ui:build  [existing outputs match the cache, left as is]
+âˆš  nx run contracts:typecheck  [existing outputs match the cache, left as is]
+âˆš  nx run ui:typecheck  [existing outputs match the cache, left as is]
+âˆš  nx run database:build  [existing outputs match the cache, left as is]
+âˆš  nx run database:typecheck  [existing outputs match the cache, left as is]
+âˆš  nx run web:typecheck  [existing outputs match the cache, left as is]
+âˆš  nx run runtime:build  [existing outputs match the cache, left as is]
+âˆš  nx run runtime:typecheck  [existing outputs match the cache, left as is]
+âˆš  nx run api:typecheck  [existing outputs match the cache, left as is]
+âˆš  nx run worker:typecheck  [existing outputs match the cache, left as is]
+
+
+
+ NX   Successfully ran target typecheck for 7 projects and 4 tasks they depend on
+
+Nx read the output from the cache instead of running the command for 11 out of 11 tasks.
+
+Output of 11 successful tasks were not shown. Run with --verbose or --output-style=static to see it.
+
+  Run duration:      164ms
+  Cache:             11/11 hit (100%)
+  Critical path:     23ms (3 tasks)
+  Recoverable time:  <1ms
 
 > sprout@0.0.0 test C:\Users\ohadf\.t3\worktrees\sprout\docs-issue-5-design
 > vitest run --project unit
 
-Test Files  10 passed (10)
-Tests  194 passed (194)
-Start at  13:30:48
-Duration  92.02s
+
+ RUN  v4.1.12 C:/Users/ohadf/.t3/worktrees/sprout/docs-issue-5-design
+
+
+ Test Files  10 passed (10)
+      Tests  194 passed (194)
+   Start at  15:37:49
+   Duration  79.27s (transform 317ms, setup 0ms, import 42.52s, tests 32.91s, environment 1ms)
+
 
 > sprout@0.0.0 build C:\Users\ohadf\.t3\worktrees\sprout\docs-issue-5-design
 > nx run-many -t build --parallel=3
 
-NX Successfully ran target build for 7 projects.
-Cache: 7/7 hit.
+
+ NX   Running target build for 7 projects:
+
+- contracts
+- database
+- runtime
+- ui
+- worker
+- api
+- web
+
+
+âˆš  nx run contracts:build  [existing outputs match the cache, left as is]
+âˆš  nx run ui:build  [existing outputs match the cache, left as is]
+âˆš  nx run database:build  [existing outputs match the cache, left as is]
+âˆš  nx run web:build  [existing outputs match the cache, left as is]
+âˆš  nx run runtime:build  [existing outputs match the cache, left as is]
+âˆš  nx run api:build  [existing outputs match the cache, left as is]
+âˆš  nx run worker:build  [existing outputs match the cache, left as is]
+
+
+
+ NX   Successfully ran target build for 7 projects
+
+Nx read the output from the cache instead of running the command for 7 out of 7 tasks.
+
+Output of 7 successful tasks were not shown. Run with --verbose or --output-style=static to see it.
+
+  Run duration:      96ms
+  Cache:             7/7 hit (100%)
+  Critical path:     23ms (4 tasks)
+  Recoverable time:  <1ms
 
 > sprout@0.0.0 check:docs C:\Users\ohadf\.t3\worktrees\sprout\docs-issue-5-design
 > python -B -X utf8 scripts/check-workflows.py
@@ -97,3 +168,4 @@ Cache: 7/7 hit.
   "runtime_scripts": 0,
   "checks": "PASS: workflow contracts, graph identities, SVG XML/markers, native controls, standalone encoding/theme, local links and offline builder"
 }
+

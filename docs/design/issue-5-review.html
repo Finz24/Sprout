@@ -13,7 +13,7 @@
 .direction-heading{display:flex;justify-content:space-between;gap:28px;align-items:start}
 .recommend{background:#dae7d4;color:#244a32;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;white-space:nowrap}
 .specimen{margin:22px 0}.spec-caption{display:flex;gap:8px;font-size:12px;color:#4e6255;margin:0 0 8px}.spec-caption>span:last-child{margin-left:auto;color:#647368}
-.screen{--bg:#f5f7f2;--fg:#1e3026;--sub:#526258;--line:#c8d4c8;--card:#fbfcf9;--sage:#e4ece2;--tile:#dfe9dc;--primary:#315b42;--on:#fff;background:var(--bg);color:var(--fg);color-scheme:light;border-radius:18px;overflow:hidden;box-shadow:0 18px 45px -24px #17351e5c}
+.screen{--bg:#f5f7f2;--fg:#1e3026;--sub:#526258;--line:#c8d4c8;--card:#fbfcf9;--sage:#e4ece2;--tile:#dfe9dc;--primary:#315b42;--on:#fff;background:var(--bg);color:var(--fg);color-scheme:light;border-radius:18px;overflow:hidden;box-shadow:0 16px 40px -22px #0b1a124d}
 .dark{--bg:#111b15;--fg:#e4ede6;--sub:#b0c0b5;--line:#33453a;--card:#17251c;--sage:#1a2920;--tile:#24372b;--primary:#9bc7a5;--on:#112016;color-scheme:dark;box-shadow:0 18px 36px -22px #0008}
 .desktop{display:flex;min-height:760px}
 .rail{width:188px;flex-shrink:0;padding:26px 16px;background:#e9eee5;color:#1e3026;display:flex;flex-direction:column;border-right:1px solid var(--line)}
@@ -27,7 +27,12 @@
 .toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid var(--line);padding:10px 26px;font-size:12px;background:var(--bg)}
 .search-sample{min-width:50%;color:var(--sub)}
 .canopy{position:relative;isolation:isolate;min-height:198px;background:#2c5039;color:#f1f6e9;overflow:hidden}
+.dark .canopy{background:#163326}
 .failed-canopy{background:#4a3428}
+.dark .failed-canopy{background:#3a261c}
+.dark .arch{border-color:#d5e8b888;background:linear-gradient(125deg,#d4e8b855,#2a553800)}
+.dark .leaf-plane.one{background:#b6d68a66}
+.dark .leaf-plane.two{background:#e6f3c260}
 .canopy-copy{position:relative;z-index:1;padding:28px 32px 64px;max-width:560px}
 .canopy h3{white-space:pre-line}
 .canopy-description{color:#d8e7cf;font-size:14px}
@@ -69,7 +74,7 @@
 .kind-failed .alert{animation:alert-shake 180ms cubic-bezier(.36,.07,.19,.97) both}
 .original-safe{margin:14px 0;padding:14px 16px;border-radius:12px;background:var(--sage);line-height:1.55}
 .button{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;padding:9px 16px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--fg);font-weight:600}
-.button.primary{background:var(--primary);color:var(--on);border-color:transparent;box-shadow:0 8px 14px -10px #17351e99}
+.button.primary{background:var(--primary);color:var(--on);border-color:transparent;box-shadow:0 8px 16px -12px #0b1a1266}
 .dark .button.primary{box-shadow:none}
 .button:focus-visible,summary:focus-visible{outline:2px solid var(--primary);outline-offset:3px}
 .phones{display:grid;grid-template-columns:1fr 1fr;gap:28px}
@@ -230,10 +235,10 @@ Bake 40 minutes
     </div>
     <p class="status-line"><span class="pen" id="R93">R93</span>New · Ready · Not scheduled</p>
   </section></div></article></div></section><section class="direction" id="failed"><h2><span class="pen" id="F01">F01</span>Failed. Repair the stage.</h2>
-<p class=""><span class="pen" id="F02">F02</span>Originals stay. Retry compose does not create a second save.</p>
+<p class=""><span class="pen" id="F02">F02</span>Originals stay. Repair does not create a second save.</p>
 <article class="specimen"><div class="spec-caption"><span class="pen" id="F19">F19</span>Desktop / light / failed<span>Synthetic</span></div><div class="screen light desktop kind-failed"><aside class="rail"><div class="wordmark"><span class="pen" id="F12">F12</span><svg class="sprout-symbol" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 29V15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M16 17C15 11 10.5 8 5 8.4 5.2 14 9.6 17.4 16 17ZM16 14C16.6 7.8 21 4 27.4 4 27.5 10.4 23 14 16 14Z" fill="currentColor"/></svg>sprout</div><nav><p class="selected"><span class="pen" id="F13">F13</span>Library</p><p class=""><span class="pen" id="F14">F14</span>Find and ask</p><p class=""><span class="pen" id="F15">F15</span>Spaces</p><p class=""><span class="pen" id="F16">F16</span>Settings</p></nav></aside><div class="workspace"><div class="toolbar"><p class="search-sample"><span class="pen" id="F17">F17</span>Find something you kept</p><p class="muted"><span class="pen" id="F18">F18</span>Private library</p></div><div class="canopy failed-canopy"><div class="greenhouse-art" aria-hidden="true"><div class="arch arch-one"></div><div class="arch arch-two"></div><div class="arch arch-three"></div><div class="leaf-plane one"></div><div class="leaf-plane two"></div><div class="glass-shelf"><i></i><i></i><i></i></div></div><div class="canopy-copy"><h3><span class="pen" id="F03">F03</span>Original is safe.</h3><p class="canopy-description"><span class="pen" id="F04">F04</span>Understanding did not finish.</p></div></div>
   <section class="paper" data-component="Card">
-    <div class="alert" data-component="Alert" role="status"><span class="pen" id="F05">F05</span>Compose failed. Original unchanged.</div>
+    <div class="alert" data-component="Alert" role="status"><span class="pen" id="F05">F05</span>Understanding failed. Originals stay.</div>
     <div class="paper-top">
       <h4><span class="pen" id="F06">F06</span>Lemon cake</h4>
       <span class="badge quiet" data-component="Badge"><span class="pen" id="F07">F07</span>Failed</span>
@@ -244,12 +249,12 @@ Bake 40 minutes
 Bake 40 minutes
 “Remind me Friday.”</pre>
     <p class="muted"><span class="pen" id="F08">F08</span>Original kept exactly.</p>
-    <p class="muted"><span class="pen" id="F09">F09</span>Retry compose. This does not save again.</p>
-    <button disabled class="button primary"><span class="pen" id="F10">F10</span>Retry compose</button>
+    <p class="muted"><span class="pen" id="F09">F09</span>Repair this attempt. This does not save again.</p>
+    <button disabled class="button primary"><span class="pen" id="F10">F10</span>Repair</button>
     <p class="status-line"><span class="pen" id="F11">F11</span>New · Failed · Not scheduled</p>
   </section></div></div></article><article class="specimen"><div class="spec-caption"><span class="pen" id="F36">F36</span>Desktop / dark / failed<span>Synthetic</span></div><div class="screen dark desktop kind-failed"><aside class="rail"><div class="wordmark"><span class="pen" id="F29">F29</span><svg class="sprout-symbol" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 29V15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M16 17C15 11 10.5 8 5 8.4 5.2 14 9.6 17.4 16 17ZM16 14C16.6 7.8 21 4 27.4 4 27.5 10.4 23 14 16 14Z" fill="currentColor"/></svg>sprout</div><nav><p class="selected"><span class="pen" id="F30">F30</span>Library</p><p class=""><span class="pen" id="F31">F31</span>Find and ask</p><p class=""><span class="pen" id="F32">F32</span>Spaces</p><p class=""><span class="pen" id="F33">F33</span>Settings</p></nav></aside><div class="workspace"><div class="toolbar"><p class="search-sample"><span class="pen" id="F34">F34</span>Find something you kept</p><p class="muted"><span class="pen" id="F35">F35</span>Private library</p></div><div class="canopy failed-canopy"><div class="greenhouse-art" aria-hidden="true"><div class="arch arch-one"></div><div class="arch arch-two"></div><div class="arch arch-three"></div><div class="leaf-plane one"></div><div class="leaf-plane two"></div><div class="glass-shelf"><i></i><i></i><i></i></div></div><div class="canopy-copy"><h3><span class="pen" id="F20">F20</span>Original is safe.</h3><p class="canopy-description"><span class="pen" id="F21">F21</span>Understanding did not finish.</p></div></div>
   <section class="paper" data-component="Card">
-    <div class="alert" data-component="Alert" role="status"><span class="pen" id="F22">F22</span>Compose failed. Original unchanged.</div>
+    <div class="alert" data-component="Alert" role="status"><span class="pen" id="F22">F22</span>Understanding failed. Originals stay.</div>
     <div class="paper-top">
       <h4><span class="pen" id="F23">F23</span>Lemon cake</h4>
       <span class="badge quiet" data-component="Badge"><span class="pen" id="F24">F24</span>Failed</span>
@@ -260,13 +265,13 @@ Bake 40 minutes
 Bake 40 minutes
 “Remind me Friday.”</pre>
     <p class="muted"><span class="pen" id="F25">F25</span>Original kept exactly.</p>
-    <p class="muted"><span class="pen" id="F26">F26</span>Retry compose. This does not save again.</p>
-    <button disabled class="button primary"><span class="pen" id="F27">F27</span>Retry compose</button>
+    <p class="muted"><span class="pen" id="F26">F26</span>Repair this attempt. This does not save again.</p>
+    <button disabled class="button primary"><span class="pen" id="F27">F27</span>Repair</button>
     <p class="status-line"><span class="pen" id="F28">F28</span>New · Failed · Not scheduled</p>
   </section></div></div></article>
 <div class="phones"><article class="specimen"><div class="spec-caption"><span class="pen" id="F47">F47</span>Galaxy / light / failed<span>Synthetic</span></div><div class="screen light phone kind-failed"><div class="mobile-top"><span class="pen" id="F46">F46</span><svg class="sprout-symbol" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 29V15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M16 17C15 11 10.5 8 5 8.4 5.2 14 9.6 17.4 16 17ZM16 14C16.6 7.8 21 4 27.4 4 27.5 10.4 23 14 16 14Z" fill="currentColor"/></svg>sprout<span>Back</span></div><div class="canopy failed-canopy"><div class="greenhouse-art" aria-hidden="true"><div class="arch arch-one"></div><div class="arch arch-two"></div><div class="arch arch-three"></div><div class="leaf-plane one"></div><div class="leaf-plane two"></div><div class="glass-shelf"><i></i><i></i><i></i></div></div><div class="canopy-copy"><h3><span class="pen" id="F37">F37</span>Original is safe.</h3><p class="canopy-description"><span class="pen" id="F38">F38</span>Understanding did not finish.</p></div></div>
   <section class="paper" data-component="Card">
-    <div class="alert" data-component="Alert" role="status"><span class="pen" id="F39">F39</span>Compose failed. Original unchanged.</div>
+    <div class="alert" data-component="Alert" role="status"><span class="pen" id="F39">F39</span>Understanding failed. Originals stay.</div>
     <div class="paper-top">
       <h4><span class="pen" id="F40">F40</span>Lemon cake</h4>
       <span class="badge quiet" data-component="Badge"><span class="pen" id="F41">F41</span>Failed</span>
@@ -277,12 +282,12 @@ Bake 40 minutes
 Bake 40 minutes
 “Remind me Friday.”</pre>
     <p class="muted"><span class="pen" id="F42">F42</span>Original kept exactly.</p>
-    <p class="muted"><span class="pen" id="F43">F43</span>Retry compose. This does not save again.</p>
-    <button disabled class="button primary"><span class="pen" id="F44">F44</span>Retry compose</button>
+    <p class="muted"><span class="pen" id="F43">F43</span>Repair this attempt. This does not save again.</p>
+    <button disabled class="button primary"><span class="pen" id="F44">F44</span>Repair</button>
     <p class="status-line"><span class="pen" id="F45">F45</span>New · Failed · Not scheduled</p>
   </section></div></article><article class="specimen"><div class="spec-caption"><span class="pen" id="F58">F58</span>Galaxy / dark / failed<span>Synthetic</span></div><div class="screen dark phone kind-failed"><div class="mobile-top"><span class="pen" id="F57">F57</span><svg class="sprout-symbol" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 29V15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M16 17C15 11 10.5 8 5 8.4 5.2 14 9.6 17.4 16 17ZM16 14C16.6 7.8 21 4 27.4 4 27.5 10.4 23 14 16 14Z" fill="currentColor"/></svg>sprout<span>Back</span></div><div class="canopy failed-canopy"><div class="greenhouse-art" aria-hidden="true"><div class="arch arch-one"></div><div class="arch arch-two"></div><div class="arch arch-three"></div><div class="leaf-plane one"></div><div class="leaf-plane two"></div><div class="glass-shelf"><i></i><i></i><i></i></div></div><div class="canopy-copy"><h3><span class="pen" id="F48">F48</span>Original is safe.</h3><p class="canopy-description"><span class="pen" id="F49">F49</span>Understanding did not finish.</p></div></div>
   <section class="paper" data-component="Card">
-    <div class="alert" data-component="Alert" role="status"><span class="pen" id="F50">F50</span>Compose failed. Original unchanged.</div>
+    <div class="alert" data-component="Alert" role="status"><span class="pen" id="F50">F50</span>Understanding failed. Originals stay.</div>
     <div class="paper-top">
       <h4><span class="pen" id="F51">F51</span>Lemon cake</h4>
       <span class="badge quiet" data-component="Badge"><span class="pen" id="F52">F52</span>Failed</span>
@@ -293,8 +298,8 @@ Bake 40 minutes
 Bake 40 minutes
 “Remind me Friday.”</pre>
     <p class="muted"><span class="pen" id="F53">F53</span>Original kept exactly.</p>
-    <p class="muted"><span class="pen" id="F54">F54</span>Retry compose. This does not save again.</p>
-    <button disabled class="button primary"><span class="pen" id="F55">F55</span>Retry compose</button>
+    <p class="muted"><span class="pen" id="F54">F54</span>Repair this attempt. This does not save again.</p>
+    <button disabled class="button primary"><span class="pen" id="F55">F55</span>Repair</button>
     <p class="status-line"><span class="pen" id="F56">F56</span>New · Failed · Not scheduled</p>
   </section></div></article></div></section><section class="motion-section" id="motion"><h2><span class="pen" id="M01">M01</span>Motion has one job.</h2>
 <p class=""><span class="pen" id="M02">M02</span>Replay a 220 ms paper reveal for an already-published Ready state.</p>
