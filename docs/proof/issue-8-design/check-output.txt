@@ -1,0 +1,13 @@
+corepack pnpm check — passed 2026-10-25
+
+check:environment: pass
+format:check: All matched files use Prettier code style
+lint: pass
+doctor: No issues found
+typecheck: 7/7 projects, cache hit
+test: 10 files, 194 tests passed (76.47s)
+build: 7/7 projects, cache hit
+check:docs: PASS — workflow contracts, graph identities, SVG XML/markers, native controls, standalone encoding/theme, local links and offline builder
+
+Sheet proof (separate): Playwright capture.mjs
+desktop 1440x22407, mobile 435x33135, Inter loaded, no overflow, no duplicate IDs, original Unicode present, no script errors, no external requests.
