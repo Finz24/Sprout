@@ -44,7 +44,10 @@ const receipt = await Library.saveText(frozenSubmission);
 if (chosenSpaceId !== null) {
   await Organization.add({ spaceId: chosenSpaceId, itemId: receipt.itemId });
 }
-await Organization.createSpace({ name: 'Things to cook' });
+await Organization.createSpace({
+  spaceId: frozenSpaceId,
+  name: 'Things to cook',
+});
 await Organization.move({
   itemId,
   fromSpaceId: tripId,
@@ -60,7 +63,9 @@ const page = await Organization.listSpaceItems(cookId, {
 
 `Library.saveText` stays the only content write. `Organization` owns Space rows
 and memberships. `listSpaceItems` returns the same `SavedTextItem` projection
-the library already shows. It does not fork originals.
+the library already shows. It does not fork originals. Create keeps a client
+`spaceId` so a retry does not mint a second Space. A later rename is a different
+call.
 
 ## Shape
 
@@ -71,6 +76,7 @@ one saved item. Collection and Space stay one persistent pair.
 ```ts
 interface Organization {
   readonly createSpace: (input: {
+    spaceId: SpaceId;
     name: SpaceName;
   }) => Effect<Space, SpaceFailure, RequestAccess>;
   readonly renameSpace: (input: {
@@ -102,7 +108,8 @@ interface Organization {
 // SpaceId branded UUID. SpaceName trimmed 1..80 Unicode scalars, no NUL.
 // Membership = { spaceId, itemId }. Move = { itemId, fromSpaceId, toSpaceId }.
 // SpaceFailure = AccessFailure | NotFound | InvalidName | NameConflict | SameSpaceMove.
-// Add and remove are idempotent. Move is one transaction: dest present, source gone.
+// Create is create-if-absent on spaceId. It never renames. Add and remove are
+// idempotent. Move is one transaction: dest present, source gone.
 ```
 
 ### Tables and RLS
@@ -175,8 +182,10 @@ Move to the same Space returns 400. Name conflict returns 409.
 ## Defaults this design takes
 
 Capture stays a text save. After a receipt the composer may call `add` once if
-the owner chose a Space. A failed add leaves the item saved and says the Space
-was not attached. Retry add, not save.
+the owner chose a Space. Receipt status stays retained. Attach status is
+attaching, attached, or unconfirmed. A failed add leaves the item saved and
+offers **Retry adding to Space**. Retry add, not save. Reload keeps the item.
+It does not persist unfinished attach intent.
 
 Move is a transfer. To keep an item in both Spaces, use add.
 
@@ -217,16 +226,15 @@ first implementation slice after approval.
 
 ## Synthesis
 
-Two architect runners used the configured pair, Sol and Luna. Luna delivered a
-separate Organization module with idempotent Add, Remove, and Move, and a
-post-receipt attach. Sol's checkout was still running at parent synthesis.
-Parent pick: co-locate Organization beside library storage, per architecture.
-Graft Luna's command split, branded IDs, and capture-never-writes-content rule.
-Reject a new `@sprout/organization` package and reject adding `spaceId` to
-`TextSubmission`. Those enlarge the public surface before the contract needs it.
+Architect runners were Sol and Luna. Cross-judge picked Luna. Parent agrees.
+Base is a co-located Organization module, not `Library.spaces`. Graft Sol's
+client `spaceId` on create, attaching or unconfirmed receipt states, and
+per-slice line budgets. Keep Move as one transaction. The ticket names add,
+move, and remove. Two `setMembership` calls can drop or duplicate a row.
+Reject a new package, `spaceId` on `TextSubmission`, and scoped `listText`.
 
 Red flags passed for one write owner per table family, private internals, and
-one membership path. Reject storing Space IDs on `saved_item`, JSON item lists,
+one membership path. Reject Space IDs on `saved_item`, JSON item lists,
 frontend-only owner filters, and drag-only membership.
 
 ## Proof
