@@ -2,8 +2,9 @@
 
 These captures show the static [red-pen sheet](../../design/issue-8-review.html),
 not a running Spaces flow. All names and originals are synthetic. No product
-code changed. No app services or Docker stacks started. PNG files are local
-capture output. They are gitignored. Re-run `capture.mjs` to regenerate them.
+code changed. No app services or Docker stacks started. Full-page section captures stay local and gitignored. Light and dark
+specimens for list, view, capture, and delete are committed. Re-run
+`capture.mjs` to regenerate every file.
 
 ## Review artifacts
 
