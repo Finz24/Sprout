@@ -1,0 +1,20 @@
+Command: corepack pnpm test:integration
+Runner: scripts/auth-workspace.mjs --interactive
+Project: sprout-text-save-4d, local app processes with container PostgreSQL
+
+Test Files 2 failed | 1 passed (3)
+Tests 12 failed | 44 passed (56)
+Start at 19:59:24
+Duration 62.91s
+
+Failure groups:
+1. Oversized JSON request: fetch failed, UND_ERR_SOCKET, other side closed.
+2. Saved-item privilege tests: validateRole returned Unavailable after restoring
+   a table INSERT grant. Later privilege/cancellation cases also failed.
+3. Backup/restore cleanup: no such service: "api": not found.
+
+The backup suite requires actual Compose API and worker containers. Its original
+service-state assertions remain required. The next full runtime suite must use
+the documented --compose mode. The local-process run is not backup proof.
+
+No timeout, RLS, privilege audit, test assertion or required gate was relaxed.

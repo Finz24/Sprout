@@ -1,4 +1,17 @@
 import { Schema } from 'effect';
+export {
+  SubmissionId,
+  SavedItemId,
+  OriginalText,
+  SavingIntent,
+  TextSubmission,
+  SaveReceipt,
+  SavedTextItem,
+  LibraryCursor,
+  LibraryPage,
+  LiteralQuery,
+  SavedTextPage,
+} from './library.js';
 
 export const LibraryView = Schema.Literals(['grid', 'list']);
 export type LibraryView = typeof LibraryView.Type;

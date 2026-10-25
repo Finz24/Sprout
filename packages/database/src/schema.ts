@@ -1,4 +1,3 @@
-// Feature issues introduce owner-scoped domain tables through reviewed migrations.
 import { sql } from 'drizzle-orm';
 import {
   boolean,
@@ -8,6 +7,7 @@ import {
   text,
   timestamp,
   unique,
+  uuid,
 } from 'drizzle-orm/pg-core';
 
 const auth = pgSchema('auth');
@@ -99,4 +99,33 @@ export const ownerSettings = privateData.table(
     ...timestamps(),
   },
   (t) => [check('library_view', sql`${t.libraryView} in ('grid', 'list')`)],
+);
+
+export const savedItem = privateData.table(
+  'saved_item',
+  {
+    id: uuid('id').primaryKey(),
+    ownerUserId: text('owner_user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'restrict' }),
+    submissionId: uuid('submission_id').notNull(),
+    originalText: text('original_text').notNull(),
+    submittedIntent: text('submitted_intent'),
+    retainedAt: timestamp('retained_at', { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => [
+    unique('saved_item_owner_submission').on(t.ownerUserId, t.submissionId),
+    unique('saved_item_owner_identity').on(t.ownerUserId, t.id),
+    index('saved_item_owner_recent').on(t.ownerUserId, t.retainedAt, t.id),
+    check(
+      'saved_item_original_size',
+      sql`octet_length(${t.originalText}) between 1 and 65536`,
+    ),
+    check(
+      'saved_item_intent_size',
+      sql`${t.submittedIntent} is null or octet_length(${t.submittedIntent}) <= 4096`,
+    ),
+  ],
 );

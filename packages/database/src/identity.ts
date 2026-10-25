@@ -4,7 +4,15 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { APIError, createAuthEndpoint } from 'better-auth/api';
 import { deleteSessionCookie } from 'better-auth/cookies';
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { SetLibraryView, type Access } from '@sprout/contracts';
+import {
+  SetLibraryView,
+  TextSubmission,
+  SavedItemId,
+  LibraryPage,
+  LiteralQuery,
+  type Access,
+} from '@sprout/contracts';
+import { libraryOperations } from './library-storage.js';
 import * as schema from './schema.js';
 import {
   createPool,
@@ -39,27 +47,35 @@ export class AccessHttp extends Context.Service<
   }
 >()('Sprout/AccessHttp') {}
 class PayloadTooLarge extends Data.TaggedError('PayloadTooLarge') {}
+class InvalidSubmission extends Data.TaggedError('InvalidSubmission') {}
 const maxBodyBytes = 16 * 1024;
-async function readJson(request: Request): Promise<unknown> {
+async function readJson(
+  request: Request,
+  limit = maxBodyBytes,
+): Promise<unknown> {
   const reader = request.body?.getReader();
   if (!reader) throw new Unauthenticated();
   const chunks: Uint8Array[] = [];
   let total = 0;
+  let oversized = false;
   try {
     for (;;) {
       const { done, value } = await reader.read();
       if (done) break;
       if (!value) continue;
-      total += value.byteLength;
-      if (total > maxBodyBytes) {
-        await reader.cancel().catch(() => undefined);
-        throw new PayloadTooLarge();
+      if (!oversized) {
+        total += value.byteLength;
+        if (total > limit) {
+          // Cancelling the Node-backed stream closes the socket before the error response.
+          oversized = true;
+          chunks.length = 0;
+        } else chunks.push(value);
       }
-      chunks.push(value);
     }
   } finally {
     reader.releaseLock();
   }
+  if (oversized) throw new PayloadTooLarge();
   const bytes = new Uint8Array(total);
   let offset = 0;
   for (const chunk of chunks) {
@@ -67,7 +83,9 @@ async function readJson(request: Request): Promise<unknown> {
     offset += chunk.byteLength;
   }
   try {
-    const parsed: unknown = JSON.parse(new TextDecoder().decode(bytes));
+    const parsed: unknown = JSON.parse(
+      new TextDecoder('utf-8', { fatal: true }).decode(bytes),
+    );
     return parsed;
   } catch {
     throw new Unauthenticated();
@@ -194,6 +212,7 @@ export const IdentityLive = (settings: IdentitySettings) =>
       });
       const auth = createIdentityAuth(settings, authPool);
       const Shell = shellOperations(privatePool);
+      const Library = libraryOperations(privatePool);
       const Identity = {
         withRequest: <A, E>(
           request: Request,
@@ -247,7 +266,14 @@ export const IdentityLive = (settings: IdentitySettings) =>
         Effect.gen(function* () {
           const path = new URL(request.url).pathname;
           const key = `${request.method} ${path}`;
+          const libraryRoute =
+            key === 'POST /api/library/text' ||
+            key === 'GET /api/library/items' ||
+            key === 'GET /api/library/search' ||
+            (request.method === 'GET' &&
+              /^\/api\/library\/items\/[^/]+$/.test(path));
           if (
+            !libraryRoute &&
             ![
               'GET /api/session',
               'GET /api/shell',
@@ -266,6 +292,70 @@ export const IdentityLive = (settings: IdentitySettings) =>
             return json(
               { error: 'Invalid request origin or content type' },
               403,
+            );
+          if (libraryRoute)
+            return yield* Identity.withRequest(
+              request,
+              Effect.gen(function* () {
+                if (key === 'POST /api/library/text') {
+                  const body = yield* Effect.tryPromise({
+                    try: () => readJson(request, 512 * 1024),
+                    catch: () => new InvalidSubmission(),
+                  });
+                  const input = yield* Effect.try({
+                    try: () =>
+                      Schema.decodeUnknownSync(TextSubmission)(body, {
+                        onExcessProperty: 'error',
+                      }),
+                    catch: () => new InvalidSubmission(),
+                  });
+                  return json(yield* Library.saveText(input));
+                }
+                if (path.startsWith('/api/library/items/')) {
+                  const id = yield* Effect.try({
+                    try: () =>
+                      Schema.decodeUnknownSync(SavedItemId)(
+                        path.slice('/api/library/items/'.length),
+                      ),
+                    catch: () => new InvalidSubmission(),
+                  });
+                  return json(yield* Library.get(id));
+                }
+                const params = new URL(request.url).searchParams;
+                const page = yield* Effect.try({
+                  try: () => {
+                    for (const name of params.keys()) {
+                      if (
+                        ![
+                          'cursor',
+                          'limit',
+                          ...(key === 'GET /api/library/search' ? ['q'] : []),
+                        ].includes(name) ||
+                        params.getAll(name).length !== 1
+                      )
+                        throw new InvalidSubmission();
+                    }
+                    const encoded = params.get('cursor');
+                    const cursor: unknown =
+                      encoded === null ? null : JSON.parse(encoded);
+                    const limit = params.get('limit');
+                    return Schema.decodeUnknownSync(LibraryPage)(
+                      { cursor, limit: limit === null ? 50 : Number(limit) },
+                      { onExcessProperty: 'error' },
+                    );
+                  },
+                  catch: () => new InvalidSubmission(),
+                });
+                if (key === 'GET /api/library/search') {
+                  const query = yield* Effect.try({
+                    try: () =>
+                      Schema.decodeUnknownSync(LiteralQuery)(params.get('q')),
+                    catch: () => new InvalidSubmission(),
+                  });
+                  return json(yield* Library.searchOriginal(query, page));
+                }
+                return json(yield* Library.list(page));
+              }),
             );
           if (key === 'GET /api/session') {
             const access = yield* Identity.read(request);
@@ -383,15 +473,27 @@ export const IdentityLive = (settings: IdentitySettings) =>
                   error:
                     error._tag === 'Unauthenticated'
                       ? 'Sign in required'
-                      : error._tag === 'PayloadTooLarge'
-                        ? 'Request body too large'
-                        : 'Service unavailable. Retry shortly.',
+                      : error._tag === 'InvalidSubmission'
+                        ? 'Invalid library input'
+                        : error._tag === 'SubmissionConflict'
+                          ? 'Submission identity already retained different text or intent'
+                          : error._tag === 'NotFound'
+                            ? 'Not found'
+                            : error._tag === 'PayloadTooLarge'
+                              ? 'Request body too large'
+                              : 'Service unavailable. Retry shortly.',
                 },
                 error._tag === 'Unauthenticated'
                   ? 401
-                  : error._tag === 'PayloadTooLarge'
-                    ? 413
-                    : 503,
+                  : error._tag === 'InvalidSubmission'
+                    ? 400
+                    : error._tag === 'SubmissionConflict'
+                      ? 409
+                      : error._tag === 'NotFound'
+                        ? 404
+                        : error._tag === 'PayloadTooLarge'
+                          ? 413
+                          : 503,
               ),
             ),
           ),

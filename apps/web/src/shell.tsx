@@ -200,7 +200,6 @@ export function Shell() {
           Sprout
         </Link>
         <Navigation />
-        <p className="sidebar-note">A place for what you want to keep.</p>
       </aside>
       <div className="workspace">
         <header className="shell-header">
@@ -240,45 +239,6 @@ export function ViewPreference() {
       ))}
       <span role="status">{pending ? 'Saving preference…' : ''}</span>
     </fieldset>
-  );
-}
-
-export function Library() {
-  return (
-    <>
-      <div className="page-heading">
-        <div>
-          <p className="eyebrow">Your workspace</p>
-          <h1>Library</h1>
-        </div>
-        <ViewPreference />
-      </div>
-      <section className="empty-library">
-        <div className="empty-symbol" aria-hidden="true">
-          <svg
-            viewBox="0 0 48 48"
-            width="48"
-            height="48"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path d="M24 42V22" strokeLinecap="round" />
-            <path d="M24 27c-7 0-12-4-12-11 7 0 12 4 12 11Z" />
-            <path d="M24 21c0-7 5-11 12-11 0 7-5 11-12 11Z" />
-          </svg>
-        </div>
-        <h2>Your library is ready for a fresh start</h2>
-        <p>
-          There are no saved items yet. Saving will be available in a future
-          update.
-        </p>
-        <Link to="/settings" className="text-link">
-          Choose your preferred library view
-        </Link>
-      </section>
-      <Outlet />
-    </>
   );
 }
 
@@ -329,24 +289,6 @@ export function Placeholder({
       <Link to="/library" className="text-link">
         Back to Library
       </Link>
-    </section>
-  );
-}
-
-export function Inspector() {
-  const heading = useRef<HTMLHeadingElement>(null);
-  useEffect(() => {
-    heading.current?.focus();
-  }, []);
-  return (
-    <section className="inspector" aria-label="Saved item">
-      <Link to="/library" className="text-link">
-        Close item
-      </Link>
-      <h1 ref={heading} tabIndex={-1}>
-        Item not found
-      </h1>
-      <p>This item is unavailable.</p>
     </section>
   );
 }

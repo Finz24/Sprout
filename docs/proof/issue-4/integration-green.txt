@@ -1,0 +1,18 @@
+Command: corepack pnpm test:integration
+Runner: node scripts/auth-workspace.mjs --compose --interactive, then integration
+Project: sprout-text-save-4e
+Database port 55478, API 3144, worker 3145, web 5194.
+Images built from current backend source with cached pinned dependencies.
+
+Test Files 3 passed (3)
+Tests 57 passed (57)
+Start at 20:05:44
+Duration 207.72s (transform 328ms, setup 0ms, import 4.49s, tests 201.39s, environment 0ms)
+
+Workspace integration finished.
+
+The existing real HTTP/PostgreSQL and backup boundaries exercised exact original
+and intent retention, retry identity, fresh concurrent equal and conflicting
+submissions, pagination, literal search, auth/owner isolation, real role ACLs,
+forced RLS, cancellation, private-pool outage/recovery and restored originals.
+This result does not establish the browser journey or physical-device behavior.
